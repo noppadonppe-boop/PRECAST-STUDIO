@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { approvalCommandSchema, designBasisPayloadSchema, designCheckPayloadSchema, loadAnalysisSettingsPayloadSchema, mockAnalysisInputSchema, productModelPayloadSchema, sourceFileSchema } from './index';
+import { approvalCommandSchema, designBasisPayloadSchema, designCheckPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, mockAnalysisInputSchema, productModelPayloadSchema, sourceFileSchema } from './index';
 
 describe('versioned runtime schemas', () => {
   it('rejects an unversioned mock analysis payload', () => {
@@ -48,5 +48,15 @@ describe('versioned runtime schemas', () => {
     expect(designCheckPayloadSchema.safeParse(valid).success).toBe(true);
     expect(designCheckPayloadSchema.safeParse({ ...valid, overallStatus: 'PASS' }).success).toBe(false);
     expect(designCheckPayloadSchema.safeParse({ ...valid, checks: checks.slice(0, 6) }).success).toBe(false);
+  });
+});
+
+describe('M6 estimate schema', () => {
+  it('rejects arithmetic drift and derived totals on a blocked estimate', () => {
+    const line = { id: 'line-a', costCode: 'CONC-C40', description: 'Concrete', category: 'material', sourceType: 'model', elementIds: ['panel-a'], quantityRule: 'model volume', rawQuantity: 2, wastePercent: 5, payableQuantity: 2.1, unit: 'm3', unitRate: null, rateSourceRef: null, amount: null, rateStatus: 'missingRate' };
+    const payload = { schemaVersion: '1.0.0', maturity: 'engineering', currency: 'THB', quantityRuleVersion: 'precast-qto@1.0.0', priceBookId: 'pb-2026', priceBookRevision: 'PB-R01', effectiveDate: '2026-09-05', designDependencyStatus: 'NOT_CHECKED', uncertaintyPercent: 15, lines: [line], summary: { pricedDirectCost: 0, directCost: null, indirectPercent: 10, indirectCost: null, contingencyPercent: 5, contingency: null, estimatedCost: null, markupMethod: 'markup', markupPercent: 12, markup: null, sellingPrice: null, vatPercent: 7, vat: null, grandTotal: null, lowRange: null, highRange: null }, assumptions: [{ id: 'assumption-a', classification: 'excluded', statement: 'Design remains pending.', blocking: true }] };
+    expect(estimatePayloadSchema.safeParse(payload).success).toBe(true);
+    expect(estimatePayloadSchema.safeParse({ ...payload, lines: [{ ...line, payableQuantity: 2 }] }).success).toBe(false);
+    expect(estimatePayloadSchema.safeParse({ ...payload, summary: { ...payload.summary, grandTotal: 0 } }).success).toBe(false);
   });
 });

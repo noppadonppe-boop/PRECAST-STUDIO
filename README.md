@@ -1,6 +1,6 @@
 # Precast Engineering Web App
 
-M5 Design Checks and G3 Verification for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, general FEM solver, or authoritative design result.
+M6 BOQ and Preliminary Estimate controls for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, general FEM solver, authoritative design result, or issued commercial document.
 
 ## Source of truth
 
@@ -26,7 +26,7 @@ pnpm check
 pnpm dev
 ```
 
-Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted M5 behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. Use `?as=engineer` at G3 to submit the completed benchmark evidence, `?as=checker` to approve the immutable G3 snapshot, then return as engineer at G4 to generate the blocked Design Check register. No production credential is required.
+Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted M6 behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. Complete the M5 G3/G4 sequence, then use `?as=qs` at G5 to generate the preliminary estimate. The seeded expired transport rate and `NOT_CHECKED` design dependency deliberately block submission and export. No production credential is required.
 
 ## Workspace map
 
@@ -38,11 +38,11 @@ packages/schemas/         Versioned Zod command/calculation contracts
 packages/ui/              Product tokens and shared UI primitives
 firebase/                 Firestore/Storage rules, indexes and emulator configuration
 firebase/tests/           Rules tests for tenant isolation and authoritative transitions
-services/                 Reserved worker boundaries; no real scanner/FEM/export worker in M5
+services/                 Worker boundaries and enforced M6 estimate-export policy
 knowledge/                Approved product and engineering source of truth
 ```
 
-## Security model through M5
+## Security model through M6
 
 - Deny by default in Firestore and Storage Rules.
 - Organization and project membership are separate and project membership can expire.
@@ -66,6 +66,11 @@ knowledge/                Approved product and engineering source of truth
 - The M5 Design Check register has exactly seven required categories: panel strength, serviceability, openings, joints, anchors, lifting and transport.
 - Design Check generation requires the current approved G3 analysis hash. Direct client creation or result mutation is denied.
 - Any `FAIL` or unresolved `NOT_CHECKED` item blocks calculation submission and G4 approval. The local fixture intentionally leaves every unimplemented design method `NOT_CHECKED`.
+- Estimate creation is limited to an active Cost Estimator and requires current approved G3/model snapshots plus an approved Price Book revision.
+- Exact model-derived quantities retain element IDs, raw quantity, waste and payable quantity; backend formulas determine amounts and every cost layer.
+- Missing, expired and unit-mismatched rates remain explicit with null rate/amount fields. They never silently become zero.
+- Direct estimate/Price Book mutations are denied. Commercial approval remains independent; a Project Manager requires explicit `commercialApprove` capability.
+- XLSX, PDF, CSV and JSON export manifests require an approved locked estimate, current rates, `PASS` design dependency, complete totals and no blockers. The M6 fixture therefore emits no commercial file.
 
 ## Validation commands
 
@@ -78,4 +83,4 @@ pnpm test:e2e
 pnpm build
 ```
 
-See the [M5 completion and M6 handoff](docs/M5_HANDOFF.md) before extending the application. Earlier handoffs remain as historical context.
+See the [M6 completion and M7 handoff](docs/M6_HANDOFF.md) before extending the application. Earlier handoffs remain as historical context.

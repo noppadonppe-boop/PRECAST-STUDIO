@@ -53,6 +53,7 @@ export function can(
   }
   const requested: Grant[] = [`${action}:${resource}`, `${action}:*`];
   const roleAllows = context.roles.some((role) => grants[role].some((grant) => requested.includes(grant)));
-  const delegated = context.capabilities.includes(`${action}:${resource}`);
+  const delegated = context.capabilities.includes(`${action}:${resource}`)
+    || (action === 'approve' && resource === 'estimate' && context.roles.includes('projectManager') && context.capabilities.includes('commercialApprove'));
   return roleAllows || delegated ? { allowed: true } : { allowed: false, reason: 'Your project roles do not grant this action.' };
 }

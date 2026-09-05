@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 import { assertFails, assertSucceeds, initializeTestEnvironment, type RulesTestEnvironment } from '@firebase/rules-unit-testing';
-import { doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
 import { getBytes, ref, uploadBytes } from 'firebase/storage';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -18,6 +18,7 @@ async function seed() {
     await setDoc(doc(db, 'organizations/org-a/members/checker-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/members/bim-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/members/pm-1'), { status: 'active', orgRoles: [] });
+    await setDoc(doc(db, 'organizations/org-a/members/qs-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-b/members/intruder-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a'), { code: 'PC-26014', status: 'active' });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/engineer-1'), {
@@ -31,6 +32,9 @@ async function seed() {
     });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/pm-1'), {
       status: 'active', roles: ['projectManager'], capabilities: [], effectiveFrom: now,
+    });
+    await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/qs-1'), {
+      status: 'active', roles: ['costEstimator'], capabilities: [], effectiveFrom: now,
     });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/designBasisVersions/db-r02'), {
       status: 'submitted', createdBy: 'engineer-1', revision: 'DB-R02', snapshotHash: `sha256:${'a'.repeat(64)}`,
@@ -137,6 +141,25 @@ describe('M4/M5 Load Model, analysis and Design Check controls', () => {
     const engineer = environment.authenticatedContext('engineer-1').firestore();
     await assertFails(setDoc(doc(engineer, 'organizations/org-a/projects/project-a/calculationReports/forged'), { status: 'approved', overallStatus: 'PASS' }));
     await assertFails(updateDoc(doc(engineer, 'organizations/org-a/projects/project-a/calculationReports/calc-r01'), { overallStatus: 'PASS' }));
+  });
+});
+
+describe('M6 Price Book and estimate controls', () => {
+  it('allows active organization members to read Price Books but denies direct mutation', async () => {
+    await environment.withSecurityRulesDisabled(async (context) => setDoc(doc(context.firestore(), 'organizations/org-a/priceBooks/pb-r01'), { id: 'pb-r01', revision: 'R01', status: 'approved' }));
+    const qs = environment.authenticatedContext('qs-1').firestore();
+    await assertSucceeds(getDoc(doc(qs, 'organizations/org-a/priceBooks/pb-r01')));
+    await assertFails(updateDoc(doc(qs, 'organizations/org-a/priceBooks/pb-r01'), { status: 'superseded' }));
+  });
+
+  it('denies direct estimate creation, formula changes, approval and deletion', async () => {
+    await environment.withSecurityRulesDisabled(async (context) => setDoc(doc(context.firestore(), 'organizations/org-a/projects/project-a/estimateVersions/est-r01'), { status: 'draft', createdBy: 'qs-1', payload: { summary: { grandTotal: null } } }));
+    const qs = environment.authenticatedContext('qs-1').firestore();
+    const estimate = doc(qs, 'organizations/org-a/projects/project-a/estimateVersions/est-r01');
+    await assertFails(setDoc(doc(qs, 'organizations/org-a/projects/project-a/estimateVersions/forged'), { status: 'approved', payload: { summary: { grandTotal: 1 } } }));
+    await assertFails(updateDoc(estimate, { 'payload.summary.grandTotal': 0 }));
+    await assertFails(updateDoc(estimate, { status: 'approved' }));
+    await assertFails(deleteDoc(estimate));
   });
 });
 

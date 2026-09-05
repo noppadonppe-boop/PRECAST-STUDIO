@@ -28,6 +28,11 @@ describe('Role Matrix v1 permission evaluator', () => {
     expect(can('view', 'project', { ...checker, expiresAt: '2020-01-01T00:00:00.000Z' }).allowed).toBe(false);
   });
 
+  it('requires explicit commercialApprove capability when a Project Manager approves an estimate', () => {
+    expect(can('approve', 'estimate', { ...checker, roles: ['projectManager'], capabilities: [] }).allowed).toBe(false);
+    expect(can('approve', 'estimate', { ...checker, roles: ['projectManager'], capabilities: ['commercialApprove'] }).allowed).toBe(true);
+  });
+
   it.each([
     ['projectManager', 'create', 'project', true],
     ['bimCoordinator', 'submit', 'sourceRevision', true],

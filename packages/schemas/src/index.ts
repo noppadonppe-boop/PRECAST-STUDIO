@@ -179,6 +179,65 @@ export const createDesignCheckRevisionCommandSchema = commandIdentitySchema.exte
   calculationId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/), revision: z.string().trim().min(2).max(24), analysisRunId: z.string().min(1), expectedAnalysisHash: snapshotHashSchema,
 });
 
+export const priceBookItemSchema = z.object({
+  id: entityIdSchema, costCode: z.string().trim().min(2).max(40), description: z.string().trim().min(3).max(240),
+  category: z.enum(['material', 'manufacturing', 'logistics', 'installation']), unit: z.enum(['m3', 'm2', 'm', 'each', 't']), currency: z.literal('THB'),
+  baseRate: z.number().nonnegative().finite(), sourceType: z.enum(['supplierQuote', 'contractRate', 'marketSurvey', 'internalBenchmark']), sourceRef: z.string().trim().min(3).max(240),
+  effectiveFrom: z.string().date(), effectiveTo: z.string().date().optional(), taxIncluded: z.literal(false), status: z.enum(['approved', 'withdrawn']),
+}).refine((item) => item.effectiveTo === undefined || item.effectiveTo >= item.effectiveFrom, 'Price validity end must not precede its start.');
+
+export const priceBookSchema = z.object({
+  id: entityIdSchema, revision: z.string().trim().min(2).max(24), status: z.enum(['approved', 'superseded']), currency: z.literal('THB'), items: z.array(priceBookItemSchema).min(1).max(1000),
+}).superRefine((book, context) => {
+  if (new Set(book.items.map((item) => item.id)).size !== book.items.length) context.addIssue({ code: 'custom', message: 'Price Book item IDs must be unique.' });
+});
+
+const estimateLineSchema = z.object({
+  id: entityIdSchema, costCode: z.string().trim().min(2).max(40), description: z.string().trim().min(3).max(240), category: z.enum(['material', 'manufacturing', 'logistics', 'installation']),
+  sourceType: z.enum(['model', 'projectAllowance']), elementIds: z.array(entityIdSchema).min(1).max(1000), quantityRule: z.string().trim().min(3).max(500),
+  rawQuantity: z.number().nonnegative().finite(), wastePercent: z.number().min(0).max(100), payableQuantity: z.number().nonnegative().finite(), unit: z.enum(['m3', 'm2', 'm', 'each', 't']),
+  unitRate: z.number().nonnegative().finite().nullable(), rateSourceRef: z.string().trim().min(3).max(240).nullable(), amount: z.number().nonnegative().finite().nullable(),
+  rateStatus: z.enum(['current', 'missingRate', 'expiredRate', 'unitMismatch']),
+}).superRefine((line, context) => {
+  const near = (a: number, b: number) => Math.abs(a - b) <= Math.max(1e-8, Math.abs(b) * 1e-8);
+  if (!near(line.payableQuantity, line.rawQuantity * (1 + line.wastePercent / 100))) context.addIssue({ code: 'custom', message: `Payable quantity formula mismatch for ${line.id}.` });
+  const priced = line.rateStatus === 'current';
+  if (priced !== (line.unitRate !== null && line.rateSourceRef !== null && line.amount !== null)) context.addIssue({ code: 'custom', message: `Rate fields conflict with rate status for ${line.id}.` });
+  if (priced && !near(line.amount!, line.payableQuantity * line.unitRate!)) context.addIssue({ code: 'custom', message: `Amount formula mismatch for ${line.id}.` });
+});
+
+export const estimatePayloadSchema = z.object({
+  schemaVersion: z.literal('1.0.0'), maturity: z.literal('engineering'), currency: z.literal('THB'), quantityRuleVersion: z.literal('precast-qto@1.0.0'),
+  priceBookId: entityIdSchema, priceBookRevision: z.string().trim().min(2).max(24), effectiveDate: z.string().date(), designDependencyStatus: designCheckStatusSchema,
+  uncertaintyPercent: z.number().min(0).max(100), lines: z.array(estimateLineSchema).min(1).max(1000),
+  summary: z.object({
+    pricedDirectCost: z.number().nonnegative().finite(), directCost: z.number().nonnegative().finite().nullable(), indirectPercent: z.number().min(0).max(100), indirectCost: z.number().nonnegative().finite().nullable(),
+    contingencyPercent: z.number().min(0).max(100), contingency: z.number().nonnegative().finite().nullable(), estimatedCost: z.number().nonnegative().finite().nullable(), markupMethod: z.literal('markup'),
+    markupPercent: z.number().min(0).max(100), markup: z.number().nonnegative().finite().nullable(), sellingPrice: z.number().nonnegative().finite().nullable(), vatPercent: z.number().min(0).max(100),
+    vat: z.number().nonnegative().finite().nullable(), grandTotal: z.number().nonnegative().finite().nullable(), lowRange: z.number().nonnegative().finite().nullable(), highRange: z.number().nonnegative().finite().nullable(),
+  }),
+  assumptions: z.array(z.object({ id: entityIdSchema, classification: z.enum(['included', 'excluded', 'allowance']), statement: z.string().trim().min(3).max(1000), blocking: z.boolean() })).min(1).max(100),
+}).superRefine((estimate, context) => {
+  const near = (a: number, b: number) => Math.abs(a - b) <= Math.max(1e-6, Math.abs(b) * 1e-8);
+  if (new Set(estimate.lines.map((line) => line.id)).size !== estimate.lines.length) context.addIssue({ code: 'custom', message: 'Estimate line IDs must be unique.' });
+  const priced = estimate.lines.reduce((sum, line) => sum + (line.amount ?? 0), 0);
+  if (!near(estimate.summary.pricedDirectCost, priced)) context.addIssue({ code: 'custom', message: 'Priced direct cost does not match the line register.' });
+  const incomplete = estimate.lines.some((line) => line.rateStatus !== 'current') || estimate.designDependencyStatus !== 'PASS';
+  const completionFields = ['directCost', 'indirectCost', 'contingency', 'estimatedCost', 'markup', 'sellingPrice', 'vat', 'grandTotal', 'lowRange', 'highRange'] as const;
+  if (incomplete && completionFields.some((key) => estimate.summary[key] !== null)) context.addIssue({ code: 'custom', message: 'Incomplete estimates must not publish derived totals or ranges.' });
+  if (!incomplete) {
+    const s = estimate.summary; const direct = priced; const indirect = direct * s.indirectPercent / 100; const contingency = (direct + indirect) * s.contingencyPercent / 100;
+    const estimated = direct + indirect + contingency; const markup = estimated * s.markupPercent / 100; const selling = estimated + markup; const vat = selling * s.vatPercent / 100; const grand = selling + vat;
+    const expected = { directCost: direct, indirectCost: indirect, contingency, estimatedCost: estimated, markup, sellingPrice: selling, vat, grandTotal: grand, lowRange: grand * (1 - estimate.uncertaintyPercent / 100), highRange: grand * (1 + estimate.uncertaintyPercent / 100) };
+    for (const [key, value] of Object.entries(expected)) if (s[key as keyof typeof expected] === null || !near(s[key as keyof typeof expected]!, value)) context.addIssue({ code: 'custom', message: `Estimate summary formula mismatch for ${key}.` });
+  }
+});
+
+export const createEstimateRevisionCommandSchema = commandIdentitySchema.extend({
+  estimateId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/), revision: z.string().trim().min(2).max(24), priceBookId: entityIdSchema, priceBookRevision: z.string().trim().min(2).max(24),
+  effectiveDate: z.string().date(), expectedModelHash: snapshotHashSchema, indirectPercent: z.number().min(0).max(100), contingencyPercent: z.number().min(0).max(100), markupPercent: z.number().min(0).max(100), vatPercent: z.number().min(0).max(100), uncertaintyPercent: z.number().min(0).max(100),
+});
+
 export const freezeSourceRevisionCommandSchema = commandIdentitySchema.extend({
   sourceRevisionId: z.string().min(1),
   expectedSnapshotHash: snapshotHashSchema,
@@ -229,6 +288,7 @@ export type CreateLoadModelRevisionCommand = z.infer<typeof createLoadModelRevis
 export type QueueAnalysisRunCommand = z.infer<typeof queueAnalysisRunCommandSchema>;
 export type CancelAnalysisRunCommand = z.infer<typeof cancelAnalysisRunCommandSchema>;
 export type CreateDesignCheckRevisionCommand = z.infer<typeof createDesignCheckRevisionCommandSchema>;
+export type CreateEstimateRevisionCommand = z.infer<typeof createEstimateRevisionCommandSchema>;
 export type FreezeSourceRevisionCommand = z.infer<typeof freezeSourceRevisionCommandSchema>;
 export type UpdateProjectCommand = z.infer<typeof updateProjectCommandSchema>;
 export type ArchiveProjectCommand = z.infer<typeof archiveProjectCommandSchema>;

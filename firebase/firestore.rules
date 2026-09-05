@@ -50,6 +50,12 @@ service cloud.firestore {
         allow write: if false;
       }
 
+      match /priceBooks/{priceBookId} {
+        allow read: if hasActiveOrgMembership(orgId);
+        // Price Book revisions are managed only by authoritative commercial administration.
+        allow write: if false;
+      }
+
       match /projects/{projectId} {
         allow read: if isInternalProjectMember(orgId, projectId);
         allow write: if false;
@@ -142,6 +148,12 @@ service cloud.firestore {
         match /calculationReports/{calculationId} {
           allow read: if isInternalProjectMember(orgId, projectId);
           // Design-check generation, review snapshots and approval remain server-authoritative.
+          allow write: if false;
+        }
+
+        match /estimateVersions/{estimateId} {
+          allow read: if isInternalProjectMember(orgId, projectId);
+          // QTO, price resolution, totals and lifecycle are server-authoritative.
           allow write: if false;
         }
 

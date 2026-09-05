@@ -59,6 +59,7 @@ export interface ProjectRecord {
   currentLoadModelVersionId?: string;
   currentApprovedAnalysisRunId?: string;
   currentCalculationReportId?: string;
+  currentEstimateVersionId?: string;
   gateStates: Partial<Record<Gate, GateState>>;
   assignedUserIds: string[];
   dueAt?: string;
@@ -176,6 +177,82 @@ export interface DesignCheckPayload {
   }>;
 }
 
+export type EstimateUnit = 'm3' | 'm2' | 'm' | 'each' | 't';
+
+export interface PriceBookItem {
+  id: string;
+  costCode: string;
+  description: string;
+  category: 'material' | 'manufacturing' | 'logistics' | 'installation';
+  unit: EstimateUnit;
+  currency: 'THB';
+  baseRate: number;
+  sourceType: 'supplierQuote' | 'contractRate' | 'marketSurvey' | 'internalBenchmark';
+  sourceRef: string;
+  effectiveFrom: string;
+  effectiveTo?: string | undefined;
+  taxIncluded: false;
+  status: 'approved' | 'withdrawn';
+}
+
+export interface PriceBookRecord {
+  id: string;
+  revision: string;
+  status: 'approved' | 'superseded';
+  currency: 'THB';
+  items: PriceBookItem[];
+}
+
+export type EstimateRateStatus = 'current' | 'missingRate' | 'expiredRate' | 'unitMismatch';
+
+export interface EstimatePayload {
+  schemaVersion: '1.0.0';
+  maturity: 'engineering';
+  currency: 'THB';
+  quantityRuleVersion: 'precast-qto@1.0.0';
+  priceBookId: string;
+  priceBookRevision: string;
+  effectiveDate: string;
+  designDependencyStatus: DesignCheckStatus;
+  uncertaintyPercent: number;
+  lines: Array<{
+    id: string;
+    costCode: string;
+    description: string;
+    category: PriceBookItem['category'];
+    sourceType: 'model' | 'projectAllowance';
+    elementIds: string[];
+    quantityRule: string;
+    rawQuantity: number;
+    wastePercent: number;
+    payableQuantity: number;
+    unit: EstimateUnit;
+    unitRate: number | null;
+    rateSourceRef: string | null;
+    amount: number | null;
+    rateStatus: EstimateRateStatus;
+  }>;
+  summary: {
+    pricedDirectCost: number;
+    directCost: number | null;
+    indirectPercent: number;
+    indirectCost: number | null;
+    contingencyPercent: number;
+    contingency: number | null;
+    estimatedCost: number | null;
+    markupMethod: 'markup';
+    markupPercent: number;
+    markup: number | null;
+    sellingPrice: number | null;
+    vatPercent: number;
+    vat: number | null;
+    grandTotal: number | null;
+    lowRange: number | null;
+    highRange: number | null;
+  };
+  assumptions: Array<{ id: string; classification: 'included' | 'excluded' | 'allowance'; statement: string; blocking: boolean }>;
+}
+
 export interface EngineeringIssue {
   id: string;
   orgId: string;
@@ -199,6 +276,7 @@ export interface ArtifactUpstreamRefs {
   modelVersionId?: string;
   loadModelVersionId?: string;
   analysisRunId?: string;
+  calculationReportId?: string;
   drawingSetId?: string;
   estimateVersionId?: string;
 }
@@ -269,7 +347,7 @@ export interface ApprovalSnapshot {
 
 export interface CommandReceipt {
   idempotencyKey: string;
-  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'createDesignCheckRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
+  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'createDesignCheckRevision' | 'createEstimateRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
   actorUid: string;
   resourceId: string;
   resultState: string;

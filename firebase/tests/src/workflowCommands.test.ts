@@ -3,9 +3,10 @@ import { deleteApp, initializeApp } from 'firebase-admin/app';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuthorizationError } from '../../../apps/functions/src/authorization';
-import type { ProductModelPayload } from '../../../packages/domain/src/types';
+import type { EstimatePayload, ProductModelPayload } from '../../../packages/domain/src/types';
 import { createLoadModelRevision, queueAnalysisRun } from '../../../apps/functions/src/analysisCommands';
 import { createDesignCheckRevision } from '../../../apps/functions/src/designCheckCommands';
+import { createEstimateRevision } from '../../../apps/functions/src/estimateCommands';
 import { approveArtifact, archiveProject, canonicalizeProductModel, computeArtifactSnapshotHash, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from '../../../apps/functions/src/workflowCommands';
 
 let db: Firestore;
@@ -49,11 +50,16 @@ async function seedWorkflow() {
   batch.set(db.doc(`organizations/${orgId}/members/checker-1`), { status: 'active', orgRoles: [], projectIds: [projectId] });
   batch.set(db.doc(`organizations/${orgId}/members/bim-1`), { status: 'active', orgRoles: [], projectIds: [projectId] });
   batch.set(db.doc(`organizations/${orgId}/members/pm-1`), { status: 'active', orgRoles: [], projectIds: [projectId] });
+  batch.set(db.doc(`organizations/${orgId}/members/qs-1`), { status: 'active', orgRoles: [], projectIds: [projectId] });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}`), { id: projectId, code: 'PC-TEST', name: 'Workflow project', status: 'active', currentStage: 'intake', currentSourceRevisionId: 'src-r02', currentDesignBasisVersionId: artifactId, gateStates: { G0: 'inProgress', G1: 'notStarted' } });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/engineer-1`), { status: 'active', roles: ['structuralEngineer', 'engineeringChecker'], capabilities: [], effectiveFrom: now });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/checker-1`), { status: 'active', roles: ['engineeringChecker'], capabilities: [], effectiveFrom: now });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/bim-1`), { status: 'active', roles: ['bimCoordinator'], capabilities: [], effectiveFrom: now });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/pm-1`), { status: 'active', roles: ['projectManager'], capabilities: [], effectiveFrom: now });
+  batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/qs-1`), { status: 'active', roles: ['costEstimator'], capabilities: [], effectiveFrom: now });
+  batch.set(db.doc(`organizations/${orgId}/priceBooks/pb-2026`), { id: 'pb-2026', revision: 'PB-R01', status: 'approved', currency: 'THB', items: [
+    ['pb-concrete', 'CONC-C40', 'm3', 2500, '2026-12-31'], ['pb-formwork', 'FORM-PANEL', 'm2', 500, '2026-12-31'], ['pb-anchor', 'ANCH-LIFT', 'each', 650, '2026-12-31'], ['pb-joint', 'JOINT-SEAL', 'm', 180, '2026-12-31'], ['pb-transport', 'LOG-TRANSPORT', 't', 900, '2026-06-30'],
+  ].map(([id, costCode, unit, baseRate, effectiveTo]) => ({ id, costCode, description: costCode, category: costCode === 'LOG-TRANSPORT' ? 'logistics' : 'material', unit, currency: 'THB', baseRate, sourceType: 'internalBenchmark', sourceRef: `PB/${id}`, effectiveFrom: '2026-01-01', effectiveTo, taxIncluded: false, status: 'approved' })) });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/sourceRevisions/src-r02`), { id: 'src-r02', revision: 'SRC-R02', status: 'draft', scanState: 'clean', locked: false, createdBy: 'bim-1', isCurrentRevision: true, upstreamRefs: {}, payload: sourcePayload, validation: { unitValid: true, coordinateValid: true, levelsValid: true, objectIdentityValid: true, objectCount: 12, duplicateGlobalIds: 0 }, blockingConditions: [], snapshotHash: sourceHash });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`), { id: artifactId, revision: 'DB-R02', status: 'draft', createdBy: 'engineer-1', isCurrentRevision: true, upstreamRefs, payload, blockingConditions: [] });
   await batch.commit();
@@ -80,6 +86,23 @@ beforeEach(async () => {
 afterAll(async () => deleteApp(app));
 
 describe('transactional workflow commands', () => {
+  it('creates a model-traced preliminary estimate idempotently and blocks submit on design/rate dependencies', async () => {
+    const productUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: artifactId };
+    const canonicalProduct = canonicalizeProductModel(productPayload);
+    const productHash = computeArtifactSnapshotHash({ artifactType: 'productModel', artifactId: 'pm-r01', artifactRevision: 'PM-R01', createdBy: 'engineer-1', upstreamRefs: productUpstreams, payload: canonicalProduct as unknown as Record<string, unknown> });
+    await db.doc(`organizations/${orgId}/projects/${projectId}`).update({ 'gateStates.G3': 'approved', 'gateStates.G4': 'inProgress', currentModelVersionId: 'pm-r01', currentApprovedAnalysisRunId: 'an-r01', currentCalculationReportId: 'calc-r01' });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/productModelVersions/pm-r01`).set({ id: 'pm-r01', revision: 'PM-R01', status: 'approved', locked: true, createdBy: 'engineer-1', isCurrentRevision: true, upstreamRefs: productUpstreams, payload: canonicalProduct, draftHash: productHash, snapshotHash: productHash });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/calculationReports/calc-r01`).set({ payload: { overallStatus: 'NOT_CHECKED' } });
+    const command = { orgId, projectId, estimateId: 'est-r01', revision: 'EST-R01', priceBookId: 'pb-2026', priceBookRevision: 'PB-R01', effectiveDate: '2026-09-05', expectedModelHash: productHash, indirectPercent: 10, contingencyPercent: 5, markupPercent: 12, vatPercent: 7, uncertaintyPercent: 15, idempotencyKey: randomUUID() };
+    expect(await createEstimateRevision(db, 'qs-1', command)).toMatchObject({ state: 'incomplete', replayed: false });
+    expect(await createEstimateRevision(db, 'qs-1', command)).toMatchObject({ state: 'incomplete', replayed: true });
+    const estimate = await db.doc(`organizations/${orgId}/projects/${projectId}/estimateVersions/est-r01`).get();
+    const estimateData = estimate.data() as { draftHash: string; payload: EstimatePayload };
+    expect(estimate.data()).toMatchObject({ estimateState: 'incomplete', payload: { designDependencyStatus: 'NOT_CHECKED', summary: { directCost: null, grandTotal: null } } });
+    expect(estimateData.payload.lines.find((line) => line.costCode === 'LOG-TRANSPORT')).toMatchObject({ rateStatus: 'expiredRate', unitRate: null, amount: null });
+    expect(estimateData.payload.lines.every((line) => line.elementIds.length > 0)).toBe(true);
+    await expect(submitArtifact(db, 'qs-1', { orgId, projectId, requestId: `request-${randomUUID()}`, artifactType: 'estimate', artifactId: 'est-r01', expectedDraftHash: estimateData.draftHash, assignedTo: 'commercial-1', idempotencyKey: randomUUID() })).rejects.toThrow('G4 design dependency');
+  });
   it('blocks G3 submission when equilibrium or verification evidence fails', async () => {
     const analysisRef = db.doc(`organizations/${orgId}/projects/${projectId}/analysisRuns/an-failed`);
     await analysisRef.set({ id: 'an-failed', revision: 'AN-X', status: 'completed', phase: 'complete', createdBy: 'engineer-1', isCurrentRevision: true, outputHash: `sha256:${'a'.repeat(64)}`, upstreamRefs: {}, payload: {}, draftHash: `sha256:${'b'.repeat(64)}`, blockingConditions: [], verification: { fatalWarnings: 0, unsupportedNodes: 0, disconnectedElements: 0, equilibriumPassed: false, convergencePassed: true, independentBenchmarkMatched: true } });
