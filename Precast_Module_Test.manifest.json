@@ -1,0 +1,50 @@
+{
+  "artifact": "Precast Module BIM intake test model",
+  "generatedAt": "2026-09-05T19:39:31+07:00",
+  "authoringApplication": "Autodesk Revit 2026.4",
+  "sourceFile": {
+    "name": "Precast_Module_Test.rvt",
+    "sizeBytes": 38535168,
+    "purpose": "Editable Revit source; not accepted by the current web app"
+  },
+  "exchangeFile": {
+    "name": "Precast_Module_Test.ifc",
+    "sizeBytes": 388772,
+    "sha256": "46012F90F9C7B056E0C5C25CFEB5037C8D18C35A2764F23C694166E6ED19AA77",
+    "schema": "IFC2X3",
+    "viewDefinition": "CoordinationView_V2.0",
+    "lengthUnit": "millimetre",
+    "canonicalUploadContentType": "application/x-step"
+  },
+  "model": {
+    "description": "Single-storey open-top precast module test shell",
+    "internalDimensionsMm": {
+      "length": 5800,
+      "width": 2800,
+      "height": 3000
+    },
+    "wallThicknessMm": 200,
+    "floorThicknessMm": 300,
+    "floorAreaM2": 19.84,
+    "floorVolumeM3": 5.952,
+    "door": {
+      "count": 1,
+      "widthMm": 750,
+      "heightMm": 2000
+    },
+    "windows": {
+      "count": 2,
+      "widthMm": 600,
+      "heightMm": 900,
+      "sillHeightMm": 900
+    }
+  },
+  "ifcEntityChecks": {
+    "IFCWALL": 4,
+    "IFCSLAB": 1,
+    "IFCDOOR": 1,
+    "IFCWINDOW": 2,
+    "IFCOPENINGELEMENT": 3
+  },
+  "currentAppBoundary": "The emulator can upload and quarantine this IFC. A production malware scanner, IFC parser, geometry viewer, and trusted validation worker are not implemented yet."
+}

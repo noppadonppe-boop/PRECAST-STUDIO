@@ -215,6 +215,18 @@ Exit: report/drawing references match the approved upstream revisions.
 
 Exit: G5/G6 gates enforced; released package cannot be overwritten.
 
+### Phase 9 — Firebase Staging, Pilot Validation and Production Readiness
+
+- Close M8 with clean commit, passing tests and `docs/M8_HANDOFF.md`
+- Connect a dedicated Firebase Staging project; do not connect Production
+- Configure Auth, Rules, indexes, Functions, App Check, IAM, monitoring, backup and retention
+- Create representative Pilot organization, users, roles and approved engineering/commercial libraries
+- Execute controlled Pilot workflow through G0–G7 with positive, negative, revision and invalidation scenarios
+- Import `REVIT-DRAFTING-01` DXF into Revit Drafting View and record dimensional/visual QA
+- Complete UAT, defect closure, go-live/rollback plan and `docs/M9_HANDOFF.md`
+
+Exit: Staging and Pilot evidence satisfy [M9_PILOT_PRODUCTION_READINESS.md](./M9_PILOT_PRODUCTION_READINESS.md); Production connection remains a separate Product Owner approval.
+
 ## 6. Initial backlog
 
 ### Must have

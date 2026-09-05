@@ -1,0 +1,2 @@
+# Preserve exact exchange-file bytes so the recorded SHA-256 survives checkout.
+*.ifc -text

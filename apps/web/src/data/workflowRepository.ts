@@ -2,8 +2,11 @@ import { collection, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, 
 import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytesResumable } from 'firebase/storage';
 import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, DesignCheckPayload, DocumentationSetPayload, EstimatePayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, ReleasePackagePayload, SourceValidationSummary } from '@precast/domain';
-import { designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, releasePackagePayloadSchema, sourceFileSchema } from '@precast/schemas';
+import { designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, releasePackagePayloadSchema } from '@precast/schemas';
 import { firebaseAuth, firestore, functions, storage } from '../firebase/client';
+import { canonicalSourceContentType, validateSourceFile } from './sourceFileValidation';
+
+export { validateSourceFile } from './sourceFileValidation';
 
 function iso(value: unknown): string {
   if (value instanceof Timestamp) return value.toDate().toISOString();
@@ -357,11 +360,6 @@ export async function releaseProductionPackage(input: { orgId: string; projectId
   return (await command({ orgId: input.orgId, projectId: input.projectId, releasePackageId: input.releasePackage.id, expectedSnapshotHash: input.releasePackage.snapshotHash, recipient: input.recipient, productionQueue: input.productionQueue, idempotencyKey: crypto.randomUUID() })).data;
 }
 
-export function validateSourceFile(file: Pick<File, 'name' | 'type' | 'size'>): string[] {
-  const result = sourceFileSchema.safeParse({ name: file.name, contentType: file.type, size: file.size });
-  return result.success ? [] : result.error.issues.map((issue) => issue.message);
-}
-
 export async function uploadSourceFile(input: { orgId: string; projectId: string; file: File; onProgress: (percent: number) => void }): Promise<string> {
   const errors = validateSourceFile(input.file);
   if (errors.length > 0) throw new Error(`Upload rejected: ${errors.join('; ')}`);
@@ -370,15 +368,16 @@ export async function uploadSourceFile(input: { orgId: string; projectId: string
   const uploadId = crypto.randomUUID();
   const sourceId = `src-${uploadId.slice(0, 8)}`;
   const path = `organizations/${input.orgId}/projects/${input.projectId}/source-staging/${uid}/${uploadId}/${input.file.name}`;
+  const contentType = canonicalSourceContentType(input.file);
   const task = uploadBytesResumable(ref(storage, path), input.file, {
-    contentType: input.file.type,
+    contentType,
     customMetadata: { scanState: 'quarantined', uploadedBy: uid, orgId: input.orgId, projectId: input.projectId },
   });
   await new Promise<void>((resolve, reject) => task.on('state_changed', (snapshot) => input.onProgress(Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)), reject, resolve));
   await setDoc(doc(firestore, `organizations/${input.orgId}/projects/${input.projectId}/sourceRevisions/${sourceId}`), {
     id: sourceId, revision: `SRC-${new Date().toISOString().slice(0, 10)}-${uploadId.slice(0, 4).toUpperCase()}`,
     status: 'draft', scanState: 'quarantined', locked: false, createdBy: uid, isCurrentRevision: true,
-    storagePath: path, fileName: input.file.name, contentType: input.file.type, size: input.file.size,
+    storagePath: path, fileName: input.file.name, contentType, size: input.file.size,
     validation: { unitValid: false, coordinateValid: false, levelsValid: false, objectIdentityValid: false, objectCount: 0, duplicateGlobalIds: 0 },
     blockingConditions: ['Malware scan and BIM validation pending'], createdAt: Timestamp.now(), updatedAt: Timestamp.now(),
   });

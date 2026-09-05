@@ -35,3 +35,7 @@ test-results/
 !.vscode/settings.json
 .DS_Store
 Thumbs.db
+
+# Local editable Revit model and automatic backup; IFC is the versioned test input.
+/Precast_Module_Test.rvt
+/Precast_Module_Test.0001.rvt

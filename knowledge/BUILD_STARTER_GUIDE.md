@@ -51,6 +51,7 @@ Stack: Vite + React + TypeScript + Firebase
 6. `knowledge/IMPLEMENTATION_PLAN.md`
 7. เอกสารนี้ `knowledge/BUILD_STARTER_GUIDE.md`
 8. `knowledge/REVIT_DXF_INTEROP_KNOWLEDGE.md`
+9. `knowledge/M9_PILOT_PRODUCTION_READINESS.md`
 
 เมื่อ Code และ Knowledge ขัดกัน ให้หยุดและเสนอ decision ก่อนเปลี่ยน behavior ที่เกี่ยวกับ engineering safety, approval, revision หรือ production release
 
@@ -206,7 +207,7 @@ Exit criteria: same immutable inputs reproduce the same quantities/totals and ev
 
 Exit criteria: G5–G7 enforce matching revisions and released packages cannot be overwritten
 
-### Step 10 — Pilot and production readiness
+### M9 / Step 10 — Firebase Staging, Pilot and production readiness
 
 - staging Firebase/GCP project
 - App Check, IAM, secret management and upload security
@@ -215,6 +216,8 @@ Exit criteria: G5–G7 enforce matching revisions and released packages cannot b
 - accessibility and browser tests
 - pilot project with real but non-production-critical data first
 - security and release checklist before live production use
+
+รายละเอียด Entry criteria, Firebase configuration timing, Pilot scenarios, G0–G7 evidence และ prompt พร้อมใช้กำหนดไว้ใน `knowledge/M9_PILOT_PRODUCTION_READINESS.md`
 
 ## 5. Recommended first coding milestone
 

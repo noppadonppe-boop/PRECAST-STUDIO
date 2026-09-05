@@ -11,6 +11,7 @@
 5. [ROLE_PERMISSION_KNOWLEDGE.md](./ROLE_PERMISSION_KNOWLEDGE.md) — Role Matrix v1 ที่อนุมัติแล้ว, Separation of Duties, Firebase membership model, approval commands, permission guards และ audit requirements
 6. [BUILD_STARTER_GUIDE.md](./BUILD_STARTER_GUIDE.md) — วิธีแบ่งแชด Product/Architecture กับ coding task, ลำดับสร้างแอป, M0 scope, Definition of Done และ prompt พร้อมใช้เริ่มพัฒนา
 7. [REVIT_DXF_INTEROP_KNOWLEDGE.md](./REVIT_DXF_INTEROP_KNOWLEDGE.md) — ข้อกำหนด DXF สำหรับ Revit Drafting View, Export Profile, Layer/Entity policy, preflight, manifest และแนวทาง Native Revit adapter
+8. [M9_PILOT_PRODUCTION_READINESS.md](./M9_PILOT_PRODUCTION_READINESS.md) — แผน M9 สำหรับ Firebase Staging, Pilot G0–G7, UAT, Revit import QA และ Production-readiness checkpoint
 
 ## กติกาการใช้ Knowledge Base
 

@@ -42,6 +42,7 @@ export function StageWorkspace() {
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [sourceRevisionId, setSourceRevisionId] = useState('src-r02');
   const [selectedPanelIds, setSelectedPanelIds] = useState<string[]>([]);
   const [selectedDrawingId, setSelectedDrawingId] = useState<string | null>(null);
   const project = projects.find((item) => item.id === projectId);
@@ -59,7 +60,7 @@ export function StageWorkspace() {
   useEffect(() => {
     setNotice('');
     if (mode !== 'emulator' || projectId === undefined) return;
-    if (gate === 'G0') return watchSourceRevision(organizationMembership.orgId, projectId, 'src-r02', setSource, showError);
+    if (gate === 'G0') return watchSourceRevision(organizationMembership.orgId, projectId, sourceRevisionId, setSource, showError);
     if (gate === 'G1') return watchDesignBasis(organizationMembership.orgId, projectId, 'db-r02', setDesignBasis, showError);
     if (gate === 'G2') return watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError);
     if (gate === 'G3') {
@@ -82,7 +83,7 @@ export function StageWorkspace() {
       const unsubscribes = [watchDocumentationSet(organizationMembership.orgId, projectId, 'ds-r01', setDocumentationSet, showError), watchReleasePackage(organizationMembership.orgId, projectId, 'rel-r01', setReleasePackage, showError)];
       return () => { for (const unsubscribe of unsubscribes) unsubscribe(); };
     }
-  }, [gate, mode, organizationMembership.orgId, projectId]);
+  }, [gate, mode, organizationMembership.orgId, projectId, sourceRevisionId]);
 
   function showError(reason: Error) { setError(true); setNotice(reason.message); }
   async function run(action: () => Promise<unknown>, success: string) {
@@ -99,6 +100,7 @@ export function StageWorkspace() {
     setSaving(true); setError(false); setUploadProgress(0);
     try {
       const id = await uploadSourceFile({ orgId: organizationMembership.orgId, projectId, file, onProgress: setUploadProgress });
+      setSourceRevisionId(id);
       setNotice(`${id} uploaded to quarantine. Scanning and IFC validation must complete before submission.`);
     } catch (reason) { showError(reason instanceof Error ? reason : new Error('Upload failed.')); }
     finally { setSaving(false); }
