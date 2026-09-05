@@ -10,6 +10,7 @@
     "dev": "vite --config apps/web/vite.config.ts",
     "staging:preflight": "node --experimental-strip-types tools/staging-preflight.mjs",
     "pilot:readiness": "node --experimental-strip-types tools/pilot-readiness.mjs",
+    "pilot:provision": "node --experimental-strip-types tools/provision-pilot.mjs",
     "emulators": "pnpm build:functions && node tools/start-local-emulators.mjs",
     "emulators:seed": "node tools/seed-emulators.mjs",
     "build:functions": "pnpm --filter @precast/functions build",

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "environment": "staging",
+  "firebaseProjectId": "replace-staging-project",
+  "planId": "replace-reviewed-plan-id",
+  "orgId": "replace-new-pilot-org",
+  "projectId": "replace-pilot-project",
+  "organizationName": "Example Pilot Organization",
+  "projectName": "Example Precast Pilot",
+  "projectCode": "PILOT-01",
+  "reviewedBy": "replace-reviewer-uid",
+  "reviewedAt": "2026-09-05T00:00:00.000Z",
+  "effectiveFrom": "2026-09-05T00:00:00.000Z",
+  "expiresAt": "2026-10-05T00:00:00.000Z",
+  "retentionUntil": "2026-11-05T00:00:00.000Z",
+  "dataOwner": "replace-data-owner-uid",
+  "cleanupOwner": "replace-cleanup-owner-uid",
+  "participants": [
+    { "uid": "replace-bim-uid", "role": "bimCoordinator" },
+    { "uid": "replace-engineer-uid", "role": "structuralEngineer" },
+    { "uid": "replace-checker-uid", "role": "engineeringChecker" },
+    { "uid": "replace-estimator-uid", "role": "costEstimator" },
+    { "uid": "replace-detailer-uid", "role": "detailer" },
+    { "uid": "replace-production-uid", "role": "productionManager" },
+    { "uid": "replace-manager-uid", "role": "projectManager" }
+  ],
+  "label": "PILOT / NOT FOR PRODUCTION"
+}

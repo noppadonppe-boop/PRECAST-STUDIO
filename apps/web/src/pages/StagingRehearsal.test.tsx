@@ -4,6 +4,7 @@ const signIn = vi.hoisted(() => vi.fn().mockResolvedValue({}));
 vi.mock('firebase/auth', () => ({ onAuthStateChanged: (_auth: unknown, callback: (user: null) => void) => { callback(null); return () => {}; }, signInWithEmailAndPassword: signIn, signOut: vi.fn() }));
 vi.mock('../firebase/client', () => ({ clientEnvironment: { config: { projectId: 'pilot-staging-test' }, orgId: 'pilot-org' }, firebaseAuth: {} }));
 vi.mock('../data/accessRepository', () => ({ watchUserAccess: vi.fn() }));
+vi.mock('./PilotWorkspace', () => ({ PilotWorkspace: () => <p>Pilot workspace</p> }));
 import { StagingRehearsal } from './StagingRehearsal';
 
 it('requires real credentials despite an emulator identity query and clears the password', async () => {

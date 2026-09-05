@@ -16,11 +16,15 @@ The reviewed Pilot/BIM baseline is commit `43764af`, following M8 `6a3e4ce`. See
 - Restricted the fixture seeder to loopback emulator hosts.
 - Added a versioned Pilot evidence schema/register covering eight gates, ten scenarios, seven distinct participant roles and eleven operational/engineering readiness categories. PASS requires evidence, verifier and timestamp. Duplicate categories/accounts and G6/G7 PASS with unverified G4 are rejected.
 - Added readiness reporting, the [Staging runbook](M9_STAGING_RUNBOOK.md), [Revit import QA record](pilot/REVIT_QA.md), and an explicit register of open engineering/export limitations. Readiness reports are local review aids, not signed approvals or backend release evidence.
+- Added reviewed-plan Pilot provisioning: preview by default, explicit matching Staging target/account validation before apply, atomic new-organization creation, seven distinct roles, expiring memberships, no fabricated engineering artifacts, idempotent receipt and overwrite protection. See [operator instructions](pilot/PROVISIONING.md). Actual Staging apply remains pending.
+- Expanded the Staging screen into a read-only membership-scoped project/evidence viewer using actual current G0–G7 reference IDs. Missing records do not imply PASS; project switching, access errors/revocation and expiry remove old evidence. Full cloud editing/approval remains pending.
+- Added an actual `Precast_Module_Test.ifc` browser upload regression. Checks original checksum/bytes, newly created revision metadata, quarantined state, disabled submission and authenticated binary-read denial. Intake labels now distinguish unparsed uploads from deterministic seed data, including NOT CHECKED object/duplicate counts. See [actual intake test record](pilot/BIM_INTAKE_QA.md).
 
 ## Validation
 
-- `pnpm check`: lint, typecheck, 55 unit tests, 50 emulator tests and production-mode local build passed.
-- `pnpm test:e2e`: 5 browser tests passed with the callable runtime guard enabled.
+- Local lint, typecheck, 62 unit tests, 51 emulator tests and production-mode build passed.
+- `pnpm test:e2e`: 6 browser tests passed, including actual IFC upload/quarantine. These are local emulator results, not Staging acceptance.
+- Provisioning example preview passes without cloud access; apply without a reviewed matching target is rejected before Firebase authentication or writes.
 - Configuration negative checks reject staging builds without the approved target; `staging:preflight` reports pending operator setup.
 - `pilot:readiness` reports BLOCKED; require-ready mode returns nonzero for the current incomplete evidence register.
 - Node on this host is 24.19.0 while Functions declares Node 22; the emulator uses the host runtime. Target Node 22 staging verification remains an operator checkpoint. Existing bundle-size/dependency-annotation warnings remain non-fatal.
@@ -31,8 +35,8 @@ The reviewed Pilot/BIM baseline is commit `43764af`, following M8 `6a3e4ce`. See
 | --- | --- |
 | M9.0 baseline | Reviewed and committed; automated local checks passed |
 | M9.1 Staging | Config/guards/runbook prepared; project ID, actual configuration, deployment, IAM, App Check enforcement, budgets and restore evidence pending |
-| M9.2 Pilot data | IFC inventory baseline available; named accounts, privacy/retention owners, approved libraries and staging provisioning/migration pending |
-| M9.3 G0–G7 | Emulator rehearsal available; dynamic cloud artifact selection and full Staging workflow UI remain to be implemented before live Pilot walkthrough |
+| M9.2 Pilot data | IFC inventory and administrative provisioning tool available; actual named accounts, privacy/retention ownership, approved libraries and Staging apply pending |
+| M9.3 G0–G7 | Emulator rehearsal and dynamic read-only cloud evidence viewer available; full Staging editing/approval workflow and live Pilot walkthrough remain pending |
 | M9.4 negative/Revit QA | Local revision/security controls tested; real DXF import/PDF comparison, download audit and retention scenarios pending |
 | M9.5 UAT | Evidence structure and rollback procedure prepared; actual UAT, signed decisions, cost/performance and incident/restore exercises pending |
 

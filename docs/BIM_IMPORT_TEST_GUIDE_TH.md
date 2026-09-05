@@ -64,6 +64,8 @@ http://localhost:5173/org/org-siam/projects/p-rama9/stages/g0?as=bim
 
 ## 5. สิ่งที่ทดสอบได้ในเวอร์ชันนี้
 
+ผลทดสอบจริงล่าสุด 2026-09-05: browser E2E อัปโหลดไฟล์ IFC ชุดนี้ผ่านหน้าเว็บใน local emulator สำเร็จ สร้าง revision ใหม่ คง quarantine และปฏิเสธการอ่าน binary ด้วย HTTP 403 ปุ่ม Submit ถูกปิด และ object/duplicate counts แสดง NOT CHECKED ดู [บันทึกผลจริง](pilot/BIM_INTAKE_QA.md) ผลนี้ยังไม่ใช่ Staging acceptance หรือผล parse geometry จากไฟล์จริง
+
 | ระดับทดสอบ | ผลที่คาดหวัง |
 | --- | --- |
 | File acceptance | รับ `.ifc` ที่ชื่อถูกต้องและขนาดไม่เกิน 100 MB |

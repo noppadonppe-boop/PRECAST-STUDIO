@@ -31,7 +31,7 @@ Use the exact reviewed ID, not an inferred default. Retain deployment output, Ru
 
 The supplied fixture seed is for loopback emulators only. Never run it against Staging: it contains fixed passwords and synthetic engineering evidence.
 
-Provision seven distinct UIDs for BIM Coordinator, Engineer, Checker, QS, Detailer, Production Manager and Project Manager. Record them in `docs/pilot/evidence.json`. Have the operator create only approved organization/project membership metadata with effective/expiry dates and minimum capabilities. No tool here imports fixture approvals or copies Pilot data to Production. Automated staging migration is deferred until exact accounts, data ownership and retention dates are assigned.
+Provision seven distinct UIDs for BIM Coordinator, Engineer, Checker, QS, Detailer, Production Manager and Project Manager. Record them in `docs/pilot/evidence.json`. Follow [Pilot provisioning](pilot/PROVISIONING.md) to preview the reviewed plan, then explicitly apply only approved organization/project membership metadata with effective/expiry dates and minimum capabilities. The tool supports a new organization only and rejects overwrites. No tool here imports fixture approvals or copies Pilot data to Production. Actual Staging apply is deferred until exact accounts, data ownership and retention dates are assigned.
 
 Create a new Pilot project with G0–G7 `notStarted`, no current approved artifact IDs, and `PILOT / NOT FOR PRODUCTION` identity. Record each imported file's hash, data owner, privacy review, retention date and cleanup owner. The local IFC contains author metadata; its deployment is not part of this change. Scanner/parser absence keeps uploaded files quarantined. DWG is not yet accepted by the current IFC/PDF intake contract.
 
@@ -39,7 +39,7 @@ Create a new Pilot project with G0–G7 `notStarted`, no current approved artifa
 
 In staging mode, verify the displayed Firebase project and organization, sign in with the assigned account, verify membership reads, then sign out. Test denied access with an unprovisioned account and cross-tenant/expired accounts. Record actual test evidence; automated local tests do not replace this step.
 
-The staging UI is a sign-in/membership rehearsal screen. Full workflow screens still contain fixture IDs and are intentionally not mounted against Staging. Dynamic artifact selection and real pilot provisioning must be completed before a cloud G0–G7 walkthrough. Local emulator workflow tests remain available.
+The staging UI supports real sign-in and a read-only project/evidence viewer following current G0–G7 references from effective memberships. Verify project switching, missing evidence, revoked/expired membership and lack of release actions with actual Staging accounts. Full editing/approval screens still contain fixture IDs and are intentionally not mounted against Staging. Actual Pilot provisioning and full cloud workflow UI must be completed before a cloud G0–G7 walkthrough. Local emulator workflow tests remain available.
 
 ## Recovery and production decision
 

@@ -2,7 +2,7 @@ import { doc, onSnapshot, Timestamp, type DocumentData, type Unsubscribe } from 
 import type { OrganizationMembership, ProjectMembership, ProjectRole } from '@precast/domain';
 import { firestore } from '../firebase/client';
 
-interface AccessSnapshot {
+export interface AccessSnapshot {
   organizationMembership: OrganizationMembership;
   projectMemberships: ProjectMembership[];
   revision: string;
