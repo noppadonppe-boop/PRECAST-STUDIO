@@ -1,10 +1,12 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, StatusBadge, Surface } from '@precast/ui';
 import { activeOrganization, approvalRequests, projects } from '../fixtures/workspace';
 import { Icon } from '../components/Icon';
 import { useAuth } from '../auth/AuthContext';
 import { createType2Project } from '../data/workflowRepository';
+import { watchProjects } from '../data/workflowRepository';
+import { gates, type Gate, type ProjectRecord } from '@precast/domain';
 
 const toneByState = {
   approved: 'success', readyForReview: 'info', needsAttention: 'warning', notStarted: 'neutral',
@@ -17,12 +19,29 @@ const labelByState = {
 } as const;
 
 export function Portfolio() {
-  const { mode, organizationMembership } = useAuth();
+  const { mode, organizationMembership, projectMemberships, accessRevision } = useAuth();
+  const [liveProjects, setLiveProjects] = useState<ProjectRecord[]>([]);
   const [creating, setCreating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
   const [code, setCode] = useState('PC-26021');
   const [name, setName] = useState('Type 2 Residential Pilot');
+
+  useEffect(() => {
+    if (mode !== 'emulator') return;
+    return watchProjects(organizationMembership.orgId, projectMemberships.map((item) => item.projectId), setLiveProjects, (reason) => setNotice(reason.message));
+  }, [accessRevision, mode, organizationMembership.orgId, projectMemberships]);
+
+  const viewProjects = mode === 'fixture' ? projects : liveProjects.filter((item) => item.status !== 'archived').map((item) => {
+    const gateByStage: Record<string, Gate> = { intake: 'G0', designBasis: 'G1', panelization: 'G2', loads: 'G2', analysis: 'G3', design: 'G4', estimate: 'G5', calculation: 'G5', drawingExport: 'G6', productionRelease: 'G7' };
+    const gate = gateByStage[item.currentStage] ?? 'G0';
+    return {
+      id: item.id, code: item.code, name: item.name, family: item.productFamilyId ?? 'Type 2 Residential', stage: item.currentStage,
+      gate, gateState: item.gateStates[gate] ?? 'notStarted', sourceRevision: item.currentSourceRevisionId ?? '—',
+      designBasisRevision: item.currentDesignBasisVersionId ?? '—', modelRevision: '—', analysisRevision: '—', engineer: 'Project team', checker: 'Independent reviewer',
+      due: item.dueAt?.slice(0, 10) ?? 'Not set', issues: 0, updated: item.updatedAt?.slice(0, 10) ?? 'Just now', progress: gates.indexOf(gate),
+    };
+  });
 
   async function createProject(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,7 +71,7 @@ export function Portfolio() {
       {notice !== '' && <div className="toast" role="status">{notice}</div>}
 
       <div className="metric-grid">
-        <Surface className="metric"><span className="metric__icon metric__icon--green"><Icon name="cube" /></span><div><strong>12</strong><small>Active projects</small></div><em>+2 this month</em></Surface>
+        <Surface className="metric"><span className="metric__icon metric__icon--green"><Icon name="cube" /></span><div><strong>{viewProjects.length}</strong><small>Active projects</small></div><em>{mode === 'emulator' ? 'Live Firestore records' : 'Approved fixture set'}</em></Surface>
         <Surface className="metric"><span className="metric__icon metric__icon--blue"><Icon name="review" /></span><div><strong>{approvalRequests.length}</strong><small>Needs my action</small></div><em>1 due soon</em></Surface>
         <Surface className="metric"><span className="metric__icon metric__icon--amber"><Icon name="warning" /></span><div><strong>7</strong><small>Open critical issues</small></div><em>Across 2 projects</em></Surface>
         <Surface className="metric"><span className="metric__icon metric__icon--gray"><Icon name="shield" /></span><div><strong>3</strong><small>Ready for release</small></div><em>Distinct actor required</em></Surface>
@@ -60,7 +79,7 @@ export function Portfolio() {
 
       <Surface className="project-register">
         <div className="register-toolbar">
-          <div><h2>Project register</h2><p>{projects.length} fixture projects · current revision status</p></div>
+          <div><h2>Project register</h2><p>{viewProjects.length} {mode === 'emulator' ? 'live' : 'fixture'} projects · current revision status</p></div>
           <div className="toolbar-controls">
             <label className="search-field"><Icon name="search" size={17} /><input aria-label="Search projects" placeholder="Search project or code" /></label>
             <select aria-label="Filter by gate"><option>All gates</option><option>Needs attention</option><option>Ready for review</option><option>Approved</option></select>
@@ -70,7 +89,7 @@ export function Portfolio() {
           <table className="data-table project-table">
             <thead><tr><th>Project</th><th>Current gate</th><th>Revision context</th><th>Engineer / Checker</th><th>Issues</th><th>Due</th><th aria-label="Open" /></tr></thead>
             <tbody>
-              {projects.map((project) => (
+              {viewProjects.map((project) => (
                 <tr key={project.id}>
                   <td><Link className="project-title" to={`/org/${activeOrganization.id}/projects/${project.id}/overview`}><span className="project-monogram">{project.code.slice(-2)}</span><span><strong>{project.name}</strong><small>{project.code} · {project.family}</small></span></Link></td>
                   <td><StatusBadge tone={toneByState[project.gateState]}>{labelByState[project.gateState]}</StatusBadge><small className="cell-note">{project.gate} · {project.stage}</small></td>

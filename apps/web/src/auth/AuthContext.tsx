@@ -27,7 +27,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
     let unsubscribe: () => void = () => undefined;
     let cancelled = false;
     const requestedIdentity = new URLSearchParams(window.location.search).get('as');
-    const identity = requestedIdentity === 'engineer' ? localEmulatorIdentities.engineer : localEmulatorIdentities.checker;
+    const identity = requestedIdentity === 'engineer' ? localEmulatorIdentities.engineer
+      : requestedIdentity === 'bim' ? localEmulatorIdentities.bim
+        : requestedIdentity === 'pm' ? localEmulatorIdentities.pm
+          : localEmulatorIdentities.checker;
     const { email, password, orgId } = identity;
     void signInWithEmailAndPassword(firebaseAuth, email, password).then(({ user }) => {
       if (cancelled) return;

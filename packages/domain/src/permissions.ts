@@ -4,11 +4,11 @@ type Resource = ArtifactType | 'project' | 'team' | 'audit';
 type Grant = `${PermissionAction}:${Resource | '*'}`;
 
 const grants: Record<ProjectRole, readonly Grant[]> = {
-  projectManager: ['view:*', 'create:project', 'editDraft:project', 'view:team'],
+  projectManager: ['view:*', 'create:project', 'editDraft:project', 'view:team', 'comment:*'],
   bimCoordinator: ['view:*', 'create:sourceRevision', 'editDraft:sourceRevision', 'submit:sourceRevision', 'comment:*'],
   structuralEngineer: [
     'view:*', 'comment:*', 'create:designBasis', 'editDraft:designBasis', 'submit:designBasis',
-    'create:analysis', 'editDraft:analysis', 'submit:analysis', 'review:estimate', 'review:drawingSet',
+    'review:sourceRevision', 'approve:sourceRevision', 'create:analysis', 'editDraft:analysis', 'submit:analysis', 'review:estimate', 'review:drawingSet',
   ],
   engineeringChecker: ['view:*', 'comment:*', 'review:designBasis', 'approve:designBasis', 'review:analysis', 'approve:analysis', 'review:calculation', 'approve:calculation', 'review:drawingSet', 'approve:drawingSet', 'review:releasePackage', 'approve:releasePackage'],
   costEstimator: ['view:*', 'comment:*', 'create:estimate', 'editDraft:estimate', 'submit:estimate'],

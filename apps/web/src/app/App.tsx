@@ -21,7 +21,7 @@ export function App() {
         <Route path="review" element={<ApprovalInbox />} />
         <Route path="team" element={<TeamPermissions />} />
         <Route path="audit" element={<AuditTimeline />} />
-        <Route path="libraries" element={<Placeholder title="Engineering libraries" detail="Versioned material, load, joint and anchor library authoring remains outside M1 scope." />} />
+        <Route path="libraries" element={<Placeholder title="Engineering libraries" detail="Versioned joint and anchor library authoring continues beyond M2; Design Basis material sources are captured at G1." />} />
         <Route path="settings" element={<Placeholder title="Organization settings" detail="This fixture does not persist organization policy changes." />} />
         <Route path="projects/:projectId/overview" element={<RequireProjectMembership><ProjectOverview /></RequireProjectMembership>} />
         <Route path="projects/:projectId/stages/:gateId" element={<RequireProjectMembership><StageWorkspace /></RequireProjectMembership>} />

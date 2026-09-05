@@ -1,3 +1,5 @@
+import type { Gate, GateState } from './workflow';
+
 export const projectRoles = [
   'projectManager',
   'bimCoordinator',
@@ -37,7 +39,68 @@ export type ArtifactType =
   | 'drawingSet'
   | 'releasePackage';
 
-export type ArtifactStatus = 'draft' | 'submitted' | 'approved' | 'returned' | 'superseded';
+export type ArtifactStatus = 'draft' | 'submitted' | 'approved' | 'accepted' | 'returned' | 'superseded';
+
+export type ProjectStatus = 'active' | 'onHold' | 'completed' | 'archived';
+
+export interface ProjectRecord {
+  id: string;
+  orgId: string;
+  code: string;
+  name: string;
+  productFamilyId?: string;
+  status: ProjectStatus;
+  currentStage: string;
+  currentSourceRevisionId?: string;
+  currentDesignBasisVersionId?: string;
+  gateStates: Partial<Record<Gate, GateState>>;
+  assignedUserIds: string[];
+  dueAt?: string;
+  updatedAt?: string;
+}
+
+export interface SourceValidationSummary {
+  unitValid: boolean;
+  coordinateValid: boolean;
+  levelsValid: boolean;
+  objectIdentityValid: boolean;
+  objectCount: number;
+  duplicateGlobalIds: number;
+}
+
+export interface DesignBasisPayload {
+  jurisdiction: string;
+  designCode: string;
+  designCodeEdition: string;
+  loadingCode: string;
+  loadingCodeEdition: string;
+  units: 'kN-m-MPa';
+  designLifeYears: number;
+  riskCategory: string;
+  concrete: { fc28Mpa: number; fcLiftMpa: number; densityKgM3: number; stiffnessMpa: number; durabilityClass: string; source: string };
+  reinforcement: { fyMpa: number; source: string };
+  handling: { liftingDynamicFactor: number; transportDynamicFactor: number; storageSupportRule: string; source: string };
+  fireResistanceMinutes: number;
+  inheritedFrom: string;
+  overrideReasons: Record<string, string>;
+}
+
+export interface EngineeringIssue {
+  id: string;
+  orgId: string;
+  projectId: string;
+  artifactType: ArtifactType;
+  artifactId: string;
+  artifactRevision: string;
+  severity: 'info' | 'warning' | 'critical';
+  title: string;
+  comment: string;
+  status: 'open' | 'resolved' | 'acceptedException';
+  createdBy: string;
+  createdAt: string;
+  dispositionReason?: string;
+  responsibleUid?: string;
+}
 
 export interface ArtifactUpstreamRefs {
   sourceRevisionId?: string;
@@ -114,7 +177,7 @@ export interface ApprovalSnapshot {
 
 export interface CommandReceipt {
   idempotencyKey: string;
-  commandName: 'createProject' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact';
+  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
   actorUid: string;
   resourceId: string;
   resultState: string;
@@ -129,7 +192,7 @@ export interface AuditEvent {
   artifactType: ArtifactType;
   artifactId: string;
   artifactRevision: string;
-  action: PermissionAction | 'return' | 'issue';
+  action: PermissionAction | 'return' | 'issue' | 'freeze' | 'archive' | 'supersede';
   stateBefore: string;
   stateAfter: string;
   actorUid: string;

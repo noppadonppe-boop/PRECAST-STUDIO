@@ -2,6 +2,7 @@ import { getApp, getApps, initializeApp } from 'firebase/app';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 
 const environment = import.meta.env as Record<string, unknown>;
 
@@ -21,6 +22,8 @@ export const localIdentity = {
 export const localEmulatorIdentities = {
   checker: localIdentity,
   engineer: { email: 'engineer@precast.local', password: 'local-emulator-only', orgId: localIdentity.orgId },
+  bim: { email: 'bim@precast.local', password: 'local-emulator-only', orgId: localIdentity.orgId },
+  pm: { email: 'pm@precast.local', password: 'local-emulator-only', orgId: localIdentity.orgId },
 } as const;
 
 const app = getApps().length > 0 ? getApp() : initializeApp({
@@ -34,6 +37,7 @@ const app = getApps().length > 0 ? getApp() : initializeApp({
 export const firebaseAuth = getAuth(app);
 export const firestore = getFirestore(app);
 export const functions = getFunctions(app, 'asia-southeast1');
+export const storage = getStorage(app);
 
 let emulatorsConnected = false;
 export function connectLocalEmulators() {
@@ -41,5 +45,6 @@ export function connectLocalEmulators() {
   connectAuthEmulator(firebaseAuth, 'http://127.0.0.1:9099', { disableWarnings: true });
   connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
   connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+  connectStorageEmulator(storage, '127.0.0.1', 9199);
   emulatorsConnected = true;
 }

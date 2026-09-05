@@ -61,14 +61,55 @@ service cloud.firestore {
 
         match /designBasisVersions/{artifactId} {
           allow read: if isInternalProjectMember(orgId, projectId);
-          allow create: if hasProjectRole(orgId, projectId, 'structuralEngineer')
-            && request.resource.data.status == 'draft'
-            && request.resource.data.createdBy == request.auth.uid;
+          // Creation/superseding is authoritative so project current-revision state changes atomically.
+          allow create: if false;
           allow update: if hasProjectRole(orgId, projectId, 'structuralEngineer')
             && resource.data.status == 'draft'
             && request.resource.data.status == resource.data.status
+            && resource.data.locked == false
+            && request.resource.data.locked == false
             && resource.data.createdBy == request.auth.uid
-            && request.resource.data.createdBy == resource.data.createdBy;
+            && request.resource.data.createdBy == resource.data.createdBy
+            && request.resource.data.revision == resource.data.revision
+            && request.resource.data.upstreamRefs == resource.data.upstreamRefs
+            && request.resource.data.isCurrentRevision == resource.data.isCurrentRevision;
+          allow delete: if false;
+        }
+
+        match /sourceRevisions/{artifactId} {
+          allow read: if isInternalProjectMember(orgId, projectId);
+          allow create: if hasProjectRole(orgId, projectId, 'bimCoordinator')
+            && request.resource.data.status == 'draft'
+            && request.resource.data.scanState == 'quarantined'
+            && request.resource.data.locked == false
+            && request.resource.data.createdBy == request.auth.uid;
+          allow update: if hasProjectRole(orgId, projectId, 'bimCoordinator')
+            && resource.data.status == 'draft'
+            && resource.data.scanState == 'quarantined'
+            && resource.data.createdBy == request.auth.uid
+            && request.resource.data.status == resource.data.status
+            && request.resource.data.scanState == resource.data.scanState
+            && request.resource.data.createdBy == resource.data.createdBy
+            && request.resource.data.storagePath == resource.data.storagePath
+            && request.resource.data.revision == resource.data.revision
+            && request.resource.data.isCurrentRevision == resource.data.isCurrentRevision;
+          allow delete: if false;
+        }
+
+        match /issues/{issueId} {
+          allow read: if isInternalProjectMember(orgId, projectId);
+          allow create: if isInternalProjectMember(orgId, projectId)
+            && request.resource.data.createdBy == request.auth.uid
+            && request.resource.data.status == 'open';
+          allow update: if isInternalProjectMember(orgId, projectId)
+            && request.resource.data.createdBy == resource.data.createdBy
+            && request.resource.data.artifactType == resource.data.artifactType
+            && request.resource.data.artifactId == resource.data.artifactId
+            && request.resource.data.artifactRevision == resource.data.artifactRevision
+            && (request.resource.data.status != 'acceptedException'
+              || (hasProjectRole(orgId, projectId, 'projectManager')
+                && request.resource.data.dispositionReason.size() >= 3
+                && request.resource.data.responsibleUid.size() >= 1));
           allow delete: if false;
         }
 

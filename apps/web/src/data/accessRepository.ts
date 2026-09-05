@@ -31,10 +31,12 @@ function projectMembership(data: DocumentData, orgId: string, projectId: string,
 export function watchUserAccess(orgId: string, uid: string, onValue: (snapshot: AccessSnapshot) => void, onError: (error: Error) => void): Unsubscribe {
   const projectUnsubscribes = new Map<string, Unsubscribe>();
   const memberships = new Map<string, ProjectMembership>();
+  const membershipSnapshotsSeen = new Set<string>();
+  let expectedProjectIds: string[] = [];
   let organizationMembership: OrganizationMembership | undefined;
 
   function emit(revision: string) {
-    if (organizationMembership === undefined) return;
+    if (organizationMembership === undefined || expectedProjectIds.some((projectId) => !membershipSnapshotsSeen.has(projectId))) return;
     onValue({ organizationMembership, projectMemberships: [...memberships.values()], revision });
   }
 
@@ -51,11 +53,13 @@ export function watchUserAccess(orgId: string, uid: string, onValue: (snapshot: 
       status: data.status === 'active' ? 'active' : data.status === 'invited' ? 'invited' : 'suspended',
     };
     const projectIds = Array.isArray(data.projectIds) ? data.projectIds.filter((item): item is string => typeof item === 'string') : [];
+    expectedProjectIds = projectIds;
     for (const [projectId, unsubscribe] of projectUnsubscribes) {
       if (!projectIds.includes(projectId)) {
         unsubscribe();
         projectUnsubscribes.delete(projectId);
         memberships.delete(projectId);
+        membershipSnapshotsSeen.delete(projectId);
       }
     }
     for (const projectId of projectIds) {
@@ -64,6 +68,7 @@ export function watchUserAccess(orgId: string, uid: string, onValue: (snapshot: 
         const projectData = projectSnapshot.data();
         if (projectData !== undefined) memberships.set(projectId, projectMembership(projectData, orgId, projectId, uid));
         else memberships.delete(projectId);
+        membershipSnapshotsSeen.add(projectId);
         emit(`${timestampToIso(data.updatedAt) ?? snapshot.id}:${timestampToIso(projectData?.updatedAt) ?? projectSnapshot.id}`);
       }, onError);
       projectUnsubscribes.set(projectId, unsubscribe);

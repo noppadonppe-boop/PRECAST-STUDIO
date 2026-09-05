@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { FieldValue, Timestamp, type Firestore, type Transaction } from 'firebase-admin/firestore';
 import { can, type ArtifactType, type ArtifactUpstreamRefs, type PermissionContext, type ProjectRole } from '@precast/domain';
-import type { ApproveArtifactCommand, CreateProjectCommand, ReturnArtifactCommand, SubmitArtifactCommand } from '@precast/schemas';
+import { designBasisPayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
 import { AuthorizationError, authorizeApproval } from './authorization';
 
 const artifactCollections: Record<ArtifactType, string> = {
@@ -81,6 +81,23 @@ function requiredString(data: UnknownRecord, field: string): string {
 
 function asStringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+}
+
+function assertSourceReady(data: UnknownRecord): void {
+  if (data.scanState !== 'clean') throw new AuthorizationError('Source file remains quarantined until its scan state is clean.', 'failed-precondition');
+  const validation = asRecord(data.validation);
+  const checks = ['unitValid', 'coordinateValid', 'levelsValid', 'objectIdentityValid'];
+  if (checks.some((check) => validation[check] !== true) || validation.duplicateGlobalIds !== 0) {
+    throw new AuthorizationError('Source unit, coordinate, level, object identity, or duplicate-ID validation failed.', 'failed-precondition');
+  }
+  if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Critical source issues require disposition before transition.', 'failed-precondition');
+}
+
+function assertDesignBasisReady(data: UnknownRecord): void {
+  if (!designBasisPayloadSchema.safeParse(data.payload).success) {
+    throw new AuthorizationError('Design Basis is incomplete or contains invalid engineering values.', 'failed-precondition');
+  }
+  if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Design Basis has unresolved blocking conditions.', 'failed-precondition');
 }
 
 function toMillis(value: unknown): number | undefined {
@@ -176,6 +193,8 @@ export async function submitArtifact(db: Firestore, actorUid: string, command: S
     const decision = can('submit', command.artifactType, { ...context, artifactStatus: requiredString(data, 'status'), artifactCreatedBy: requiredString(data, 'createdBy'), isCurrentRevision: data.isCurrentRevision !== false });
     if (!decision.allowed) throw new AuthorizationError(decision.reason ?? 'Submission denied.', 'permission-denied');
     if (!['draft', 'returned'].includes(requiredString(data, 'status'))) throw new AuthorizationError('Only a draft or returned artifact can be submitted.', 'failed-precondition');
+    if (command.artifactType === 'sourceRevision') assertSourceReady(data);
+    if (command.artifactType === 'designBasis') assertDesignBasisReady(data);
     const input = snapshotInput(command.artifactType, command.artifactId, data);
     const snapshotHash = computeArtifactSnapshotHash(input);
     if (snapshotHash !== command.expectedDraftHash) throw new AuthorizationError('Draft changed after the client review; refresh before submitting.', 'failed-precondition');
@@ -256,7 +275,9 @@ async function decideArtifact(
     const nextState = decisionName === 'approve' ? 'approved' : 'draft';
     const auditRef = db.doc(`${root}/auditEvents/${command.idempotencyKey}`);
     tx.update(artifactRef, decisionName === 'approve'
-      ? { status: nextState, locked: true, approvedBy: actorUid, approvedAt: now }
+      ? command.artifactType === 'sourceRevision'
+        ? { status: nextState, locked: false, reviewedBy: actorUid, reviewedAt: now }
+        : { status: nextState, locked: true, approvedBy: actorUid, approvedAt: now }
       : { status: nextState, returnedForCorrection: true, returnedBy: actorUid, returnedAt: now });
     tx.update(requestRef, { status: decisionName === 'approve' ? 'approved' : 'returned', decidedBy: actorUid, decidedAt: now, ...(command.comment === undefined ? {} : { decisionComment: command.comment }) });
     tx.create(auditRef, {
@@ -268,6 +289,15 @@ async function decideArtifact(
       ...(command.comment === undefined ? {} : { comment: command.comment }),
     });
     tx.create(receiptRef, { idempotencyKey: command.idempotencyKey, commandName, actorUid, resourceId: command.artifactId, resultState: nextState, auditEventId: command.idempotencyKey, createdAt: now });
+    if (decisionName === 'approve' && command.artifactType === 'designBasis') {
+      tx.update(projectRef, {
+        currentDesignBasisVersionId: command.artifactId,
+        currentStage: 'panelization',
+        'gateStates.G1': 'approved',
+        updatedAt: now,
+        updatedBy: actorUid,
+      });
+    }
     return { resourceId: command.artifactId, state: nextState, auditEventId: command.idempotencyKey, replayed: false };
   });
 }
@@ -301,4 +331,165 @@ export async function createType2Project(db: Firestore, actorUid: string, comman
     tx.create(receiptRef, { idempotencyKey: command.idempotencyKey, commandName: 'createProject', actorUid, resourceId: command.projectId, resultState: 'active', auditEventId: command.idempotencyKey, createdAt: now });
     return { resourceId: command.projectId, state: 'active', auditEventId: command.idempotencyKey, replayed: false };
   });
+}
+
+export async function freezeSourceRevision(db: Firestore, actorUid: string, command: FreezeSourceRevisionCommand): Promise<CommandResult> {
+  return db.runTransaction(async (tx) => {
+    const now = Timestamp.now();
+    const root = projectRoot(command.orgId, command.projectId);
+    const receiptRef = db.doc(`${root}/commandReceipts/${command.idempotencyKey}`);
+    const sourceRef = db.doc(`${root}/sourceRevisions/${command.sourceRevisionId}`);
+    const projectRef = db.doc(root);
+    const openCriticalIssuesQuery = db.collection(`${root}/issues`)
+      .where('artifactType', '==', 'sourceRevision')
+      .where('artifactId', '==', command.sourceRevisionId)
+      .where('severity', '==', 'critical')
+      .where('status', '==', 'open');
+    const [receipt, source, project, openCriticalIssues, context] = await Promise.all([
+      tx.get(receiptRef), tx.get(sourceRef), tx.get(projectRef),
+      tx.get(openCriticalIssuesQuery),
+      loadPermissionContext(tx, db, actorUid, command.orgId, command.projectId, now),
+    ]);
+    if (receipt.exists) return replayedReceipt(asRecord(receipt.data()), actorUid, 'freezeSourceRevision');
+    if (!source.exists || !project.exists) throw new AuthorizationError('Project or source revision does not exist.', 'failed-precondition');
+    if (!context.roles.includes('projectManager')) {
+      throw new AuthorizationError('Only the Project Manager can freeze Gate G0.', 'permission-denied');
+    }
+    const sourceData = asRecord(source.data());
+    if (sourceData.status !== 'approved') throw new AuthorizationError('Structural suitability must be independently approved before Gate G0 freeze.', 'failed-precondition');
+    if (sourceData.snapshotHash !== command.expectedSnapshotHash) throw new AuthorizationError('Source snapshot hash mismatch.', 'failed-precondition');
+    assertSourceReady(sourceData);
+    if (!openCriticalIssues.empty) throw new AuthorizationError('Open critical source issues require resolution or an accepted exception before Gate G0 freeze.', 'failed-precondition');
+
+    const auditRef = db.doc(`${root}/auditEvents/${command.idempotencyKey}`);
+    tx.update(sourceRef, { status: 'accepted', locked: true, frozenBy: actorUid, frozenAt: now });
+    tx.update(projectRef, {
+      currentSourceRevisionId: command.sourceRevisionId,
+      currentStage: 'designBasis',
+      'gateStates.G0': 'approved',
+      'gateStates.G1': 'inProgress',
+      updatedAt: now,
+      updatedBy: actorUid,
+    });
+    tx.create(auditRef, {
+      id: command.idempotencyKey, orgId: command.orgId, projectId: command.projectId, artifactType: 'sourceRevision',
+      artifactId: command.sourceRevisionId, artifactRevision: requiredString(sourceData, 'revision'), action: 'freeze',
+      stateBefore: 'approved', stateAfter: 'accepted', actorUid, effectiveRoles: context.roles,
+      delegatedCapabilities: context.capabilities, occurredAt: now, requestId: command.idempotencyKey,
+      idempotencyKey: command.idempotencyKey, snapshotHash: command.expectedSnapshotHash,
+    });
+    tx.create(receiptRef, { idempotencyKey: command.idempotencyKey, commandName: 'freezeSourceRevision', actorUid, resourceId: command.sourceRevisionId, resultState: 'accepted', auditEventId: command.idempotencyKey, createdAt: now });
+    return { resourceId: command.sourceRevisionId, state: 'accepted', auditEventId: command.idempotencyKey, replayed: false };
+  });
+}
+
+export async function createDesignBasisRevision(db: Firestore, actorUid: string, command: CreateDesignBasisRevisionCommand): Promise<CommandResult> {
+  return db.runTransaction(async (tx) => {
+    const now = Timestamp.now();
+    const root = projectRoot(command.orgId, command.projectId);
+    const receiptRef = db.doc(`${root}/commandReceipts/${command.idempotencyKey}`);
+    const projectRef = db.doc(root);
+    const designBasisRef = db.doc(`${root}/designBasisVersions/${command.designBasisId}`);
+    const previousRef = command.supersedesId === undefined ? undefined : db.doc(`${root}/designBasisVersions/${command.supersedesId}`);
+    const [receipt, project, designBasis, previous, context] = await Promise.all([
+      tx.get(receiptRef), tx.get(projectRef), tx.get(designBasisRef),
+      previousRef === undefined ? Promise.resolve(undefined) : tx.get(previousRef),
+      loadPermissionContext(tx, db, actorUid, command.orgId, command.projectId, now),
+    ]);
+    if (receipt.exists) return replayedReceipt(asRecord(receipt.data()), actorUid, 'createDesignBasisRevision');
+    if (!project.exists) throw new AuthorizationError('Project does not exist.', 'failed-precondition');
+    if (designBasis.exists) throw new AuthorizationError('Design Basis revision ID already exists.', 'failed-precondition');
+    const createDecision = can('create', 'designBasis', context);
+    if (!createDecision.allowed) throw new AuthorizationError(createDecision.reason ?? 'Design Basis creation denied.', 'permission-denied');
+    const projectData = asRecord(project.data());
+    const gateStates = asRecord(projectData.gateStates);
+    if (gateStates.G0 !== 'approved') throw new AuthorizationError('Gate G0 must be frozen before creating a Design Basis revision.', 'failed-precondition');
+    const sourceRevisionId = requiredString(projectData, 'currentSourceRevisionId');
+    if (command.supersedesId !== undefined) {
+      if (previous === undefined || !previous.exists || projectData.currentDesignBasisVersionId !== command.supersedesId) throw new AuthorizationError('Only the current Design Basis can be superseded.', 'failed-precondition');
+      const previousData = asRecord(previous.data());
+      if (previousData.locked !== true || previousData.status !== 'approved') throw new AuthorizationError('Only an approved, locked Design Basis can be superseded.', 'failed-precondition');
+    }
+
+    const input: SnapshotInput = {
+      artifactType: 'designBasis', artifactId: command.designBasisId, artifactRevision: command.revision,
+      createdBy: actorUid, upstreamRefs: { sourceRevisionId }, payload: command.payload,
+    };
+    const draftHash = computeArtifactSnapshotHash(input);
+    const auditRef = db.doc(`${root}/auditEvents/${command.idempotencyKey}`);
+    tx.create(designBasisRef, {
+      id: command.designBasisId, revision: command.revision, status: 'draft', locked: false, createdBy: actorUid,
+      isCurrentRevision: true, upstreamRefs: { sourceRevisionId }, payload: command.payload, blockingConditions: [],
+      draftHash, ...(command.supersedesId === undefined ? {} : { supersedesId: command.supersedesId }), createdAt: now, updatedAt: now, updatedBy: actorUid,
+    });
+    if (previousRef !== undefined) tx.update(previousRef, { status: 'superseded', isCurrentRevision: false, supersededBy: command.designBasisId, supersededAt: now });
+    tx.update(projectRef, {
+      currentDesignBasisVersionId: command.designBasisId,
+      currentStage: 'designBasis',
+      'gateStates.G1': 'inProgress',
+      updatedAt: now,
+      updatedBy: actorUid,
+      ...(command.supersedesId === undefined ? {} : { downstreamState: 'outOfDate' }),
+    });
+    tx.create(auditRef, {
+      id: command.idempotencyKey, orgId: command.orgId, projectId: command.projectId, artifactType: 'designBasis', artifactId: command.designBasisId,
+      artifactRevision: command.revision, action: command.supersedesId === undefined ? 'create' : 'supersede', stateBefore: command.supersedesId === undefined ? 'none' : 'approved', stateAfter: 'draft',
+      actorUid, effectiveRoles: context.roles, delegatedCapabilities: context.capabilities, occurredAt: now, requestId: command.idempotencyKey,
+      idempotencyKey: command.idempotencyKey, snapshotHash: draftHash,
+    });
+    tx.create(receiptRef, { idempotencyKey: command.idempotencyKey, commandName: 'createDesignBasisRevision', actorUid, resourceId: command.designBasisId, resultState: 'draft', auditEventId: command.idempotencyKey, createdAt: now });
+    return { resourceId: command.designBasisId, state: 'draft', auditEventId: command.idempotencyKey, replayed: false };
+  });
+}
+
+async function mutateProject(
+  db: Firestore,
+  actorUid: string,
+  command: UpdateProjectCommand | ArchiveProjectCommand,
+  commandName: 'updateProject' | 'archiveProject',
+): Promise<CommandResult> {
+  return db.runTransaction(async (tx) => {
+    const now = Timestamp.now();
+    const root = projectRoot(command.orgId, command.projectId);
+    const receiptRef = db.doc(`${root}/commandReceipts/${command.idempotencyKey}`);
+    const projectRef = db.doc(root);
+    const orgMemberRef = db.doc(`organizations/${command.orgId}/members/${actorUid}`);
+    const [receipt, project, orgMember, context] = await Promise.all([
+      tx.get(receiptRef), tx.get(projectRef), tx.get(orgMemberRef),
+      loadPermissionContext(tx, db, actorUid, command.orgId, command.projectId, now),
+    ]);
+    if (receipt.exists) return replayedReceipt(asRecord(receipt.data()), actorUid, commandName);
+    if (!project.exists) throw new AuthorizationError('Project does not exist.', 'failed-precondition');
+    const orgRoles = asStringArray(asRecord(orgMember.data()).orgRoles);
+    if (!context.roles.includes('projectManager') && !orgRoles.includes('orgAdmin') && !context.capabilities.includes('editProject')) {
+      throw new AuthorizationError('Project update requires Project Manager or Organization Admin authority.', 'permission-denied');
+    }
+    const projectData = asRecord(project.data());
+    if (projectData.status === 'archived') throw new AuthorizationError('Archived projects are immutable.', 'failed-precondition');
+    const nextState = commandName === 'archiveProject' ? 'archived' : (command as UpdateProjectCommand).status;
+    const auditRef = db.doc(`${root}/auditEvents/${command.idempotencyKey}`);
+    if (commandName === 'archiveProject') {
+      tx.update(projectRef, { status: 'archived', archivedAt: now, archivedBy: actorUid, archiveReason: (command as ArchiveProjectCommand).reason, updatedAt: now, updatedBy: actorUid });
+    } else {
+      const update = command as UpdateProjectCommand;
+      tx.update(projectRef, { code: update.code, name: update.name, status: update.status, dueAt: update.dueAt === undefined ? FieldValue.delete() : Timestamp.fromDate(new Date(update.dueAt)), updatedAt: now, updatedBy: actorUid });
+    }
+    tx.create(auditRef, {
+      id: command.idempotencyKey, orgId: command.orgId, projectId: command.projectId, artifactType: 'sourceRevision', artifactId: command.projectId,
+      artifactRevision: 'PROJECT', action: commandName === 'archiveProject' ? 'archive' : 'editDraft', stateBefore: String(projectData.status), stateAfter: nextState,
+      actorUid, effectiveRoles: context.roles, delegatedCapabilities: context.capabilities, occurredAt: now, requestId: command.idempotencyKey,
+      idempotencyKey: command.idempotencyKey, snapshotHash: `project:${command.projectId}:${command.idempotencyKey}`,
+      ...('reason' in command ? { comment: command.reason } : {}),
+    });
+    tx.create(receiptRef, { idempotencyKey: command.idempotencyKey, commandName, actorUid, resourceId: command.projectId, resultState: nextState, auditEventId: command.idempotencyKey, createdAt: now });
+    return { resourceId: command.projectId, state: nextState, auditEventId: command.idempotencyKey, replayed: false };
+  });
+}
+
+export async function updateProject(db: Firestore, actorUid: string, command: UpdateProjectCommand): Promise<CommandResult> {
+  return mutateProject(db, actorUid, command, 'updateProject');
+}
+
+export async function archiveProject(db: Firestore, actorUid: string, command: ArchiveProjectCommand): Promise<CommandResult> {
+  return mutateProject(db, actorUid, command, 'archiveProject');
 }

@@ -1,15 +1,15 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { approveArtifactCommandSchema, createProjectCommandSchema, returnArtifactCommandSchema, submitArtifactCommandSchema } from '@precast/schemas';
+import { approveArtifactCommandSchema, archiveProjectCommandSchema, createDesignBasisRevisionCommandSchema, createProjectCommandSchema, freezeSourceRevisionCommandSchema, returnArtifactCommandSchema, submitArtifactCommandSchema, updateProjectCommandSchema } from '@precast/schemas';
 import { AuthorizationError } from './authorization';
-import { approveArtifact, createType2Project, returnArtifact, submitArtifact } from './workflowCommands';
+import { approveArtifact, archiveProject, createDesignBasisRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from './workflowCommands';
 
 if (getApps().length === 0) initializeApp();
 
 export { authorizeApproval } from './authorization';
 export { runDeterministicMockAnalysis } from './mockAnalysis';
-export { approveArtifact, computeArtifactSnapshotHash, createType2Project, returnArtifact, submitArtifact } from './workflowCommands';
+export { approveArtifact, archiveProject, computeArtifactSnapshotHash, createDesignBasisRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from './workflowCommands';
 
 function callable<T>(schema: { safeParse(value: unknown): { success: true; data: T } | { success: false } }, handler: (uid: string, command: T) => Promise<unknown>) {
   const enforceAppCheck = process.env.FUNCTIONS_EMULATOR !== 'true';
@@ -30,3 +30,7 @@ export const submitArtifactCommand = callable(submitArtifactCommandSchema, (uid,
 export const approveArtifactCommand = callable(approveArtifactCommandSchema, (uid, command) => approveArtifact(getFirestore(), uid, command));
 export const returnArtifactCommand = callable(returnArtifactCommandSchema, (uid, command) => returnArtifact(getFirestore(), uid, command));
 export const createProjectCommand = callable(createProjectCommandSchema, (uid, command) => createType2Project(getFirestore(), uid, command));
+export const createDesignBasisRevisionCommand = callable(createDesignBasisRevisionCommandSchema, (uid, command) => createDesignBasisRevision(getFirestore(), uid, command));
+export const freezeSourceRevisionCommand = callable(freezeSourceRevisionCommandSchema, (uid, command) => freezeSourceRevision(getFirestore(), uid, command));
+export const updateProjectCommand = callable(updateProjectCommandSchema, (uid, command) => updateProject(getFirestore(), uid, command));
+export const archiveProjectCommand = callable(archiveProjectCommandSchema, (uid, command) => archiveProject(getFirestore(), uid, command));
