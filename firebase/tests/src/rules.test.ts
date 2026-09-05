@@ -39,6 +39,11 @@ async function seed() {
       status: 'draft', locked: false, createdBy: 'engineer-1', revision: 'PM-R01', isCurrentRevision: true,
       upstreamRefs: { sourceRevisionId: 'src-r02', designBasisVersionId: 'db-r02' }, payload: { mark: 'initial' },
     });
+    await setDoc(doc(db, 'organizations/org-a/projects/project-a/loadModelVersions/load-r01'), {
+      status: 'draft', locked: false, createdBy: 'engineer-1', revision: 'LOAD-R01', isCurrentRevision: true,
+      upstreamRefs: { sourceRevisionId: 'src-r02', designBasisVersionId: 'db-r02', modelVersionId: 'pm-r01' }, payload: { meshSizeM: 0.25 }, draftHash: `sha256:${'b'.repeat(64)}`,
+    });
+    await setDoc(doc(db, 'organizations/org-a/projects/project-a/analysisRuns/an-r01'), { status: 'completed', designStatus: 'NOT_CHECKED', createdBy: 'engineer-1' });
   });
 }
 
@@ -108,6 +113,23 @@ describe('M3 Product Model controls', () => {
     });
     const db = environment.authenticatedContext('engineer-2').firestore();
     await assertFails(updateDoc(doc(db, 'organizations/org-a/projects/project-a/productModelVersions/pm-r01'), { payload: { mark: 'hijacked' } }));
+  });
+});
+
+describe('M4 Load Model and analysis controls', () => {
+  it('permits only the author to edit mutable Load Model fields', async () => {
+    const engineer = environment.authenticatedContext('engineer-1').firestore();
+    const load = doc(engineer, 'organizations/org-a/projects/project-a/loadModelVersions/load-r01');
+    await assertSucceeds(updateDoc(load, { payload: { meshSizeM: 0.2 }, draftHash: `sha256:${'c'.repeat(64)}`, updatedAt: Timestamp.now(), updatedBy: 'engineer-1' }));
+    await assertFails(updateDoc(load, { status: 'frozen', locked: true }));
+    const checker = environment.authenticatedContext('checker-1').firestore();
+    await assertFails(updateDoc(doc(checker, load.path), { payload: { meshSizeM: 0.1 } }));
+  });
+
+  it('denies all direct analysis lifecycle and result writes', async () => {
+    const engineer = environment.authenticatedContext('engineer-1').firestore();
+    await assertFails(setDoc(doc(engineer, 'organizations/org-a/projects/project-a/analysisRuns/forged'), { status: 'completed', designStatus: 'PASS' }));
+    await assertFails(updateDoc(doc(engineer, 'organizations/org-a/projects/project-a/analysisRuns/an-r01'), { designStatus: 'PASS' }));
   });
 });
 

@@ -4,6 +4,7 @@ import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestor
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuthorizationError } from '../../../apps/functions/src/authorization';
 import type { ProductModelPayload } from '../../../packages/domain/src/types';
+import { createLoadModelRevision, queueAnalysisRun } from '../../../apps/functions/src/analysisCommands';
 import { approveArtifact, archiveProject, canonicalizeProductModel, computeArtifactSnapshotHash, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from '../../../apps/functions/src/workflowCommands';
 
 let db: Firestore;
@@ -32,6 +33,11 @@ const productPayload: ProductModelPayload = {
   supports: [{ id: 'support-a', panelId: 'panel-a', scenario: 'final', positionM: { x: 0, y: 0, z: 0 }, restrainedDofs: ['UX', 'UY', 'UZ'] }],
   loadCases: [{ id: 'dead', scenario: 'final', type: 'dead', magnitude: 53, unit: 'kN' }], loadCombinations: [{ id: 'uls', factors: { dead: 1.4 } }], stages: ['final'],
   validation: { unsupportedNodes: 0, disconnectedElements: 0, missingLoadPaths: 0, geometryConflicts: 0 },
+};
+const loadPayload = {
+  schemaVersion: '1.0.0' as const, units: 'kN-m-MPa' as const, elementIdealization: 'shell-mid-surface' as const, shellFormulation: 'benchmark-shell' as const,
+  meshSizeM: 0.25, refinementZoneIds: [], stiffnessModifiers: { membrane: 1, bending: 1 }, solverTolerance: 0.000001, maxIterations: 500, resultAveraging: 'nodal' as const,
+  scenarios: [{ id: 'final' as const, activeSupportIds: ['support-a'], activeJointIds: ['joint-ab'], loadCaseIds: ['dead'], combinationIds: ['uls'] }],
 };
 
 async function seedWorkflow() {
@@ -73,6 +79,23 @@ beforeEach(async () => {
 afterAll(async () => deleteApp(app));
 
 describe('transactional workflow commands', () => {
+  it('freezes a versioned Load Model and completes an auditable benchmark without claiming design approval', async () => {
+    const productUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: artifactId };
+    const canonicalProduct = canonicalizeProductModel(productPayload);
+    const productHash = computeArtifactSnapshotHash({ artifactType: 'productModel', artifactId: 'pm-r01', artifactRevision: 'PM-R01', createdBy: 'engineer-1', upstreamRefs: productUpstreams, payload: canonicalProduct as unknown as Record<string, unknown> });
+    await db.doc(`organizations/${orgId}/projects/${projectId}`).update({ 'gateStates.G0': 'approved', 'gateStates.G1': 'approved', 'gateStates.G2': 'approved', currentModelVersionId: 'pm-r01' });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/productModelVersions/pm-r01`).set({ id: 'pm-r01', revision: 'PM-R01', status: 'approved', locked: true, createdBy: 'engineer-1', isCurrentRevision: true, upstreamRefs: productUpstreams, payload: canonicalProduct, draftHash: productHash, snapshotHash: productHash });
+    const createCommand = { orgId, projectId, loadModelVersionId: 'load-r01', revision: 'LOAD-R01', payload: loadPayload, idempotencyKey: randomUUID() };
+    expect(await createLoadModelRevision(db, 'engineer-1', createCommand)).toMatchObject({ state: 'draft', replayed: false });
+    const loadRef = db.doc(`organizations/${orgId}/projects/${projectId}/loadModelVersions/load-r01`); const loadHash = String((await loadRef.get()).data()?.draftHash);
+    const queueCommand = { orgId, projectId, runId: 'an-r01', revision: 'AN-R01', loadModelVersionId: 'load-r01', benchmarkId: 'two-panel-static-v1' as const, expectedModelHash: productHash, expectedLoadModelHash: loadHash, idempotencyKey: randomUUID() };
+    const completed = await queueAnalysisRun(db, 'engineer-1', queueCommand);
+    expect(completed).toMatchObject({ state: 'completed', replayed: false });
+    expect(await queueAnalysisRun(db, 'engineer-1', queueCommand)).toMatchObject({ state: 'completed', replayed: true });
+    expect((await loadRef.get()).data()).toMatchObject({ status: 'frozen', locked: true, snapshotHash: loadHash });
+    expect((await db.doc(`organizations/${orgId}/projects/${projectId}/analysisRuns/an-r01`).get()).data()).toMatchObject({ status: 'completed', phase: 'complete', designStatus: 'NOT_CHECKED', engine: 'precast-benchmark-adapter@1.0.0', result: { appliedLoadKn: 74.2, reactionSumKn: 74.2, equilibriumImbalancePercent: 0 }, verification: { fatalWarnings: 0, equilibriumPassed: true, convergencePassed: true, independentBenchmarkMatched: true } });
+  });
+
   it('canonicalizes entity ordering for deterministic model snapshots', () => {
     const reversed = { ...productPayload, panels: [...productPayload.panels].reverse(), loadCombinations: [...productPayload.loadCombinations].reverse() };
     expect(canonicalizeProductModel(reversed)).toEqual(canonicalizeProductModel(productPayload));

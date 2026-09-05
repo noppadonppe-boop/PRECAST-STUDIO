@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { approvalCommandSchema, designBasisPayloadSchema, mockAnalysisInputSchema, productModelPayloadSchema, sourceFileSchema } from './index';
+import { approvalCommandSchema, designBasisPayloadSchema, loadAnalysisSettingsPayloadSchema, mockAnalysisInputSchema, productModelPayloadSchema, sourceFileSchema } from './index';
 
 describe('versioned runtime schemas', () => {
   it('rejects an unversioned mock analysis payload', () => {
@@ -32,5 +32,12 @@ describe('versioned runtime schemas', () => {
     const outside = { ...valid, panels: [{ ...valid.panels[0], openings: [{ id: 'op-a', xM: 2.5, yM: 0, widthM: 1, heightM: 2 }] }] };
     expect(productModelPayloadSchema.safeParse(outside).success).toBe(false);
     expect(productModelPayloadSchema.safeParse({ ...valid, supports: [{ ...valid.supports[0], panelId: 'missing' }] }).success).toBe(false);
+  });
+
+  it('bounds analysis controls and requires unique scenario IDs', () => {
+    const valid = { schemaVersion: '1.0.0', units: 'kN-m-MPa', elementIdealization: 'shell-mid-surface', shellFormulation: 'benchmark-shell', meshSizeM: 0.25, refinementZoneIds: [], stiffnessModifiers: { membrane: 1, bending: 1 }, solverTolerance: 0.000001, maxIterations: 500, resultAveraging: 'nodal', scenarios: [{ id: 'final', activeSupportIds: ['support-a'], activeJointIds: [], loadCaseIds: ['dead'], combinationIds: ['uls'] }] };
+    expect(loadAnalysisSettingsPayloadSchema.safeParse(valid).success).toBe(true);
+    expect(loadAnalysisSettingsPayloadSchema.safeParse({ ...valid, meshSizeM: 0.001 }).success).toBe(false);
+    expect(loadAnalysisSettingsPayloadSchema.safeParse({ ...valid, scenarios: [...valid.scenarios, valid.scenarios[0]] }).success).toBe(false);
   });
 });

@@ -61,6 +61,16 @@ const productModelPayload = {
 const productUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: 'db-r02' };
 const productSnapshotInput = { artifactType: 'productModel', artifactId: 'pm-r01', artifactRevision: 'PM-R01', createdBy: 'engineer-supachai', upstreamRefs: productUpstreams, payload: productModelPayload };
 const productHash = hash(productSnapshotInput);
+const loadModelPayload = {
+  schemaVersion: '1.0.0', units: 'kN-m-MPa', elementIdealization: 'shell-mid-surface', shellFormulation: 'benchmark-shell', meshSizeM: 0.25,
+  refinementZoneIds: ['opening-a'], stiffnessModifiers: { membrane: 1, bending: 1 }, solverTolerance: 0.000001, maxIterations: 500, resultAveraging: 'nodal',
+  scenarios: [
+    { id: 'final', activeSupportIds: ['support-final-a'], activeJointIds: ['joint-a-b'], loadCaseIds: ['lc-dead'], combinationIds: ['comb-final-uls'] },
+    { id: 'lifting', activeSupportIds: ['support-lift-a'], activeJointIds: ['joint-a-b'], loadCaseIds: ['lc-lift'], combinationIds: ['comb-lift-uls'] },
+  ],
+};
+const loadUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: 'db-r02', modelVersionId: 'pm-r01' };
+const loadHash = hash({ artifactType: 'loadModel', artifactId: 'load-r01', artifactRevision: 'LOAD-R01', createdBy: 'engineer-supachai', upstreamRefs: loadUpstreams, payload: loadModelPayload });
 
 const batch = db.batch();
 batch.set(db.doc('organizations/org-siam'), { id: 'org-siam', name: 'Siam Precast Engineering', updatedAt: now });
@@ -68,8 +78,8 @@ for (const [uid, orgRoles] of [['checker-narin', ['orgAdmin']], ['engineer-supac
   batch.set(db.doc(`organizations/org-siam/members/${uid}`), { uid, orgId: 'org-siam', status: 'active', orgRoles, projectIds: ['p-rama9'], updatedAt: now, updatedBy: 'seed' });
 }
 batch.set(db.doc('organizations/org-siam/projects/p-rama9'), {
-  id: 'p-rama9', orgId: 'org-siam', code: 'PC-26014', name: 'Rama IX Modular Residence', productFamilyId: 'type-2-residential', status: 'active', currentStage: 'panelization',
-  currentSourceRevisionId: 'src-r02', currentDesignBasisVersionId: 'db-r02', currentModelVersionId: 'pm-r01', gateStates: { G0: 'approved', G1: 'approved', G2: 'inProgress', G3: 'notStarted', G4: 'notStarted', G5: 'notStarted', G6: 'notStarted', G7: 'notStarted' },
+  id: 'p-rama9', orgId: 'org-siam', code: 'PC-26014', name: 'Rama IX Modular Residence', productFamilyId: 'type-2-residential', status: 'active', currentStage: 'analysis',
+  currentSourceRevisionId: 'src-r02', currentDesignBasisVersionId: 'db-r02', currentModelVersionId: 'pm-r01', currentLoadModelVersionId: 'load-r01', gateStates: { G0: 'approved', G1: 'approved', G2: 'approved', G3: 'inProgress', G4: 'notStarted', G5: 'notStarted', G6: 'notStarted', G7: 'notStarted' },
   assignedUserIds: ['checker-narin', 'engineer-supachai', 'bim-arin', 'pm-malee'], updatedAt: now, updatedBy: 'seed',
 });
 for (const [uid, roles] of [['checker-narin', ['engineeringChecker']], ['engineer-supachai', ['structuralEngineer']], ['bim-arin', ['bimCoordinator']], ['pm-malee', ['projectManager']]]) {
@@ -81,10 +91,11 @@ batch.set(db.doc('organizations/org-siam/projects/p-rama9/sourceRevisions/src-r0
   blockingConditions: [], draftHash: sourceHash, snapshotHash: sourceHash, storagePath: 'seed/clean/rama9-coordination-r02.ifc', createdAt: now, updatedAt: now,
 });
 batch.set(db.doc('organizations/org-siam/projects/p-rama9/designBasisVersions/db-r02'), { id: 'db-r02', revision: 'DB-R02', status: 'approved', locked: true, createdBy: 'engineer-supachai', approvedBy: 'checker-narin', isCurrentRevision: true, upstreamRefs, payload: designBasisPayload, blockingConditions: [], draftHash, snapshotHash: draftHash, createdAt: now, updatedAt: now });
-batch.set(db.doc('organizations/org-siam/projects/p-rama9/productModelVersions/pm-r01'), { id: 'pm-r01', revision: 'PM-R01', status: 'draft', locked: false, createdBy: 'engineer-supachai', isCurrentRevision: true, upstreamRefs: productUpstreams, payload: productModelPayload, blockingConditions: [], draftHash: productHash, createdAt: now, updatedAt: now });
+batch.set(db.doc('organizations/org-siam/projects/p-rama9/productModelVersions/pm-r01'), { id: 'pm-r01', revision: 'PM-R01', status: 'approved', locked: true, createdBy: 'engineer-supachai', approvedBy: 'checker-narin', isCurrentRevision: true, upstreamRefs: productUpstreams, payload: productModelPayload, blockingConditions: [], draftHash: productHash, snapshotHash: productHash, createdAt: now, updatedAt: now });
+batch.set(db.doc('organizations/org-siam/projects/p-rama9/loadModelVersions/load-r01'), { id: 'load-r01', revision: 'LOAD-R01', status: 'draft', locked: false, createdBy: 'engineer-supachai', isCurrentRevision: true, upstreamRefs: loadUpstreams, payload: loadModelPayload, draftHash: loadHash, createdAt: now, updatedAt: now, updatedBy: 'engineer-supachai' });
 batch.set(db.doc('organizations/org-siam/projects/p-rama9/designBasisVersions/db-self'), { id: 'db-self', revision: 'DB-SELF', status: 'submitted', locked: false, createdBy: 'engineer-supachai', isCurrentRevision: true, upstreamRefs, payload: designBasisPayload, blockingConditions: [], snapshotHash: selfSnapshotHash, createdAt: now, updatedAt: now });
 batch.set(db.doc('organizations/org-siam/projects/p-rama9/approvalSnapshots/apr-self'), { ...selfSnapshotInput, id: 'apr-self', orgId: 'org-siam', projectId: 'p-rama9', snapshotHash: selfSnapshotHash, capturedAt: now, capturedBy: 'engineer-supachai' });
 batch.set(db.doc('organizations/org-siam/projects/p-rama9/approvalRequests/apr-self'), { id: 'apr-self', orgId: 'org-siam', projectId: 'p-rama9', artifactType: 'designBasis', artifactId: 'db-self', artifactRevision: 'DB-SELF', snapshotHash: selfSnapshotHash, requestedAction: 'approve', requiredRole: 'engineeringChecker', assignedTo: 'engineer-supachai', status: 'open', requestedBy: 'engineer-supachai', requestedAt: now, blockingConditions: [] });
 await batch.commit();
 await deleteApp(app);
-console.log(`Seeded ${projectId}. Source ${sourceHash}; Design Basis ${draftHash}; Product Model ${productHash}`);
+console.log(`Seeded ${projectId}. Source ${sourceHash}; Design Basis ${draftHash}; Product Model ${productHash}; Load Model ${loadHash}`);

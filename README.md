@@ -1,6 +1,6 @@
 # Precast Engineering Web App
 
-M3 Product Model and Panelization for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, or authoritative engineering result.
+M4 Loads and Controlled Analysis Orchestration for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, general FEM solver, or authoritative design result.
 
 ## Source of truth
 
@@ -26,7 +26,7 @@ pnpm check
 pnpm dev
 ```
 
-Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted M3 behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. Use `?as=engineer` and `?as=checker` for the G2 author/reviewer journey; the M2 BIM/PM identities remain available. No production credential is required.
+Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted M4 behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. Use `?as=engineer` at G3 to edit the versioned Load Model and run the controlled two-panel benchmark; reviewer, BIM and PM identities remain available. No production credential is required.
 
 ## Workspace map
 
@@ -38,11 +38,11 @@ packages/schemas/         Versioned Zod command/calculation contracts
 packages/ui/              Product tokens and shared UI primitives
 firebase/                 Firestore/Storage rules, indexes and emulator configuration
 firebase/tests/           Rules tests for tenant isolation and authoritative transitions
-services/                 Reserved worker boundaries; no real scanner/FEM/export worker in M3
+services/                 Reserved worker boundaries; no real scanner/FEM/export worker in M4
 knowledge/                Approved product and engineering source of truth
 ```
 
-## Security model through M3
+## Security model through M4
 
 - Deny by default in Firestore and Storage Rules.
 - Organization and project membership are separate and project membership can expire.
@@ -54,10 +54,14 @@ knowledge/                Approved product and engineering source of truth
 - G1 requires a complete bounded Design Basis, current accepted source, an independent checker, and an immutable locked approval snapshot.
 - Product Model versions bind accepted Source and locked Design Basis IDs, canonicalize entity ordering, and preserve immutable superseded history.
 - G2 validates panel/opening geometry, globally unique references, joints, supports, construction scenarios, load cases/combinations and zero model-quality failures before independent checker lock.
+- Load Model versions separate scenario activation, mesh controls, stiffness modifiers and solver controls from the locked Product Model.
+- Queueing freezes the Load Model and records an immutable input manifest, engine version and input hash before server-side execution.
+- The versioned `two-panel-static-v1` adapter records phase history, normalized reactions/displacement, equilibrium, convergence, topology and benchmark evidence with an output hash.
+- Direct client writes to analysis lifecycle, manifest and result fields are denied. Firestore stores metadata only, not large mesh/result arrays.
 - Functions revalidate active membership, expiry, role/capability, artifact state, snapshot hash, blockers and current upstream revisions.
 - Every successful transition creates exactly one append-only audit event and a command receipt.
 - Artifact creators cannot approve their own Design Basis, analysis, calculation, or drawing revision.
-- The deterministic mock analysis always reports `NOT CHECKED`; it never presents a design `PASS`.
+- M4 benchmark checks can report `PASS`, `WARNING` or `FAIL`, while the engineering design status remains `NOT CHECKED`; G3 is not approved by this milestone.
 
 ## Validation commands
 
@@ -70,4 +74,4 @@ pnpm test:e2e
 pnpm build
 ```
 
-See the [M3 completion and M4 handoff](docs/M3_HANDOFF.md) before extending the application. Earlier handoffs remain as historical context.
+See the [M4 completion and M5 handoff](docs/M4_HANDOFF.md) before extending the application. Earlier handoffs remain as historical context.

@@ -1,14 +1,16 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { approveArtifactCommandSchema, archiveProjectCommandSchema, createDesignBasisRevisionCommandSchema, createProductModelRevisionCommandSchema, createProjectCommandSchema, freezeSourceRevisionCommandSchema, returnArtifactCommandSchema, submitArtifactCommandSchema, updateProjectCommandSchema } from '@precast/schemas';
+import { approveArtifactCommandSchema, archiveProjectCommandSchema, cancelAnalysisRunCommandSchema, createDesignBasisRevisionCommandSchema, createLoadModelRevisionCommandSchema, createProductModelRevisionCommandSchema, createProjectCommandSchema, freezeSourceRevisionCommandSchema, queueAnalysisRunCommandSchema, returnArtifactCommandSchema, submitArtifactCommandSchema, updateProjectCommandSchema } from '@precast/schemas';
 import { AuthorizationError } from './authorization';
+import { cancelAnalysisRun, createLoadModelRevision, queueAnalysisRun } from './analysisCommands';
 import { approveArtifact, archiveProject, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from './workflowCommands';
 
 if (getApps().length === 0) initializeApp();
 
 export { authorizeApproval } from './authorization';
 export { runDeterministicMockAnalysis } from './mockAnalysis';
+export { cancelAnalysisRun, canonicalizeLoadSettings, createLoadModelRevision, queueAnalysisRun, runTwoPanelStaticBenchmark } from './analysisCommands';
 export { approveArtifact, archiveProject, canonicalizeProductModel, computeArtifactSnapshotHash, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from './workflowCommands';
 
 function callable<T>(schema: { safeParse(value: unknown): { success: true; data: T } | { success: false } }, handler: (uid: string, command: T) => Promise<unknown>) {
@@ -32,6 +34,9 @@ export const returnArtifactCommand = callable(returnArtifactCommandSchema, (uid,
 export const createProjectCommand = callable(createProjectCommandSchema, (uid, command) => createType2Project(getFirestore(), uid, command));
 export const createDesignBasisRevisionCommand = callable(createDesignBasisRevisionCommandSchema, (uid, command) => createDesignBasisRevision(getFirestore(), uid, command));
 export const createProductModelRevisionCommand = callable(createProductModelRevisionCommandSchema, (uid, command) => createProductModelRevision(getFirestore(), uid, command));
+export const createLoadModelRevisionCommand = callable(createLoadModelRevisionCommandSchema, (uid, command) => createLoadModelRevision(getFirestore(), uid, command));
+export const queueAnalysisRunCommand = callable(queueAnalysisRunCommandSchema, (uid, command) => queueAnalysisRun(getFirestore(), uid, command));
+export const cancelAnalysisRunCommand = callable(cancelAnalysisRunCommandSchema, (uid, command) => cancelAnalysisRun(getFirestore(), uid, command));
 export const freezeSourceRevisionCommand = callable(freezeSourceRevisionCommandSchema, (uid, command) => freezeSourceRevision(getFirestore(), uid, command));
 export const updateProjectCommand = callable(updateProjectCommandSchema, (uid, command) => updateProject(getFirestore(), uid, command));
 export const archiveProjectCommand = callable(archiveProjectCommandSchema, (uid, command) => archiveProject(getFirestore(), uid, command));

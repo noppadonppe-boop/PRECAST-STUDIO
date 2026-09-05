@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const artifactTypeSchema = z.enum([
-  'sourceRevision', 'designBasis', 'productModel', 'analysis', 'estimate', 'calculation', 'drawingSet', 'releasePackage',
+  'sourceRevision', 'designBasis', 'productModel', 'loadModel', 'analysis', 'estimate', 'calculation', 'drawingSet', 'releasePackage',
 ]);
 
 const commandIdentitySchema = z.object({
@@ -93,6 +93,16 @@ export const productModelPayloadSchema = z.object({
   for (const combination of model.loadCombinations) for (const loadCaseId of Object.keys(combination.factors)) if (!loadCaseIds.has(loadCaseId)) context.addIssue({ code: 'custom', message: `${combination.id} references unknown load case ${loadCaseId}.` });
 });
 
+export const loadAnalysisSettingsPayloadSchema = z.object({
+  schemaVersion: z.literal('1.0.0'), units: z.literal('kN-m-MPa'), elementIdealization: z.literal('shell-mid-surface'), shellFormulation: z.literal('benchmark-shell'),
+  meshSizeM: z.number().min(0.02).max(5), refinementZoneIds: z.array(entityIdSchema).max(200),
+  stiffnessModifiers: z.object({ membrane: z.number().min(0.01).max(2), bending: z.number().min(0.01).max(2) }),
+  solverTolerance: z.number().min(1e-9).max(0.1), maxIterations: z.number().int().min(1).max(10000), resultAveraging: z.enum(['nodal', 'element']),
+  scenarios: z.array(z.object({ id: scenarioSchema, activeSupportIds: z.array(entityIdSchema).min(1).max(800), activeJointIds: z.array(entityIdSchema).max(400), loadCaseIds: z.array(entityIdSchema).min(1).max(100), combinationIds: z.array(entityIdSchema).min(1).max(100) })).min(1).max(7),
+}).superRefine((settings, context) => {
+  if (new Set(settings.scenarios.map((item) => item.id)).size !== settings.scenarios.length) context.addIssue({ code: 'custom', message: 'Analysis scenario IDs must be unique.' });
+});
+
 export const submitArtifactCommandSchema = commandIdentitySchema.extend({
   requestId: z.string().min(1),
   artifactType: artifactTypeSchema,
@@ -136,6 +146,18 @@ export const createProductModelRevisionCommandSchema = commandIdentitySchema.ext
   supersedesId: z.string().min(1).optional(),
   payload: productModelPayloadSchema,
 });
+
+export const createLoadModelRevisionCommandSchema = commandIdentitySchema.extend({
+  loadModelVersionId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/), revision: z.string().trim().min(2).max(24),
+  payload: loadAnalysisSettingsPayloadSchema,
+});
+
+export const queueAnalysisRunCommandSchema = commandIdentitySchema.extend({
+  runId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/), revision: z.string().trim().min(2).max(24), loadModelVersionId: z.string().min(1),
+  benchmarkId: z.literal('two-panel-static-v1'), expectedModelHash: snapshotHashSchema, expectedLoadModelHash: snapshotHashSchema,
+});
+
+export const cancelAnalysisRunCommandSchema = commandIdentitySchema.extend({ runId: z.string().min(1), reason: z.string().trim().min(3).max(500) });
 
 export const freezeSourceRevisionCommandSchema = commandIdentitySchema.extend({
   sourceRevisionId: z.string().min(1),
@@ -183,6 +205,9 @@ export type ReturnArtifactCommand = z.infer<typeof returnArtifactCommandSchema>;
 export type CreateProjectCommand = z.infer<typeof createProjectCommandSchema>;
 export type CreateDesignBasisRevisionCommand = z.infer<typeof createDesignBasisRevisionCommandSchema>;
 export type CreateProductModelRevisionCommand = z.infer<typeof createProductModelRevisionCommandSchema>;
+export type CreateLoadModelRevisionCommand = z.infer<typeof createLoadModelRevisionCommandSchema>;
+export type QueueAnalysisRunCommand = z.infer<typeof queueAnalysisRunCommandSchema>;
+export type CancelAnalysisRunCommand = z.infer<typeof cancelAnalysisRunCommandSchema>;
 export type FreezeSourceRevisionCommand = z.infer<typeof freezeSourceRevisionCommandSchema>;
 export type UpdateProjectCommand = z.infer<typeof updateProjectCommandSchema>;
 export type ArchiveProjectCommand = z.infer<typeof archiveProjectCommandSchema>;

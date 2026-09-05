@@ -5,8 +5,8 @@ import { gateLabels, gates, type Gate, type PermissionContext } from '@precast/d
 import { activeOrganization, projects } from '../fixtures/workspace';
 import { useAuth } from '../auth/AuthContext';
 import {
-  freezeSourceRevision, saveProductModelDraft, submitDesignBasis, submitProductModel, submitSourceRevision, uploadSourceFile, validateSourceFile,
-  watchDesignBasis, watchProductModel, watchSourceRevision, type DesignBasisState, type ProductModelState, type SourceRevisionState,
+  cancelAnalysisRun, freezeSourceRevision, queueAnalysisRun, saveLoadModelDraft, saveProductModelDraft, submitDesignBasis, submitProductModel, submitSourceRevision, uploadSourceFile, validateSourceFile,
+  watchAnalysisRun, watchDesignBasis, watchLoadModel, watchProductModel, watchSourceRevision, type AnalysisRunState, type DesignBasisState, type LoadModelState, type ProductModelState, type SourceRevisionState,
 } from '../data/workflowRepository';
 import { Can } from '../permissions/guards';
 import { confirmModelLoadPaths, mergePanels, splitPanel } from '../data/panelization';
@@ -15,7 +15,7 @@ const stageDescriptions: Record<Gate, string> = {
   G0: 'BIM source intake validates file type, quarantine state, units, coordinates, levels and stable object identity before independent structural review and Project Manager freeze.',
   G1: 'The Design Basis records locked code editions, materials, durability, handling and transport assumptions before independent checker approval.',
   G2: 'Panel geometry, openings, joints, anchors, supports, scenarios and load paths are validated into an immutable deterministic model snapshot.',
-  G3: 'M4 will add controlled analysis orchestration. The current deterministic fixture remains NOT CHECKED; no FEM solver is implemented.',
+  G3: 'Controlled backend orchestration validates immutable inputs and executes a versioned two-panel benchmark adapter. Engineering design remains NOT CHECKED.',
   G4: 'Engineering design checks require a verified backend calculation service.',
   G5: 'Traceable quantity takeoff and preliminary estimate workflow follows approved design checks.',
   G6: 'Drawing register, DXF/PDF generation and preflight are not implemented yet.',
@@ -32,6 +32,8 @@ export function StageWorkspace() {
   const [designBasis, setDesignBasis] = useState<DesignBasisState | null>(null);
   const [source, setSource] = useState<SourceRevisionState | null>(null);
   const [productModel, setProductModel] = useState<ProductModelState | null>(null);
+  const [loadModel, setLoadModel] = useState<LoadModelState | null>(null);
+  const [analysisRun, setAnalysisRun] = useState<AnalysisRunState | null>(null);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -40,7 +42,7 @@ export function StageWorkspace() {
   const project = projects.find((item) => item.id === projectId);
   const gate = gates.find((item) => item.toLowerCase() === gateId);
   const membership = projectMemberships.find((item) => item.projectId === projectId);
-  const activeArtifact = gate === 'G0' ? source : gate === 'G1' ? designBasis : productModel;
+  const activeArtifact = gate === 'G0' ? source : gate === 'G1' ? designBasis : gate === 'G3' ? loadModel : productModel;
   const permissionContext = useMemo<PermissionContext | null>(() => activeArtifact === null || membership === undefined ? null : {
     userId: user.uid, orgId: membership.orgId, projectId: membership.projectId, roles: membership.roles,
     capabilities: membership.capabilities, membershipStatus: membership.status,
@@ -54,6 +56,10 @@ export function StageWorkspace() {
     if (gate === 'G0') return watchSourceRevision(organizationMembership.orgId, projectId, 'src-r02', setSource, showError);
     if (gate === 'G1') return watchDesignBasis(organizationMembership.orgId, projectId, 'db-r02', setDesignBasis, showError);
     if (gate === 'G2') return watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError);
+    if (gate === 'G3') {
+      const unsubscribes = [watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError), watchLoadModel(organizationMembership.orgId, projectId, 'load-r01', setLoadModel, showError), watchAnalysisRun(organizationMembership.orgId, projectId, 'an-r01', setAnalysisRun, showError)];
+      return () => { for (const unsubscribe of unsubscribes) unsubscribe(); };
+    }
   }, [gate, mode, organizationMembership.orgId, projectId]);
 
   function showError(reason: Error) { setError(true); setNotice(reason.message); }
@@ -80,6 +86,7 @@ export function StageWorkspace() {
   const validation = source?.validation;
   const isPm = membership?.roles.includes('projectManager') === true;
   const canEditModel = productModel?.status === 'draft' && productModel.createdBy === user.uid && membership?.roles.includes('structuralEngineer') === true;
+  const canEditLoadModel = loadModel?.status === 'draft' && loadModel.createdBy === user.uid && membership?.roles.includes('structuralEngineer') === true;
 
   function togglePanel(panelId: string) {
     setSelectedPanelIds((current) => current.includes(panelId) ? current.filter((id) => id !== panelId) : current.length >= 2 ? [...current.slice(-1), panelId] : [...current, panelId]);
@@ -104,8 +111,22 @@ export function StageWorkspace() {
     catch (reason) { showError(reason instanceof Error ? reason : new Error('Merge failed.')); }
   }
 
+  function updateAnalysisSetting(key: 'meshSizeM' | 'solverTolerance' | 'maxIterations', value: number) {
+    if (loadModel !== null) setLoadModel({ ...loadModel, payload: { ...loadModel.payload, [key]: value } });
+  }
+
+  function saveAnalysisSettings() {
+    if (loadModel === null || projectId === undefined) return;
+    void run(() => saveLoadModelDraft({ orgId: organizationMembership.orgId, projectId, artifact: loadModel, payload: loadModel.payload }), 'Analysis settings saved with a new deterministic draft hash.');
+  }
+
+  function executeBenchmark() {
+    if (loadModel === null || productModel === null || projectId === undefined) return;
+    void run(() => queueAnalysisRun({ orgId: organizationMembership.orgId, projectId, runId: 'an-r01', revision: 'AN-R01', loadModel, modelHash: productModel.draftHash }), 'Controlled benchmark completed; normalized verification evidence is available.');
+  }
+
   return <>
-    <div className="project-heading"><div><Link to={`/org/${activeOrganization.id}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>{gate === 'G2' ? 'M3 controlled workflow' : gate === 'G0' || gate === 'G1' ? 'M2 controlled workflow' : 'Read-only scaffold'}</StatusBadge></div>
+    <div className="project-heading"><div><Link to={`/org/${activeOrganization.id}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>{gate === 'G3' ? 'M4 controlled workflow' : gate === 'G2' ? 'M3 controlled workflow' : gate === 'G0' || gate === 'G1' ? 'M2 controlled workflow' : 'Read-only scaffold'}</StatusBadge></div>
     <Surface className="revision-context" ariaLabel="Current revision context"><div><small>SOURCE</small><strong>{source?.revision ?? project.sourceRevision}</strong><span>{source?.locked ? 'Accepted & locked' : 'Controlled reference'}</span></div><i>→</i><div><small>DESIGN BASIS</small><strong>{designBasis?.revision ?? project.designBasisRevision}</strong><span>{designBasis?.locked ? 'Approved & locked' : 'Project context'}</span></div><i>→</i><div><small>MODEL</small><strong>{productModel?.revision ?? project.modelRevision}</strong><span>{productModel?.locked ? 'Approved & locked' : 'Version reference'}</span></div><i>→</i><div><small>ANALYSIS</small><strong>{project.analysisRevision}</strong><span>NOT CHECKED</span></div></Surface>
     {notice !== '' && <div className={`toast ${error ? 'toast--error' : ''}`} role="status">{notice}</div>}
 
@@ -145,6 +166,25 @@ export function StageWorkspace() {
       <div className="m2-actions"><Can action="submit" resource="productModel" context={permissionContext}><Button type="button" disabled={saving || productModel.status !== 'draft'} onClick={() => void run(() => submitProductModel({ orgId: organizationMembership.orgId, projectId: project.id, artifact: productModel, assignedTo: 'checker-narin' }), `${productModel.revision} submitted for independent G2 review.`)}>Submit Product Model for G2 review</Button></Can></div>
     </Surface>}
 
-    <Surface className="stage-placeholder"><EmptyState icon={gate} title={gate === 'G0' || gate === 'G1' || gate === 'G2' ? `${gate} evidence and controls` : `${gate} workspace is safely scaffolded`} detail={stageDescriptions[gate]} /><div className="stage-link-row">{gates.map((item) => <Link className={item === gate ? 'active' : ''} key={item} to={`/org/${activeOrganization.id}/projects/${project.id}/stages/${item.toLowerCase()}`}>{item}</Link>)}</div></Surface>
+    {gate === 'G3' && mode === 'emulator' && loadModel !== null && productModel !== null && permissionContext !== null && <Surface className="m2-workspace m4-workspace">
+      <div className="section-heading"><div><p className="eyebrow">CONTROLLED ANALYSIS ORCHESTRATION</p><h2>{loadModel.revision} · two-panel-static-v1</h2><p>Versioned neutral settings feed an immutable backend manifest. This is a verified benchmark adapter, not a general-purpose FEM solver.</p></div><StatusBadge tone={analysisRun?.status === 'completed' ? 'success' : loadModel.locked ? 'info' : 'neutral'}>{analysisRun?.status ?? loadModel.status}{loadModel.locked ? ' · frozen' : ''}</StatusBadge></div>
+      <div className="analysis-settings">
+        <label><span>Mesh size (m)</span><input aria-label="Mesh size (m)" type="number" min="0.02" max="5" step="0.01" disabled={!canEditLoadModel || saving} value={loadModel.payload.meshSizeM} onChange={(event) => updateAnalysisSetting('meshSizeM', Number(event.target.value))} /></label>
+        <label><span>Solver tolerance</span><input aria-label="Solver tolerance" type="number" min="0.000000001" max="0.1" step="0.000001" disabled={!canEditLoadModel || saving} value={loadModel.payload.solverTolerance} onChange={(event) => updateAnalysisSetting('solverTolerance', Number(event.target.value))} /></label>
+        <label><span>Maximum iterations</span><input aria-label="Maximum iterations" type="number" min="1" max="10000" step="1" disabled={!canEditLoadModel || saving} value={loadModel.payload.maxIterations} onChange={(event) => updateAnalysisSetting('maxIterations', Number(event.target.value))} /></label>
+        <div><span>Element / formulation</span><strong>{loadModel.payload.elementIdealization}<br />{loadModel.payload.shellFormulation}</strong></div>
+      </div>
+      <div className="scenario-register">{loadModel.payload.scenarios.map((scenario) => <article key={scenario.id}><strong>{scenario.id}</strong><span>{scenario.activeSupportIds.length} supports · {scenario.activeJointIds.length} joints</span><span>{scenario.loadCaseIds.length} load cases · {scenario.combinationIds.length} combinations</span></article>)}</div>
+      <div className="analysis-manifest"><div><small>PRODUCT MODEL</small><strong>{productModel.revision} · locked</strong><code>{productModel.draftHash}</code></div><div><small>LOAD MODEL</small><strong>{loadModel.revision}{loadModel.locked ? ' · frozen' : ' · editable'}</strong><code>{loadModel.draftHash}</code></div><div><small>ENGINE</small><strong>{analysisRun?.engine ?? 'precast-benchmark-adapter@1.0.0'}</strong><code>{analysisRun?.inputHash ?? 'Input hash created when queued'}</code></div></div>
+      {analysisRun !== null && <>
+        <div className="analysis-result-heading"><div><p className="eyebrow">NORMALIZED RESULT</p><h3>{analysisRun.revision} · {analysisRun.status}</h3></div><StatusBadge tone="warning">{analysisRun.designStatus}</StatusBadge></div>
+        {analysisRun.result !== undefined && <dl className="analysis-results"><div><dt>Applied load</dt><dd>{analysisRun.result.appliedLoadKn.toFixed(1)} kN</dd></div><div><dt>Reaction sum</dt><dd>{analysisRun.result.reactionSumKn.toFixed(1)} kN</dd></div><div><dt>Equilibrium imbalance</dt><dd>{analysisRun.result.equilibriumImbalancePercent.toFixed(3)}%</dd></div><div><dt>Max displacement</dt><dd>{analysisRun.result.maxDisplacementMm.toFixed(2)} mm</dd></div><div><dt>Governing combination</dt><dd>{analysisRun.result.governingCombinationId}</dd></div><div><dt>Output hash</dt><dd className="hash">{analysisRun.outputHash}</dd></div></dl>}
+        {analysisRun.verification !== undefined && <div className="verification-grid"><span className={analysisRun.verification.fatalWarnings === 0 ? 'pass' : 'fail'}>{analysisRun.verification.fatalWarnings === 0 ? 'PASS' : 'FAIL'} · fatal warnings</span><span className={analysisRun.verification.unsupportedNodes === 0 && analysisRun.verification.disconnectedElements === 0 ? 'pass' : 'fail'}>{analysisRun.verification.unsupportedNodes === 0 && analysisRun.verification.disconnectedElements === 0 ? 'PASS' : 'FAIL'} · model quality</span><span className={analysisRun.verification.equilibriumPassed ? 'pass' : 'fail'}>{analysisRun.verification.equilibriumPassed ? 'PASS' : 'FAIL'} · equilibrium</span><span className={analysisRun.verification.convergencePassed ? 'pass' : 'fail'}>{analysisRun.verification.convergencePassed ? 'PASS' : 'FAIL'} · convergence</span><span className={analysisRun.verification.independentBenchmarkMatched ? 'pass' : 'fail'}>{analysisRun.verification.independentBenchmarkMatched ? 'PASS' : 'WARNING'} · benchmark match</span><span className="not-checked">NOT CHECKED · engineering design</span></div>}
+        <ol className="phase-log">{analysisRun.phaseHistory.map((item, index) => <li key={`${item.phase}-${index}`}><b>✓ {item.phase}</b><span>{item.message}</span></li>)}</ol>
+      </>}
+      <div className="m2-actions"><Button variant="secondary" type="button" disabled={saving || !canEditLoadModel} onClick={saveAnalysisSettings}>Save settings</Button><Button type="button" disabled={saving || !canEditLoadModel || analysisRun !== null} onClick={executeBenchmark}>Run controlled benchmark</Button>{analysisRun !== null && (analysisRun.status === 'queued' || analysisRun.status === 'running') && <Button variant="secondary" type="button" disabled={saving} onClick={() => void run(() => cancelAnalysisRun({ orgId: organizationMembership.orgId, projectId: project.id, runId: analysisRun.id, reason: 'Cancelled by authorized workspace user.' }), 'Analysis run cancelled safely.')}>Cancel run</Button>}<span className="design-boundary">G3 is not approved in M4; design checks begin at G4.</span></div>
+    </Surface>}
+
+    <Surface className="stage-placeholder"><EmptyState icon={gate} title={gate === 'G0' || gate === 'G1' || gate === 'G2' || gate === 'G3' ? `${gate} evidence and controls` : `${gate} workspace is safely scaffolded`} detail={stageDescriptions[gate]} /><div className="stage-link-row">{gates.map((item) => <Link className={item === gate ? 'active' : ''} key={item} to={`/org/${activeOrganization.id}/projects/${project.id}/stages/${item.toLowerCase()}`}>{item}</Link>)}</div></Surface>
   </>;
 }

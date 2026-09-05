@@ -8,7 +8,7 @@ import { useAuth } from '../auth/AuthContext';
 import { approveRequest, returnRequest, watchApprovalInbox } from '../data/workflowRepository';
 
 const artifactLabels = {
-  sourceRevision: 'Source revision', designBasis: 'Design Basis', productModel: 'Product Model', analysis: 'Analysis snapshot', estimate: 'Estimate',
+  sourceRevision: 'Source revision', designBasis: 'Design Basis', productModel: 'Product Model', loadModel: 'Load Model', analysis: 'Analysis snapshot', estimate: 'Estimate',
   calculation: 'Calculation report', drawingSet: 'Drawing set', releasePackage: 'Release package',
 };
 

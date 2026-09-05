@@ -34,6 +34,7 @@ export type ArtifactType =
   | 'sourceRevision'
   | 'designBasis'
   | 'productModel'
+  | 'loadModel'
   | 'analysis'
   | 'estimate'
   | 'calculation'
@@ -55,6 +56,8 @@ export interface ProjectRecord {
   currentSourceRevisionId?: string;
   currentDesignBasisVersionId?: string;
   currentModelVersionId?: string;
+  currentLoadModelVersionId?: string;
+  currentApprovedAnalysisRunId?: string;
   gateStates: Partial<Record<Gate, GateState>>;
   assignedUserIds: string[];
   dueAt?: string;
@@ -115,6 +118,36 @@ export interface ProductModelPayload {
   validation: { unsupportedNodes: number; disconnectedElements: number; missingLoadPaths: number; geometryConflicts: number };
 }
 
+export interface LoadAnalysisSettingsPayload {
+  schemaVersion: '1.0.0';
+  units: 'kN-m-MPa';
+  elementIdealization: 'shell-mid-surface';
+  shellFormulation: 'benchmark-shell';
+  meshSizeM: number;
+  refinementZoneIds: string[];
+  stiffnessModifiers: { membrane: number; bending: number };
+  solverTolerance: number;
+  maxIterations: number;
+  resultAveraging: 'nodal' | 'element';
+  scenarios: Array<{ id: ConstructionScenario; activeSupportIds: string[]; activeJointIds: string[]; loadCaseIds: string[]; combinationIds: string[] }>;
+}
+
+export interface AnalysisRunRecord {
+  id: string;
+  revision: string;
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
+  designStatus: 'NOT_CHECKED';
+  engine: string;
+  benchmarkId: 'two-panel-static-v1';
+  inputHash: string;
+  outputHash?: string;
+  upstreamRefs: ArtifactUpstreamRefs & { loadModelVersionId: string };
+  phase: 'validate' | 'mesh' | 'solve' | 'postProcess' | 'checks' | 'artifacts' | 'complete';
+  phaseHistory: Array<{ phase: string; status: 'completed' | 'failed'; message: string }>;
+  result?: { appliedLoadKn: number; reactionSumKn: number; equilibriumImbalancePercent: number; maxDisplacementMm: number; governingCombinationId: string };
+  verification?: { fatalWarnings: number; unsupportedNodes: number; disconnectedElements: number; equilibriumTolerancePercent: number; equilibriumPassed: boolean; convergencePassed: boolean; independentBenchmarkMatched: boolean };
+}
+
 export interface EngineeringIssue {
   id: string;
   orgId: string;
@@ -136,6 +169,7 @@ export interface ArtifactUpstreamRefs {
   sourceRevisionId?: string;
   designBasisVersionId?: string;
   modelVersionId?: string;
+  loadModelVersionId?: string;
   analysisRunId?: string;
   drawingSetId?: string;
   estimateVersionId?: string;
@@ -207,7 +241,7 @@ export interface ApprovalSnapshot {
 
 export interface CommandReceipt {
   idempotencyKey: string;
-  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
+  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
   actorUid: string;
   resourceId: string;
   resultState: string;
@@ -222,7 +256,7 @@ export interface AuditEvent {
   artifactType: ArtifactType;
   artifactId: string;
   artifactRevision: string;
-  action: PermissionAction | 'return' | 'issue' | 'freeze' | 'archive' | 'supersede';
+  action: PermissionAction | 'return' | 'issue' | 'freeze' | 'archive' | 'supersede' | 'execute' | 'cancel';
   stateBefore: string;
   stateAfter: string;
   actorUid: string;

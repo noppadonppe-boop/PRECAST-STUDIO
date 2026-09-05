@@ -1,8 +1,8 @@
 import { collection, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where, type DocumentData, type Unsubscribe } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytesResumable } from 'firebase/storage';
-import type { ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, ProductModelPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
-import { productModelPayloadSchema, sourceFileSchema } from '@precast/schemas';
+import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
+import { loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, sourceFileSchema } from '@precast/schemas';
 import { firebaseAuth, firestore, functions, storage } from '../firebase/client';
 
 function iso(value: unknown): string {
@@ -64,6 +64,8 @@ export function watchProjects(orgId: string, projectIds: string[], onValue: (pro
       ...(typeof data.currentSourceRevisionId === 'string' ? { currentSourceRevisionId: data.currentSourceRevisionId } : {}),
       ...(typeof data.currentDesignBasisVersionId === 'string' ? { currentDesignBasisVersionId: data.currentDesignBasisVersionId } : {}),
       ...(typeof data.currentModelVersionId === 'string' ? { currentModelVersionId: data.currentModelVersionId } : {}),
+      ...(typeof data.currentLoadModelVersionId === 'string' ? { currentLoadModelVersionId: data.currentLoadModelVersionId } : {}),
+      ...(typeof data.currentApprovedAnalysisRunId === 'string' ? { currentApprovedAnalysisRunId: data.currentApprovedAnalysisRunId } : {}),
       ...(data.dueAt === undefined ? {} : { dueAt: iso(data.dueAt) }), ...(data.updatedAt === undefined ? {} : { updatedAt: iso(data.updatedAt) }),
     });
     onValue([...records.values()].sort((a, b) => a.code.localeCompare(b.code)));
@@ -106,6 +108,19 @@ export interface ProductModelState {
   upstreamRefs: { sourceRevisionId: string; designBasisVersionId: string };
 }
 
+export interface LoadModelState {
+  id: string;
+  revision: string;
+  status: string;
+  createdBy: string;
+  draftHash: string;
+  locked: boolean;
+  payload: LoadAnalysisSettingsPayload;
+  upstreamRefs: { sourceRevisionId: string; designBasisVersionId: string; modelVersionId: string };
+}
+
+export type AnalysisRunState = AnalysisRunRecord;
+
 export function watchDesignBasis(orgId: string, projectId: string, artifactId: string, onValue: (artifact: DesignBasisState) => void, onError: (error: Error) => void): Unsubscribe {
   return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`), (snapshot) => {
     if (!snapshot.exists()) {
@@ -138,6 +153,21 @@ export function watchProductModel(orgId: string, projectId: string, artifactId: 
   }, onError);
 }
 
+export function watchLoadModel(orgId: string, projectId: string, artifactId: string, onValue: (artifact: LoadModelState) => void, onError: (error: Error) => void): Unsubscribe {
+  return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/loadModelVersions/${artifactId}`), (snapshot) => {
+    if (!snapshot.exists()) return onError(new Error('Load Model was not found.'));
+    const data = snapshot.data();
+    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), createdBy: String(data.createdBy), draftHash: String(data.draftHash), locked: data.locked === true, payload: data.payload as LoadAnalysisSettingsPayload, upstreamRefs: data.upstreamRefs as LoadModelState['upstreamRefs'] });
+  }, onError);
+}
+
+export function watchAnalysisRun(orgId: string, projectId: string, runId: string, onValue: (run: AnalysisRunState | null) => void, onError: (error: Error) => void): Unsubscribe {
+  return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/analysisRuns/${runId}`), (snapshot) => {
+    if (!snapshot.exists()) { onValue(null); return; }
+    onValue(snapshot.data() as AnalysisRunState);
+  }, onError);
+}
+
 function stable(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
   if (value !== null && typeof value === 'object') return `{${Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => `${JSON.stringify(key)}:${stable(item)}`).join(',')}}`;
@@ -151,6 +181,34 @@ export async function saveProductModelDraft(input: { orgId: string; projectId: s
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(stable(snapshot)));
   const draftHash = `sha256:${[...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')}`;
   await updateDoc(doc(firestore, `organizations/${input.orgId}/projects/${input.projectId}/productModelVersions/${input.artifact.id}`), { payload: parsed.data, draftHash, updatedAt: Timestamp.now(), updatedBy: input.artifact.createdBy });
+}
+
+async function snapshotHash(value: unknown): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(stable(value)));
+  return `sha256:${[...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')}`;
+}
+
+export async function saveLoadModelDraft(input: { orgId: string; projectId: string; artifact: LoadModelState; payload: LoadAnalysisSettingsPayload }): Promise<void> {
+  const parsed = loadAnalysisSettingsPayloadSchema.safeParse(input.payload);
+  if (!parsed.success) throw new Error(parsed.error.issues.map((issue) => issue.message).join('; '));
+  const canonical = { ...parsed.data, refinementZoneIds: [...new Set(parsed.data.refinementZoneIds)].sort(), scenarios: [...parsed.data.scenarios].sort((a, b) => a.id.localeCompare(b.id)).map((scenario) => ({ ...scenario, activeSupportIds: [...new Set(scenario.activeSupportIds)].sort(), activeJointIds: [...new Set(scenario.activeJointIds)].sort(), loadCaseIds: [...new Set(scenario.loadCaseIds)].sort(), combinationIds: [...new Set(scenario.combinationIds)].sort() })) };
+  const draftHash = await snapshotHash({ artifactType: 'loadModel', artifactId: input.artifact.id, artifactRevision: input.artifact.revision, createdBy: input.artifact.createdBy, upstreamRefs: input.artifact.upstreamRefs, payload: canonical });
+  await updateDoc(doc(firestore, `organizations/${input.orgId}/projects/${input.projectId}/loadModelVersions/${input.artifact.id}`), { payload: canonical, draftHash, updatedAt: Timestamp.now(), updatedBy: input.artifact.createdBy });
+}
+
+export async function createLoadModelRevision(input: { orgId: string; projectId: string; id: string; revision: string; payload: LoadAnalysisSettingsPayload }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'createLoadModelRevisionCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, loadModelVersionId: input.id, revision: input.revision, payload: input.payload, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function queueAnalysisRun(input: { orgId: string; projectId: string; runId: string; revision: string; loadModel: LoadModelState; modelHash: string }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'queueAnalysisRunCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, runId: input.runId, revision: input.revision, loadModelVersionId: input.loadModel.id, benchmarkId: 'two-panel-static-v1', expectedModelHash: input.modelHash, expectedLoadModelHash: input.loadModel.draftHash, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function cancelAnalysisRun(input: { orgId: string; projectId: string; runId: string; reason: string }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'cancelAnalysisRunCommand');
+  return (await command({ ...input, idempotencyKey: crypto.randomUUID() })).data;
 }
 
 export function validateSourceFile(file: Pick<File, 'name' | 'type' | 'size'>): string[] {

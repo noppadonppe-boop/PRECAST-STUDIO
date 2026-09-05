@@ -9,6 +9,7 @@ const grants: Record<ProjectRole, readonly Grant[]> = {
   structuralEngineer: [
     'view:*', 'comment:*', 'create:designBasis', 'editDraft:designBasis', 'submit:designBasis',
     'create:productModel', 'editDraft:productModel', 'submit:productModel',
+    'create:loadModel', 'editDraft:loadModel', 'submit:loadModel',
     'review:sourceRevision', 'approve:sourceRevision', 'create:analysis', 'editDraft:analysis', 'submit:analysis', 'review:estimate', 'review:drawingSet',
   ],
   engineeringChecker: ['view:*', 'comment:*', 'review:designBasis', 'approve:designBasis', 'review:productModel', 'approve:productModel', 'review:analysis', 'approve:analysis', 'review:calculation', 'approve:calculation', 'review:drawingSet', 'approve:drawingSet', 'review:releasePackage', 'approve:releasePackage'],

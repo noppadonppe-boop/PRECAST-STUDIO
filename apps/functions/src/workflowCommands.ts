@@ -8,6 +8,7 @@ const artifactCollections: Record<ArtifactType, string> = {
   sourceRevision: 'sourceRevisions',
   designBasis: 'designBasisVersions',
   productModel: 'productModelVersions',
+  loadModel: 'loadModelVersions',
   analysis: 'analysisRuns',
   estimate: 'estimateVersions',
   calculation: 'calculationReports',
@@ -19,6 +20,7 @@ const approvalRoles: Record<ArtifactType, ProjectRole> = {
   sourceRevision: 'structuralEngineer',
   designBasis: 'engineeringChecker',
   productModel: 'engineeringChecker',
+  loadModel: 'engineeringChecker',
   analysis: 'engineeringChecker',
   estimate: 'commercialApprover',
   calculation: 'engineeringChecker',
@@ -30,6 +32,7 @@ const upstreamProjectFields: Partial<Record<keyof ArtifactUpstreamRefs, string>>
   sourceRevisionId: 'currentSourceRevisionId',
   designBasisVersionId: 'currentDesignBasisVersionId',
   modelVersionId: 'currentModelVersionId',
+  loadModelVersionId: 'currentLoadModelVersionId',
   drawingSetId: 'currentDrawingSetId',
 };
 

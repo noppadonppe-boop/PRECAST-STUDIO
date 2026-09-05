@@ -19,8 +19,8 @@ export const organizationMembership: OrganizationMembership = {
 export const projects = [
   {
     id: 'p-rama9', code: 'PC-26014', name: 'Rama IX Modular Residence', family: 'Type 2 Residential',
-    stage: 'Panelization', gate: 'G2' as Gate, gateState: 'inProgress' as GateState,
-    sourceRevision: 'SRC-R02', designBasisRevision: 'DB-R02', modelRevision: 'PM-R01', analysisRevision: '—',
+    stage: 'Analysis', gate: 'G3' as Gate, gateState: 'inProgress' as GateState,
+    sourceRevision: 'SRC-R02', designBasisRevision: 'DB-R02', modelRevision: 'PM-R01', analysisRevision: 'AN-R01',
     engineer: 'ศุภชัย ก.', checker: 'นรินทร์ ว.', due: '09 Sep 2026', issues: 0, updated: '18 นาทีที่แล้ว', progress: 3,
   },
   {
@@ -80,5 +80,5 @@ export const deterministicMockAnalysis = {
   inputHash: `sha256:${'2d'.repeat(32)}`,
   outputHash: `sha256:${'91'.repeat(32)}`,
   status: 'NOT CHECKED',
-  disclaimer: 'M1 retains this deterministic fixture — not authoritative and not suitable for design or production.',
+  disclaimer: 'This local fixture is not authoritative and is not suitable for design or production.',
 };
