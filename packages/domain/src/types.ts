@@ -58,6 +58,7 @@ export interface ProjectRecord {
   currentModelVersionId?: string;
   currentLoadModelVersionId?: string;
   currentApprovedAnalysisRunId?: string;
+  currentCalculationReportId?: string;
   gateStates: Partial<Record<Gate, GateState>>;
   assignedUserIds: string[];
   dueAt?: string;
@@ -135,7 +136,7 @@ export interface LoadAnalysisSettingsPayload {
 export interface AnalysisRunRecord {
   id: string;
   revision: string;
-  status: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled';
+  status: 'queued' | 'running' | 'completed' | 'submitted' | 'approved' | 'returned' | 'failed' | 'cancelled';
   designStatus: 'NOT_CHECKED';
   engine: string;
   benchmarkId: 'two-panel-static-v1';
@@ -146,6 +147,33 @@ export interface AnalysisRunRecord {
   phaseHistory: Array<{ phase: string; status: 'completed' | 'failed'; message: string }>;
   result?: { appliedLoadKn: number; reactionSumKn: number; equilibriumImbalancePercent: number; maxDisplacementMm: number; governingCombinationId: string };
   verification?: { fatalWarnings: number; unsupportedNodes: number; disconnectedElements: number; equilibriumTolerancePercent: number; equilibriumPassed: boolean; convergencePassed: boolean; independentBenchmarkMatched: boolean };
+  draftHash?: string;
+  snapshotHash?: string;
+  locked?: boolean;
+  createdBy?: string;
+}
+
+export type DesignCheckStatus = 'PASS' | 'FAIL' | 'NOT_CHECKED';
+
+export interface DesignCheckPayload {
+  schemaVersion: '1.0.0';
+  units: 'kN-m-MPa';
+  engine: 'precast-design-check-register@1.0.0';
+  analysisRunId: string;
+  analysisOutputHash: string;
+  overallStatus: DesignCheckStatus;
+  checks: Array<{
+    id: string;
+    category: 'panelStrength' | 'serviceability' | 'opening' | 'joint' | 'anchor' | 'lifting' | 'transport';
+    scenario: ConstructionScenario;
+    entityIds: string[];
+    governingCombinationId?: string;
+    codeClauseRef: string;
+    status: DesignCheckStatus;
+    utilization?: number;
+    message: string;
+    disposition?: { kind: 'notApplicable' | 'acceptedException' | 'deferred'; rationale: string; evidenceRef: string };
+  }>;
 }
 
 export interface EngineeringIssue {
@@ -241,7 +269,7 @@ export interface ApprovalSnapshot {
 
 export interface CommandReceipt {
   idempotencyKey: string;
-  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
+  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'createDesignCheckRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
   actorUid: string;
   resourceId: string;
   resultState: string;

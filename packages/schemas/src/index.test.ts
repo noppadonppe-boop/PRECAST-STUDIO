@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { approvalCommandSchema, designBasisPayloadSchema, loadAnalysisSettingsPayloadSchema, mockAnalysisInputSchema, productModelPayloadSchema, sourceFileSchema } from './index';
+import { approvalCommandSchema, designBasisPayloadSchema, designCheckPayloadSchema, loadAnalysisSettingsPayloadSchema, mockAnalysisInputSchema, productModelPayloadSchema, sourceFileSchema } from './index';
 
 describe('versioned runtime schemas', () => {
   it('rejects an unversioned mock analysis payload', () => {
@@ -39,5 +39,14 @@ describe('versioned runtime schemas', () => {
     expect(loadAnalysisSettingsPayloadSchema.safeParse(valid).success).toBe(true);
     expect(loadAnalysisSettingsPayloadSchema.safeParse({ ...valid, meshSizeM: 0.001 }).success).toBe(false);
     expect(loadAnalysisSettingsPayloadSchema.safeParse({ ...valid, scenarios: [...valid.scenarios, valid.scenarios[0]] }).success).toBe(false);
+  });
+
+  it('derives the Design Check overall status from exactly seven required categories', () => {
+    const categories = ['panelStrength', 'serviceability', 'opening', 'joint', 'anchor', 'lifting', 'transport'] as const;
+    const checks = categories.map((category, index) => ({ id: `check-${index}`, category, scenario: 'final', entityIds: ['panel-a'], codeClauseRef: 'Pending verified method', status: 'NOT_CHECKED', message: 'Engineering calculation is not implemented.' }));
+    const valid = { schemaVersion: '1.0.0', units: 'kN-m-MPa', engine: 'precast-design-check-register@1.0.0', analysisRunId: 'an-r01', analysisOutputHash: `sha256:${'a'.repeat(64)}`, overallStatus: 'NOT_CHECKED', checks };
+    expect(designCheckPayloadSchema.safeParse(valid).success).toBe(true);
+    expect(designCheckPayloadSchema.safeParse({ ...valid, overallStatus: 'PASS' }).success).toBe(false);
+    expect(designCheckPayloadSchema.safeParse({ ...valid, checks: checks.slice(0, 6) }).success).toBe(false);
   });
 });

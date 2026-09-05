@@ -5,6 +5,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuthorizationError } from '../../../apps/functions/src/authorization';
 import type { ProductModelPayload } from '../../../packages/domain/src/types';
 import { createLoadModelRevision, queueAnalysisRun } from '../../../apps/functions/src/analysisCommands';
+import { createDesignCheckRevision } from '../../../apps/functions/src/designCheckCommands';
 import { approveArtifact, archiveProject, canonicalizeProductModel, computeArtifactSnapshotHash, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from '../../../apps/functions/src/workflowCommands';
 
 let db: Firestore;
@@ -79,7 +80,13 @@ beforeEach(async () => {
 afterAll(async () => deleteApp(app));
 
 describe('transactional workflow commands', () => {
-  it('freezes a versioned Load Model and completes an auditable benchmark without claiming design approval', async () => {
+  it('blocks G3 submission when equilibrium or verification evidence fails', async () => {
+    const analysisRef = db.doc(`organizations/${orgId}/projects/${projectId}/analysisRuns/an-failed`);
+    await analysisRef.set({ id: 'an-failed', revision: 'AN-X', status: 'completed', phase: 'complete', createdBy: 'engineer-1', isCurrentRevision: true, outputHash: `sha256:${'a'.repeat(64)}`, upstreamRefs: {}, payload: {}, draftHash: `sha256:${'b'.repeat(64)}`, blockingConditions: [], verification: { fatalWarnings: 0, unsupportedNodes: 0, disconnectedElements: 0, equilibriumPassed: false, convergencePassed: true, independentBenchmarkMatched: true } });
+    await expect(submitArtifact(db, 'engineer-1', { orgId, projectId, requestId: `request-${randomUUID()}`, artifactType: 'analysis', artifactId: 'an-failed', expectedDraftHash: `sha256:${'b'.repeat(64)}`, assignedTo: 'checker-1', idempotencyKey: randomUUID() })).rejects.toThrow('G3 requires');
+  });
+
+  it('approves verified G3 evidence then blocks G4 while Design Checks remain NOT CHECKED', async () => {
     const productUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: artifactId };
     const canonicalProduct = canonicalizeProductModel(productPayload);
     const productHash = computeArtifactSnapshotHash({ artifactType: 'productModel', artifactId: 'pm-r01', artifactRevision: 'PM-R01', createdBy: 'engineer-1', upstreamRefs: productUpstreams, payload: canonicalProduct as unknown as Record<string, unknown> });
@@ -94,6 +101,17 @@ describe('transactional workflow commands', () => {
     expect(await queueAnalysisRun(db, 'engineer-1', queueCommand)).toMatchObject({ state: 'completed', replayed: true });
     expect((await loadRef.get()).data()).toMatchObject({ status: 'frozen', locked: true, snapshotHash: loadHash });
     expect((await db.doc(`organizations/${orgId}/projects/${projectId}/analysisRuns/an-r01`).get()).data()).toMatchObject({ status: 'completed', phase: 'complete', designStatus: 'NOT_CHECKED', engine: 'precast-benchmark-adapter@1.0.0', result: { appliedLoadKn: 74.2, reactionSumKn: 74.2, equilibriumImbalancePercent: 0 }, verification: { fatalWarnings: 0, equilibriumPassed: true, convergencePassed: true, independentBenchmarkMatched: true } });
+    const analysisRef = db.doc(`organizations/${orgId}/projects/${projectId}/analysisRuns/an-r01`); const analysisHash = String((await analysisRef.get()).data()?.draftHash); const requestId = `request-${randomUUID()}`;
+    await submitArtifact(db, 'engineer-1', { orgId, projectId, requestId, artifactType: 'analysis', artifactId: 'an-r01', expectedDraftHash: analysisHash, assignedTo: 'checker-1', idempotencyKey: randomUUID() });
+    await approveArtifact(db, 'checker-1', { orgId, projectId, requestId, artifactType: 'analysis', artifactId: 'an-r01', snapshotHash: analysisHash, idempotencyKey: randomUUID() });
+    expect((await db.doc(`organizations/${orgId}/projects/${projectId}`).get()).data()).toMatchObject({ currentApprovedAnalysisRunId: 'an-r01', currentStage: 'design', gateStates: { G3: 'approved', G4: 'inProgress' } });
+    const createChecks = { orgId, projectId, calculationId: 'calc-r01', revision: 'CALC-R01', analysisRunId: 'an-r01', expectedAnalysisHash: analysisHash, idempotencyKey: randomUUID() };
+    expect(await createDesignCheckRevision(db, 'engineer-1', createChecks)).toMatchObject({ state: 'draft', replayed: false });
+    expect(await createDesignCheckRevision(db, 'engineer-1', createChecks)).toMatchObject({ state: 'draft', replayed: true });
+    const calculation = await db.doc(`organizations/${orgId}/projects/${projectId}/calculationReports/calc-r01`).get();
+    expect(calculation.data()).toMatchObject({ status: 'draft', overallStatus: 'NOT_CHECKED' });
+    expect(calculation.data()?.blockingConditions as unknown[]).toContain('check-panel-strength: NOT_CHECKED');
+    await expect(submitArtifact(db, 'engineer-1', { orgId, projectId, requestId: `request-${randomUUID()}`, artifactType: 'calculation', artifactId: 'calc-r01', expectedDraftHash: String(calculation.data()?.draftHash), assignedTo: 'checker-1', idempotencyKey: randomUUID() })).rejects.toThrow('NOT CHECKED');
   });
 
   it('canonicalizes entity ordering for deterministic model snapshots', () => {

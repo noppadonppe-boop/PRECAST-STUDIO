@@ -159,6 +159,26 @@ export const queueAnalysisRunCommandSchema = commandIdentitySchema.extend({
 
 export const cancelAnalysisRunCommandSchema = commandIdentitySchema.extend({ runId: z.string().min(1), reason: z.string().trim().min(3).max(500) });
 
+const designCheckStatusSchema = z.enum(['PASS', 'FAIL', 'NOT_CHECKED']);
+export const designCheckPayloadSchema = z.object({
+  schemaVersion: z.literal('1.0.0'), units: z.literal('kN-m-MPa'), engine: z.literal('precast-design-check-register@1.0.0'),
+  analysisRunId: entityIdSchema, analysisOutputHash: snapshotHashSchema, overallStatus: designCheckStatusSchema,
+  checks: z.array(z.object({
+    id: entityIdSchema, category: z.enum(['panelStrength', 'serviceability', 'opening', 'joint', 'anchor', 'lifting', 'transport']), scenario: scenarioSchema,
+    entityIds: z.array(entityIdSchema).min(1).max(200), governingCombinationId: entityIdSchema.optional(), codeClauseRef: z.string().trim().min(3).max(160),
+    status: designCheckStatusSchema, utilization: z.number().nonnegative().max(100).optional(), message: z.string().trim().min(3).max(500),
+    disposition: z.object({ kind: z.enum(['notApplicable', 'acceptedException', 'deferred']), rationale: z.string().trim().min(10).max(1000), evidenceRef: z.string().trim().min(3).max(240) }).optional(),
+  })).length(7),
+}).superRefine((payload, context) => {
+  if (new Set(payload.checks.map((check) => check.id)).size !== payload.checks.length) context.addIssue({ code: 'custom', message: 'Design check IDs must be unique.' });
+  const derived = payload.checks.some((check) => check.status === 'FAIL') ? 'FAIL' : payload.checks.some((check) => check.status === 'NOT_CHECKED') ? 'NOT_CHECKED' : 'PASS';
+  if (payload.overallStatus !== derived) context.addIssue({ code: 'custom', message: 'Overall design status must match the check register.' });
+});
+
+export const createDesignCheckRevisionCommandSchema = commandIdentitySchema.extend({
+  calculationId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/), revision: z.string().trim().min(2).max(24), analysisRunId: z.string().min(1), expectedAnalysisHash: snapshotHashSchema,
+});
+
 export const freezeSourceRevisionCommandSchema = commandIdentitySchema.extend({
   sourceRevisionId: z.string().min(1),
   expectedSnapshotHash: snapshotHashSchema,
@@ -208,6 +228,7 @@ export type CreateProductModelRevisionCommand = z.infer<typeof createProductMode
 export type CreateLoadModelRevisionCommand = z.infer<typeof createLoadModelRevisionCommandSchema>;
 export type QueueAnalysisRunCommand = z.infer<typeof queueAnalysisRunCommandSchema>;
 export type CancelAnalysisRunCommand = z.infer<typeof cancelAnalysisRunCommandSchema>;
+export type CreateDesignCheckRevisionCommand = z.infer<typeof createDesignCheckRevisionCommandSchema>;
 export type FreezeSourceRevisionCommand = z.infer<typeof freezeSourceRevisionCommandSchema>;
 export type UpdateProjectCommand = z.infer<typeof updateProjectCommandSchema>;
 export type ArchiveProjectCommand = z.infer<typeof archiveProjectCommandSchema>;

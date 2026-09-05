@@ -139,6 +139,12 @@ service cloud.firestore {
           allow write: if false;
         }
 
+        match /calculationReports/{calculationId} {
+          allow read: if isInternalProjectMember(orgId, projectId);
+          // Design-check generation, review snapshots and approval remain server-authoritative.
+          allow write: if false;
+        }
+
         match /issues/{issueId} {
           allow read: if isInternalProjectMember(orgId, projectId);
           allow create: if isInternalProjectMember(orgId, projectId)

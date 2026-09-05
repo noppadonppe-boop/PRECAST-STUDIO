@@ -19,7 +19,7 @@ export const organizationMembership: OrganizationMembership = {
 export const projects = [
   {
     id: 'p-rama9', code: 'PC-26014', name: 'Rama IX Modular Residence', family: 'Type 2 Residential',
-    stage: 'Analysis', gate: 'G3' as Gate, gateState: 'inProgress' as GateState,
+    stage: 'Design Checks', gate: 'G4' as Gate, gateState: 'needsAttention' as GateState,
     sourceRevision: 'SRC-R02', designBasisRevision: 'DB-R02', modelRevision: 'PM-R01', analysisRevision: 'AN-R01',
     engineer: 'ศุภชัย ก.', checker: 'นรินทร์ ว.', due: '09 Sep 2026', issues: 0, updated: '18 นาทีที่แล้ว', progress: 3,
   },

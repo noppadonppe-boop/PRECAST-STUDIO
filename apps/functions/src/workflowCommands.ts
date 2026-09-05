@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { FieldValue, Timestamp, type Firestore, type Transaction } from 'firebase-admin/firestore';
 import { can, type ArtifactType, type ArtifactUpstreamRefs, type PermissionContext, type ProductModelPayload, type ProjectRole } from '@precast/domain';
-import { designBasisPayloadSchema, productModelPayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProductModelRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
+import { designBasisPayloadSchema, designCheckPayloadSchema, productModelPayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProductModelRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
 import { AuthorizationError, authorizeApproval } from './authorization';
 
 const artifactCollections: Record<ArtifactType, string> = {
@@ -33,6 +33,7 @@ const upstreamProjectFields: Partial<Record<keyof ArtifactUpstreamRefs, string>>
   designBasisVersionId: 'currentDesignBasisVersionId',
   modelVersionId: 'currentModelVersionId',
   loadModelVersionId: 'currentLoadModelVersionId',
+  analysisRunId: 'currentApprovedAnalysisRunId',
   drawingSetId: 'currentDrawingSetId',
 };
 
@@ -111,6 +112,22 @@ function assertProductModelReady(data: UnknownRecord): void {
   if (Object.values(result.data.validation).some((value) => value !== 0)) throw new AuthorizationError('Product Model quality checks contain unresolved failures.', 'failed-precondition');
   if (result.data.joints.some((joint) => !joint.loadPathConfirmed)) throw new AuthorizationError('Every joint load path must be confirmed before G2 review.', 'failed-precondition');
   if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Product Model has unresolved blocking conditions.', 'failed-precondition');
+}
+
+function assertAnalysisReady(data: UnknownRecord): void {
+  const verification = asRecord(data.verification);
+  if (data.phase !== 'complete' || data.outputHash === undefined || verification.fatalWarnings !== 0 || verification.unsupportedNodes !== 0 || verification.disconnectedElements !== 0 || verification.equilibriumPassed !== true || verification.convergencePassed !== true || verification.independentBenchmarkMatched !== true) {
+    throw new AuthorizationError('G3 requires completed solver, model-quality, equilibrium, convergence and independent benchmark evidence.', 'failed-precondition');
+  }
+  if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Analysis has unresolved blocking conditions.', 'failed-precondition');
+}
+
+function assertCalculationReady(data: UnknownRecord): void {
+  const parsed = designCheckPayloadSchema.safeParse(data.payload);
+  if (!parsed.success) throw new AuthorizationError('Design check register is incomplete or invalid.', 'failed-precondition');
+  if (parsed.data.checks.some((check) => check.status === 'FAIL')) throw new AuthorizationError('Design checks contain FAIL results.', 'failed-precondition');
+  if (parsed.data.checks.some((check) => check.status === 'NOT_CHECKED' && check.disposition === undefined)) throw new AuthorizationError('Every NOT CHECKED design item requires an explicit disposition.', 'failed-precondition');
+  if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Calculation has unresolved blocking conditions.', 'failed-precondition');
 }
 
 const scenarioOrder = ['service', 'demould', 'lifting', 'transport', 'storage', 'installation', 'final'] as const;
@@ -218,10 +235,13 @@ export async function submitArtifact(db: Firestore, actorUid: string, command: S
     const data = asRecord(artifact.data());
     const decision = can('submit', command.artifactType, { ...context, artifactStatus: requiredString(data, 'status'), artifactCreatedBy: requiredString(data, 'createdBy'), isCurrentRevision: data.isCurrentRevision !== false });
     if (!decision.allowed) throw new AuthorizationError(decision.reason ?? 'Submission denied.', 'permission-denied');
-    if (!['draft', 'returned'].includes(requiredString(data, 'status'))) throw new AuthorizationError('Only a draft or returned artifact can be submitted.', 'failed-precondition');
+    const sourceStatus = requiredString(data, 'status');
+    if (!['draft', 'returned'].includes(sourceStatus) && !(command.artifactType === 'analysis' && sourceStatus === 'completed')) throw new AuthorizationError('Only a draft, returned artifact, or completed analysis can be submitted.', 'failed-precondition');
     if (command.artifactType === 'sourceRevision') assertSourceReady(data);
     if (command.artifactType === 'designBasis') assertDesignBasisReady(data);
     if (command.artifactType === 'productModel') assertProductModelReady(data);
+    if (command.artifactType === 'analysis') assertAnalysisReady(data);
+    if (command.artifactType === 'calculation') assertCalculationReady(data);
     const input = snapshotInput(command.artifactType, command.artifactId, data);
     const snapshotHash = computeArtifactSnapshotHash(input);
     if (snapshotHash !== command.expectedDraftHash) throw new AuthorizationError('Draft changed after the client review; refresh before submitting.', 'failed-precondition');
@@ -334,6 +354,12 @@ async function decideArtifact(
         updatedAt: now,
         updatedBy: actorUid,
       });
+    }
+    if (decisionName === 'approve' && command.artifactType === 'analysis') {
+      tx.update(projectRef, { currentApprovedAnalysisRunId: command.artifactId, currentStage: 'design', 'gateStates.G3': 'approved', 'gateStates.G4': 'inProgress', updatedAt: now, updatedBy: actorUid });
+    }
+    if (decisionName === 'approve' && command.artifactType === 'calculation') {
+      tx.update(projectRef, { currentCalculationReportId: command.artifactId, 'gateStates.G4': 'approved', updatedAt: now, updatedBy: actorUid });
     }
     return { resourceId: command.artifactId, state: nextState, auditEventId: command.idempotencyKey, replayed: false };
   });

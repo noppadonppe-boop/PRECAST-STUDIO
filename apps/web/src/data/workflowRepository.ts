@@ -1,8 +1,8 @@
 import { collection, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where, type DocumentData, type Unsubscribe } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytesResumable } from 'firebase/storage';
-import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
-import { loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, sourceFileSchema } from '@precast/schemas';
+import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, DesignCheckPayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
+import { designCheckPayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, sourceFileSchema } from '@precast/schemas';
 import { firebaseAuth, firestore, functions, storage } from '../firebase/client';
 
 function iso(value: unknown): string {
@@ -66,6 +66,7 @@ export function watchProjects(orgId: string, projectIds: string[], onValue: (pro
       ...(typeof data.currentModelVersionId === 'string' ? { currentModelVersionId: data.currentModelVersionId } : {}),
       ...(typeof data.currentLoadModelVersionId === 'string' ? { currentLoadModelVersionId: data.currentLoadModelVersionId } : {}),
       ...(typeof data.currentApprovedAnalysisRunId === 'string' ? { currentApprovedAnalysisRunId: data.currentApprovedAnalysisRunId } : {}),
+      ...(typeof data.currentCalculationReportId === 'string' ? { currentCalculationReportId: data.currentCalculationReportId } : {}),
       ...(data.dueAt === undefined ? {} : { dueAt: iso(data.dueAt) }), ...(data.updatedAt === undefined ? {} : { updatedAt: iso(data.updatedAt) }),
     });
     onValue([...records.values()].sort((a, b) => a.code.localeCompare(b.code)));
@@ -121,6 +122,17 @@ export interface LoadModelState {
 
 export type AnalysisRunState = AnalysisRunRecord;
 
+export interface CalculationState {
+  id: string;
+  revision: string;
+  status: string;
+  createdBy: string;
+  draftHash: string;
+  locked: boolean;
+  payload: DesignCheckPayload;
+  blockingConditions: string[];
+}
+
 export function watchDesignBasis(orgId: string, projectId: string, artifactId: string, onValue: (artifact: DesignBasisState) => void, onError: (error: Error) => void): Unsubscribe {
   return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`), (snapshot) => {
     if (!snapshot.exists()) {
@@ -168,6 +180,15 @@ export function watchAnalysisRun(orgId: string, projectId: string, runId: string
   }, onError);
 }
 
+export function watchCalculation(orgId: string, projectId: string, calculationId: string, onValue: (calculation: CalculationState | null) => void, onError: (error: Error) => void): Unsubscribe {
+  return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/calculationReports/${calculationId}`), (snapshot) => {
+    if (!snapshot.exists()) { onValue(null); return; }
+    const data = snapshot.data(); const parsed = designCheckPayloadSchema.safeParse(data.payload);
+    if (!parsed.success) return onError(new Error('Design Check register is invalid.'));
+    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), createdBy: String(data.createdBy), draftHash: String(data.draftHash), locked: data.locked === true, payload: parsed.data as DesignCheckPayload, blockingConditions: Array.isArray(data.blockingConditions) ? data.blockingConditions.filter((item): item is string => typeof item === 'string') : [] });
+  }, onError);
+}
+
 function stable(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
   if (value !== null && typeof value === 'object') return `{${Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => `${JSON.stringify(key)}:${stable(item)}`).join(',')}}`;
@@ -209,6 +230,23 @@ export async function queueAnalysisRun(input: { orgId: string; projectId: string
 export async function cancelAnalysisRun(input: { orgId: string; projectId: string; runId: string; reason: string }): Promise<CommandResult> {
   const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'cancelAnalysisRunCommand');
   return (await command({ ...input, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function submitAnalysis(input: { orgId: string; projectId: string; analysis: AnalysisRunState; assignedTo: string }): Promise<CommandResult> {
+  if (input.analysis.draftHash === undefined) throw new Error('Completed analysis review hash is missing.');
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'submitArtifactCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, requestId: `apr-${crypto.randomUUID()}`, artifactType: 'analysis', artifactId: input.analysis.id, expectedDraftHash: input.analysis.draftHash, assignedTo: input.assignedTo, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function createDesignCheckRevision(input: { orgId: string; projectId: string; calculationId: string; revision: string; analysis: AnalysisRunState }): Promise<CommandResult> {
+  if (input.analysis.snapshotHash === undefined) throw new Error('Approved analysis snapshot hash is missing.');
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'createDesignCheckRevisionCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, calculationId: input.calculationId, revision: input.revision, analysisRunId: input.analysis.id, expectedAnalysisHash: input.analysis.snapshotHash, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function submitCalculation(input: { orgId: string; projectId: string; calculation: CalculationState; assignedTo: string }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'submitArtifactCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, requestId: `apr-${crypto.randomUUID()}`, artifactType: 'calculation', artifactId: input.calculation.id, expectedDraftHash: input.calculation.draftHash, assignedTo: input.assignedTo, idempotencyKey: crypto.randomUUID() })).data;
 }
 
 export function validateSourceFile(file: Pick<File, 'name' | 'type' | 'size'>): string[] {

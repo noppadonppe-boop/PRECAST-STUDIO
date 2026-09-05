@@ -5,8 +5,8 @@ import { gateLabels, gates, type Gate, type PermissionContext } from '@precast/d
 import { activeOrganization, projects } from '../fixtures/workspace';
 import { useAuth } from '../auth/AuthContext';
 import {
-  cancelAnalysisRun, freezeSourceRevision, queueAnalysisRun, saveLoadModelDraft, saveProductModelDraft, submitDesignBasis, submitProductModel, submitSourceRevision, uploadSourceFile, validateSourceFile,
-  watchAnalysisRun, watchDesignBasis, watchLoadModel, watchProductModel, watchSourceRevision, type AnalysisRunState, type DesignBasisState, type LoadModelState, type ProductModelState, type SourceRevisionState,
+  cancelAnalysisRun, createDesignCheckRevision, freezeSourceRevision, queueAnalysisRun, saveLoadModelDraft, saveProductModelDraft, submitAnalysis, submitCalculation, submitDesignBasis, submitProductModel, submitSourceRevision, uploadSourceFile, validateSourceFile,
+  watchAnalysisRun, watchCalculation, watchDesignBasis, watchLoadModel, watchProductModel, watchSourceRevision, type AnalysisRunState, type CalculationState, type DesignBasisState, type LoadModelState, type ProductModelState, type SourceRevisionState,
 } from '../data/workflowRepository';
 import { Can } from '../permissions/guards';
 import { confirmModelLoadPaths, mergePanels, splitPanel } from '../data/panelization';
@@ -16,7 +16,7 @@ const stageDescriptions: Record<Gate, string> = {
   G1: 'The Design Basis records locked code editions, materials, durability, handling and transport assumptions before independent checker approval.',
   G2: 'Panel geometry, openings, joints, anchors, supports, scenarios and load paths are validated into an immutable deterministic model snapshot.',
   G3: 'Controlled backend orchestration validates immutable inputs and executes a versioned two-panel benchmark adapter. Engineering design remains NOT CHECKED.',
-  G4: 'Engineering design checks require a verified backend calculation service.',
+  G4: 'The versioned Design Check register binds every panel, connection and construction-stage item to approved analysis evidence. Unresolved FAIL or NOT CHECKED items block approval.',
   G5: 'Traceable quantity takeoff and preliminary estimate workflow follows approved design checks.',
   G6: 'Drawing register, DXF/PDF generation and preflight are not implemented yet.',
   G7: 'No production release can be issued from this local emulator workspace.',
@@ -34,6 +34,7 @@ export function StageWorkspace() {
   const [productModel, setProductModel] = useState<ProductModelState | null>(null);
   const [loadModel, setLoadModel] = useState<LoadModelState | null>(null);
   const [analysisRun, setAnalysisRun] = useState<AnalysisRunState | null>(null);
+  const [calculation, setCalculation] = useState<CalculationState | null>(null);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -42,12 +43,12 @@ export function StageWorkspace() {
   const project = projects.find((item) => item.id === projectId);
   const gate = gates.find((item) => item.toLowerCase() === gateId);
   const membership = projectMemberships.find((item) => item.projectId === projectId);
-  const activeArtifact = gate === 'G0' ? source : gate === 'G1' ? designBasis : gate === 'G3' ? loadModel : productModel;
+  const activeArtifact = gate === 'G0' ? source : gate === 'G1' ? designBasis : gate === 'G3' ? analysisRun ?? loadModel : gate === 'G4' ? calculation : productModel;
   const permissionContext = useMemo<PermissionContext | null>(() => activeArtifact === null || membership === undefined ? null : {
     userId: user.uid, orgId: membership.orgId, projectId: membership.projectId, roles: membership.roles,
     capabilities: membership.capabilities, membershipStatus: membership.status,
     ...(membership.expiresAt === undefined ? {} : { expiresAt: membership.expiresAt }), artifactStatus: activeArtifact.status,
-    artifactCreatedBy: activeArtifact.createdBy, isCurrentRevision: true,
+    ...(activeArtifact.createdBy === undefined ? {} : { artifactCreatedBy: activeArtifact.createdBy }), isCurrentRevision: true,
   }, [activeArtifact, membership, user.uid]);
 
   useEffect(() => {
@@ -58,6 +59,10 @@ export function StageWorkspace() {
     if (gate === 'G2') return watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError);
     if (gate === 'G3') {
       const unsubscribes = [watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError), watchLoadModel(organizationMembership.orgId, projectId, 'load-r01', setLoadModel, showError), watchAnalysisRun(organizationMembership.orgId, projectId, 'an-r01', setAnalysisRun, showError)];
+      return () => { for (const unsubscribe of unsubscribes) unsubscribe(); };
+    }
+    if (gate === 'G4') {
+      const unsubscribes = [watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError), watchAnalysisRun(organizationMembership.orgId, projectId, 'an-r01', setAnalysisRun, showError), watchCalculation(organizationMembership.orgId, projectId, 'calc-r01', setCalculation, showError)];
       return () => { for (const unsubscribe of unsubscribes) unsubscribe(); };
     }
   }, [gate, mode, organizationMembership.orgId, projectId]);
@@ -125,9 +130,14 @@ export function StageWorkspace() {
     void run(() => queueAnalysisRun({ orgId: organizationMembership.orgId, projectId, runId: 'an-r01', revision: 'AN-R01', loadModel, modelHash: productModel.draftHash }), 'Controlled benchmark completed; normalized verification evidence is available.');
   }
 
+  function generateDesignChecks() {
+    if (analysisRun === null || projectId === undefined) return;
+    void run(() => createDesignCheckRevision({ orgId: organizationMembership.orgId, projectId, calculationId: 'calc-r01', revision: 'CALC-R01', analysis: analysisRun }), 'Versioned Design Check register generated from the approved analysis snapshot.');
+  }
+
   return <>
-    <div className="project-heading"><div><Link to={`/org/${activeOrganization.id}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>{gate === 'G3' ? 'M4 controlled workflow' : gate === 'G2' ? 'M3 controlled workflow' : gate === 'G0' || gate === 'G1' ? 'M2 controlled workflow' : 'Read-only scaffold'}</StatusBadge></div>
-    <Surface className="revision-context" ariaLabel="Current revision context"><div><small>SOURCE</small><strong>{source?.revision ?? project.sourceRevision}</strong><span>{source?.locked ? 'Accepted & locked' : 'Controlled reference'}</span></div><i>→</i><div><small>DESIGN BASIS</small><strong>{designBasis?.revision ?? project.designBasisRevision}</strong><span>{designBasis?.locked ? 'Approved & locked' : 'Project context'}</span></div><i>→</i><div><small>MODEL</small><strong>{productModel?.revision ?? project.modelRevision}</strong><span>{productModel?.locked ? 'Approved & locked' : 'Version reference'}</span></div><i>→</i><div><small>ANALYSIS</small><strong>{project.analysisRevision}</strong><span>NOT CHECKED</span></div></Surface>
+    <div className="project-heading"><div><Link to={`/org/${activeOrganization.id}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>{gate === 'G3' ? 'M5 G3 verification' : gate === 'G4' ? 'M5 design checks' : gate === 'G2' ? 'M3 controlled workflow' : gate === 'G0' || gate === 'G1' ? 'M2 controlled workflow' : 'Read-only scaffold'}</StatusBadge></div>
+    <Surface className="revision-context" ariaLabel="Current revision context"><div><small>SOURCE</small><strong>{source?.revision ?? project.sourceRevision}</strong><span>{source?.locked ? 'Accepted & locked' : 'Controlled reference'}</span></div><i>→</i><div><small>DESIGN BASIS</small><strong>{designBasis?.revision ?? project.designBasisRevision}</strong><span>{designBasis?.locked ? 'Approved & locked' : 'Project context'}</span></div><i>→</i><div><small>MODEL</small><strong>{productModel?.revision ?? project.modelRevision}</strong><span>{productModel?.locked ? 'Approved & locked' : 'Version reference'}</span></div><i>→</i><div><small>ANALYSIS</small><strong>{analysisRun?.revision ?? project.analysisRevision}</strong><span>{analysisRun?.status ?? 'NOT CHECKED'}</span></div></Surface>
     {notice !== '' && <div className={`toast ${error ? 'toast--error' : ''}`} role="status">{notice}</div>}
 
     {gate === 'G0' && mode === 'emulator' && source !== null && permissionContext !== null && <Surface className="m2-workspace">
@@ -182,9 +192,19 @@ export function StageWorkspace() {
         {analysisRun.verification !== undefined && <div className="verification-grid"><span className={analysisRun.verification.fatalWarnings === 0 ? 'pass' : 'fail'}>{analysisRun.verification.fatalWarnings === 0 ? 'PASS' : 'FAIL'} · fatal warnings</span><span className={analysisRun.verification.unsupportedNodes === 0 && analysisRun.verification.disconnectedElements === 0 ? 'pass' : 'fail'}>{analysisRun.verification.unsupportedNodes === 0 && analysisRun.verification.disconnectedElements === 0 ? 'PASS' : 'FAIL'} · model quality</span><span className={analysisRun.verification.equilibriumPassed ? 'pass' : 'fail'}>{analysisRun.verification.equilibriumPassed ? 'PASS' : 'FAIL'} · equilibrium</span><span className={analysisRun.verification.convergencePassed ? 'pass' : 'fail'}>{analysisRun.verification.convergencePassed ? 'PASS' : 'FAIL'} · convergence</span><span className={analysisRun.verification.independentBenchmarkMatched ? 'pass' : 'fail'}>{analysisRun.verification.independentBenchmarkMatched ? 'PASS' : 'WARNING'} · benchmark match</span><span className="not-checked">NOT CHECKED · engineering design</span></div>}
         <ol className="phase-log">{analysisRun.phaseHistory.map((item, index) => <li key={`${item.phase}-${index}`}><b>✓ {item.phase}</b><span>{item.message}</span></li>)}</ol>
       </>}
-      <div className="m2-actions"><Button variant="secondary" type="button" disabled={saving || !canEditLoadModel} onClick={saveAnalysisSettings}>Save settings</Button><Button type="button" disabled={saving || !canEditLoadModel || analysisRun !== null} onClick={executeBenchmark}>Run controlled benchmark</Button>{analysisRun !== null && (analysisRun.status === 'queued' || analysisRun.status === 'running') && <Button variant="secondary" type="button" disabled={saving} onClick={() => void run(() => cancelAnalysisRun({ orgId: organizationMembership.orgId, projectId: project.id, runId: analysisRun.id, reason: 'Cancelled by authorized workspace user.' }), 'Analysis run cancelled safely.')}>Cancel run</Button>}<span className="design-boundary">G3 is not approved in M4; design checks begin at G4.</span></div>
+      <div className="m2-actions"><Button variant="secondary" type="button" disabled={saving || !canEditLoadModel} onClick={saveAnalysisSettings}>Save settings</Button><Button type="button" disabled={saving || !canEditLoadModel || analysisRun !== null} onClick={executeBenchmark}>Run controlled benchmark</Button>{analysisRun?.status === 'completed' && <Button type="button" disabled={saving || analysisRun.createdBy !== user.uid} onClick={() => void run(() => submitAnalysis({ orgId: organizationMembership.orgId, projectId: project.id, analysis: analysisRun, assignedTo: 'checker-narin' }), `${analysisRun.revision} submitted for independent G3 verification.`)}>Submit Analysis for G3 review</Button>}{analysisRun !== null && (analysisRun.status === 'queued' || analysisRun.status === 'running') && <Button variant="secondary" type="button" disabled={saving} onClick={() => void run(() => cancelAnalysisRun({ orgId: organizationMembership.orgId, projectId: project.id, runId: analysisRun.id, reason: 'Cancelled by authorized workspace user.' }), 'Analysis run cancelled safely.')}>Cancel run</Button>}<span className="design-boundary">G3 requires independent checker approval; design checks remain NOT CHECKED.</span></div>
     </Surface>}
 
-    <Surface className="stage-placeholder"><EmptyState icon={gate} title={gate === 'G0' || gate === 'G1' || gate === 'G2' || gate === 'G3' ? `${gate} evidence and controls` : `${gate} workspace is safely scaffolded`} detail={stageDescriptions[gate]} /><div className="stage-link-row">{gates.map((item) => <Link className={item === gate ? 'active' : ''} key={item} to={`/org/${activeOrganization.id}/projects/${project.id}/stages/${item.toLowerCase()}`}>{item}</Link>)}</div></Surface>
+    {gate === 'G4' && mode === 'emulator' && analysisRun !== null && <Surface className="m2-workspace m5-workspace">
+      <div className="section-heading"><div><p className="eyebrow">VERSIONED DESIGN CHECK REGISTER</p><h2>{calculation?.revision ?? 'No calculation revision'}</h2><p>Checks are generated only from the approved G3 snapshot. M5 exposes every unimplemented engineering method rather than manufacturing a passing result.</p></div><StatusBadge tone={calculation?.payload.overallStatus === 'PASS' ? 'success' : 'warning'}>{calculation?.payload.overallStatus ?? 'NOT CHECKED'}</StatusBadge></div>
+      {calculation === null ? <div className="design-check-empty"><strong>Approved analysis ready</strong><p>{analysisRun.revision} · {analysisRun.snapshotHash ?? 'approval hash pending'}</p><Button type="button" disabled={saving || analysisRun.status !== 'approved' || analysisRun.createdBy !== user.uid} onClick={generateDesignChecks}>Generate Design Check register</Button></div> : <>
+        <div className="design-check-summary"><span><b>{calculation.payload.checks.filter((check) => check.status === 'PASS').length}</b> PASS</span><span><b>{calculation.payload.checks.filter((check) => check.status === 'FAIL').length}</b> FAIL</span><span><b>{calculation.payload.checks.filter((check) => check.status === 'NOT_CHECKED').length}</b> NOT CHECKED</span><code>{calculation.draftHash}</code></div>
+        <div className="design-check-register">{calculation.payload.checks.map((check) => <article key={check.id}><StatusBadge tone={check.status === 'PASS' ? 'success' : check.status === 'FAIL' ? 'danger' : 'warning'}>{check.status}</StatusBadge><div><strong>{check.category.replace(/([A-Z])/g, ' $1')}</strong><span>{check.scenario} · {check.entityIds.join(', ')}</span><p>{check.message}</p></div><small>{check.codeClauseRef}</small></article>)}</div>
+        <div className="blocking-list"><strong>G4 approval blocked</strong><p>{calculation.blockingConditions.length} unresolved design items require verified calculations and dispositions.</p></div>
+        <div className="m2-actions"><Button type="button" disabled={saving || calculation.blockingConditions.length > 0 || calculation.status !== 'draft'} onClick={() => void run(() => submitCalculation({ orgId: organizationMembership.orgId, projectId: project.id, calculation, assignedTo: 'checker-narin' }), `${calculation.revision} submitted for G4 approval.`)}>Submit Design Checks for G4 approval</Button><span className="design-boundary">FAIL and unresolved NOT CHECKED items are server-enforced blockers.</span></div>
+      </>}
+    </Surface>}
+
+    <Surface className="stage-placeholder"><EmptyState icon={gate} title={gate === 'G0' || gate === 'G1' || gate === 'G2' || gate === 'G3' || gate === 'G4' ? `${gate} evidence and controls` : `${gate} workspace is safely scaffolded`} detail={stageDescriptions[gate]} /><div className="stage-link-row">{gates.map((item) => <Link className={item === gate ? 'active' : ''} key={item} to={`/org/${activeOrganization.id}/projects/${project.id}/stages/${item.toLowerCase()}`}>{item}</Link>)}</div></Surface>
   </>;
 }

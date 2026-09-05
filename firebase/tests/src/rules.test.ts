@@ -44,6 +44,7 @@ async function seed() {
       upstreamRefs: { sourceRevisionId: 'src-r02', designBasisVersionId: 'db-r02', modelVersionId: 'pm-r01' }, payload: { meshSizeM: 0.25 }, draftHash: `sha256:${'b'.repeat(64)}`,
     });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/analysisRuns/an-r01'), { status: 'completed', designStatus: 'NOT_CHECKED', createdBy: 'engineer-1' });
+    await setDoc(doc(db, 'organizations/org-a/projects/project-a/calculationReports/calc-r01'), { status: 'draft', overallStatus: 'NOT_CHECKED', createdBy: 'engineer-1' });
   });
 }
 
@@ -116,7 +117,7 @@ describe('M3 Product Model controls', () => {
   });
 });
 
-describe('M4 Load Model and analysis controls', () => {
+describe('M4/M5 Load Model, analysis and Design Check controls', () => {
   it('permits only the author to edit mutable Load Model fields', async () => {
     const engineer = environment.authenticatedContext('engineer-1').firestore();
     const load = doc(engineer, 'organizations/org-a/projects/project-a/loadModelVersions/load-r01');
@@ -130,6 +131,12 @@ describe('M4 Load Model and analysis controls', () => {
     const engineer = environment.authenticatedContext('engineer-1').firestore();
     await assertFails(setDoc(doc(engineer, 'organizations/org-a/projects/project-a/analysisRuns/forged'), { status: 'completed', designStatus: 'PASS' }));
     await assertFails(updateDoc(doc(engineer, 'organizations/org-a/projects/project-a/analysisRuns/an-r01'), { designStatus: 'PASS' }));
+  });
+
+  it('denies direct Design Check creation and result mutation', async () => {
+    const engineer = environment.authenticatedContext('engineer-1').firestore();
+    await assertFails(setDoc(doc(engineer, 'organizations/org-a/projects/project-a/calculationReports/forged'), { status: 'approved', overallStatus: 'PASS' }));
+    await assertFails(updateDoc(doc(engineer, 'organizations/org-a/projects/project-a/calculationReports/calc-r01'), { overallStatus: 'PASS' }));
   });
 });
 
