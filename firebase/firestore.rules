@@ -196,6 +196,18 @@ service cloud.firestore {
           allow write: if false;
         }
 
+        match /exportJobs/{exportJobId} {
+          allow read: if isInternalProjectMember(orgId, projectId);
+          // Export worker results and attestations are server-authoritative.
+          allow write: if false;
+        }
+
+        match /releasePackages/{releasePackageId} {
+          allow read: if isInternalProjectMember(orgId, projectId) || isSharedIssuedContent(orgId, projectId);
+          // Composition, technical approval and Production Release are command-only.
+          allow write: if false;
+        }
+
         match /{document=**} {
           allow read: if isInternalProjectMember(orgId, projectId);
           allow write: if false;

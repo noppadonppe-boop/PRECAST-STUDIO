@@ -40,6 +40,7 @@ describe('Role Matrix v1 permission evaluator', () => {
     ['engineeringChecker', 'approve', 'analysis', true],
     ['costEstimator', 'submit', 'estimate', true],
     ['detailer', 'submit', 'drawingSet', true],
+    ['productionManager', 'create', 'releasePackage', true],
     ['productionManager', 'release', 'releasePackage', true],
     ['commercialApprover', 'approve', 'estimate', true],
     ['siteQa', 'comment', 'releasePackage', true],

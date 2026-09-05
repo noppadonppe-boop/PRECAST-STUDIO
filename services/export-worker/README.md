@@ -17,3 +17,11 @@ The local fixture intentionally fails these conditions (`G4 = NOT_CHECKED` and o
 M7 adds a deterministic manifest planner for Calculation Report DOCX/PDF/A, panel drawing PDF/A/SVG previews, result XLSX, drawing-register CSV and audit JSON. Planning is rejected unless the Documentation Set is approved and locked, G4/G6 evidence is `PASS`, the snapshot hash exists and no blocker remains. Binary rendering is intentionally not implemented while the local fixture remains unsafe.
 
 The shared `REVIT-DRAFTING-01` contract is a future DXF exporter input, not an emitted file. It fixes R2018, millimetres, 2D Model Space, Z=0, conservative entities, semantic `PC-*` layers, no border and required sibling PDF/A/JSON. Its M7 preflight state is `notRun`; production DXF generation, golden-file checks and Revit import verification must be implemented before it can enter an issued manifest. The product must describe this path as “Revit-ready CAD import,” never Native Revit.
+
+## M8 release boundary
+
+M8 implements the deterministic `REVIT-DRAFTING-01` DXF builder and structural preflight contract for a trusted export worker. It emits R2018/AC1032 text with millimetre units, declared extents, local-origin 2D geometry at Z=0, a stable Arial text style, conservative entities, semantic `PC-*` layers, source references, entity counts, a geometry hash and a file hash. Unit tests exercise deterministic output and reject an incorrect DXF version.
+
+That structural check is necessary but not sufficient for issue. Release Package composition accepts only a completed server-authoritative export result that is bound to the current approved/locked G6 snapshot and attests immutable storage, complete required file roles, SHA-256 checksums, exact DXF hash coverage, actual import into the named Autodesk Revit version using a Drafting View/current-view-only workflow, and a `PASS` sibling PDF/A visual comparison. Client writes to export-job evidence are denied.
+
+The local fixture has no trusted renderer or Revit lab evidence and therefore emits no production DXF, PDF/A, spreadsheet, checksum register or archive. It must remain blocked at G7. The application describes the output as “Revit-ready CAD import,” never Native Revit.

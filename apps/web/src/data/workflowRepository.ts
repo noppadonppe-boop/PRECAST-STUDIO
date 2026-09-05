@@ -1,8 +1,8 @@
 import { collection, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where, type DocumentData, type Unsubscribe } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytesResumable } from 'firebase/storage';
-import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, DesignCheckPayload, DocumentationSetPayload, EstimatePayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
-import { designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, sourceFileSchema } from '@precast/schemas';
+import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, DesignCheckPayload, DocumentationSetPayload, EstimatePayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, ReleasePackagePayload, SourceValidationSummary } from '@precast/domain';
+import { designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, releasePackagePayloadSchema, sourceFileSchema } from '@precast/schemas';
 import { firebaseAuth, firestore, functions, storage } from '../firebase/client';
 
 function iso(value: unknown): string {
@@ -69,6 +69,7 @@ export function watchProjects(orgId: string, projectIds: string[], onValue: (pro
       ...(typeof data.currentCalculationReportId === 'string' ? { currentCalculationReportId: data.currentCalculationReportId } : {}),
       ...(typeof data.currentEstimateVersionId === 'string' ? { currentEstimateVersionId: data.currentEstimateVersionId } : {}),
       ...(typeof data.currentDrawingSetId === 'string' ? { currentDrawingSetId: data.currentDrawingSetId } : {}),
+      ...(typeof data.currentReleasePackageId === 'string' ? { currentReleasePackageId: data.currentReleasePackageId } : {}),
       ...(data.dueAt === undefined ? {} : { dueAt: iso(data.dueAt) }), ...(data.updatedAt === undefined ? {} : { updatedAt: iso(data.updatedAt) }),
     });
     onValue([...records.values()].sort((a, b) => a.code.localeCompare(b.code)));
@@ -154,9 +155,27 @@ export interface DocumentationSetState {
   documentationState: 'incomplete' | 'readyForReview';
   createdBy: string;
   draftHash: string;
+  snapshotHash?: string;
   locked: boolean;
   payload: DocumentationSetPayload;
   blockingConditions: string[];
+}
+
+export interface ReleasePackageState {
+  id: string;
+  revision: string;
+  status: string;
+  releaseState: 'readyForTechnicalApproval' | 'released';
+  createdBy: string;
+  draftHash: string;
+  snapshotHash?: string;
+  locked: boolean;
+  payload: ReleasePackagePayload;
+  blockingConditions: string[];
+  approvedBy?: string;
+  releasedBy?: string;
+  recipient?: string;
+  productionQueue?: string;
 }
 
 export function watchDesignBasis(orgId: string, projectId: string, artifactId: string, onValue: (artifact: DesignBasisState) => void, onError: (error: Error) => void): Unsubscribe {
@@ -229,7 +248,16 @@ export function watchDocumentationSet(orgId: string, projectId: string, drawingS
     if (!snapshot.exists()) { onValue(null); return; }
     const data = snapshot.data(); const parsed = documentationSetPayloadSchema.safeParse(data.payload);
     if (!parsed.success) return onError(new Error('Documentation Set is invalid.'));
-    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), documentationState: data.documentationState === 'readyForReview' ? 'readyForReview' : 'incomplete', createdBy: String(data.createdBy), draftHash: String(data.draftHash), locked: data.locked === true, payload: parsed.data, blockingConditions: Array.isArray(data.blockingConditions) ? data.blockingConditions.filter((item): item is string => typeof item === 'string') : [] });
+    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), documentationState: data.documentationState === 'readyForReview' ? 'readyForReview' : 'incomplete', createdBy: String(data.createdBy), draftHash: String(data.draftHash), ...(typeof data.snapshotHash === 'string' ? { snapshotHash: data.snapshotHash } : {}), locked: data.locked === true, payload: parsed.data, blockingConditions: Array.isArray(data.blockingConditions) ? data.blockingConditions.filter((item): item is string => typeof item === 'string') : [] });
+  }, onError);
+}
+
+export function watchReleasePackage(orgId: string, projectId: string, releasePackageId: string, onValue: (value: ReleasePackageState | null) => void, onError: (error: Error) => void): Unsubscribe {
+  return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/releasePackages/${releasePackageId}`), (snapshot) => {
+    if (!snapshot.exists()) { onValue(null); return; }
+    const data = snapshot.data(); const parsed = releasePackagePayloadSchema.safeParse(data.payload);
+    if (!parsed.success) return onError(new Error('Release Package manifest is invalid.'));
+    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), releaseState: data.releaseState === 'released' ? 'released' : 'readyForTechnicalApproval', createdBy: String(data.createdBy), draftHash: String(data.draftHash), ...(typeof data.snapshotHash === 'string' ? { snapshotHash: data.snapshotHash } : {}), locked: data.locked === true, payload: parsed.data, blockingConditions: Array.isArray(data.blockingConditions) ? data.blockingConditions.filter((item): item is string => typeof item === 'string') : [], ...(typeof data.approvedBy === 'string' ? { approvedBy: data.approvedBy } : {}), ...(typeof data.releasedBy === 'string' ? { releasedBy: data.releasedBy } : {}), ...(typeof data.recipient === 'string' ? { recipient: data.recipient } : {}), ...(typeof data.productionQueue === 'string' ? { productionQueue: data.productionQueue } : {}) });
   }, onError);
 }
 
@@ -311,6 +339,22 @@ export async function createDocumentationSetRevision(input: { orgId: string; pro
 export async function submitDocumentationSet(input: { orgId: string; projectId: string; drawingSet: DocumentationSetState; assignedTo: string }): Promise<CommandResult> {
   const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'submitArtifactCommand');
   return (await command({ orgId: input.orgId, projectId: input.projectId, requestId: `apr-${crypto.randomUUID()}`, artifactType: 'drawingSet', artifactId: input.drawingSet.id, expectedDraftHash: input.drawingSet.draftHash, assignedTo: input.assignedTo, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function createReleasePackageRevision(input: { orgId: string; projectId: string; releasePackageId: string; revision: string; exportJobId: string; drawingSetHash: string }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'createReleasePackageRevisionCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, releasePackageId: input.releasePackageId, revision: input.revision, exportJobId: input.exportJobId, expectedDrawingSetHash: input.drawingSetHash, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function submitReleasePackage(input: { orgId: string; projectId: string; releasePackage: ReleasePackageState; assignedTo: string }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'submitArtifactCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, requestId: `apr-${crypto.randomUUID()}`, artifactType: 'releasePackage', artifactId: input.releasePackage.id, expectedDraftHash: input.releasePackage.draftHash, assignedTo: input.assignedTo, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function releaseProductionPackage(input: { orgId: string; projectId: string; releasePackage: ReleasePackageState; recipient: string; productionQueue: string }): Promise<CommandResult> {
+  if (input.releasePackage.snapshotHash === undefined) throw new Error('Approved Release Package snapshot hash is missing.');
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'releaseProductionPackageCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, releasePackageId: input.releasePackage.id, expectedSnapshotHash: input.releasePackage.snapshotHash, recipient: input.recipient, productionQueue: input.productionQueue, idempotencyKey: crypto.randomUUID() })).data;
 }
 
 export function validateSourceFile(file: Pick<File, 'name' | 'type' | 'size'>): string[] {

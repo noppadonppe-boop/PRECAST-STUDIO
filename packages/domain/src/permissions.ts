@@ -16,7 +16,7 @@ const grants: Record<ProjectRole, readonly Grant[]> = {
   engineeringChecker: ['view:*', 'comment:*', 'review:designBasis', 'approve:designBasis', 'review:productModel', 'approve:productModel', 'review:analysis', 'approve:analysis', 'review:calculation', 'approve:calculation', 'review:drawingSet', 'approve:drawingSet', 'review:releasePackage', 'approve:releasePackage'],
   costEstimator: ['view:*', 'comment:*', 'create:estimate', 'editDraft:estimate', 'submit:estimate'],
   detailer: ['view:*', 'comment:*', 'create:drawingSet', 'editDraft:drawingSet', 'submit:drawingSet'],
-  productionManager: ['view:releasePackage', 'release:releasePackage'],
+  productionManager: ['view:releasePackage', 'create:releasePackage', 'submit:releasePackage', 'release:releasePackage'],
   commercialApprover: ['view:estimate', 'review:estimate', 'approve:estimate'],
   siteQa: ['view:releasePackage', 'comment:releasePackage'],
   externalReviewer: ['view:calculation', 'view:drawingSet', 'comment:calculation', 'comment:drawingSet'],

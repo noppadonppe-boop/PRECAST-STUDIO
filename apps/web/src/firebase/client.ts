@@ -26,6 +26,7 @@ export const localEmulatorIdentities = {
   pm: { email: 'pm@precast.local', password: 'local-emulator-only', orgId: localIdentity.orgId },
   qs: { email: 'qs@precast.local', password: 'local-emulator-only', orgId: localIdentity.orgId },
   detailer: { email: 'detailer@precast.local', password: 'local-emulator-only', orgId: localIdentity.orgId },
+  production: { email: 'production@precast.local', password: 'local-emulator-only', orgId: localIdentity.orgId },
 } as const;
 
 const app = getApps().length > 0 ? getApp() : initializeApp({

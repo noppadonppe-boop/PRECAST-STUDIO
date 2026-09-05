@@ -1,12 +1,13 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
-import { approveArtifactCommandSchema, archiveProjectCommandSchema, cancelAnalysisRunCommandSchema, createDesignBasisRevisionCommandSchema, createDesignCheckRevisionCommandSchema, createDocumentationSetRevisionCommandSchema, createEstimateRevisionCommandSchema, createLoadModelRevisionCommandSchema, createProductModelRevisionCommandSchema, createProjectCommandSchema, freezeSourceRevisionCommandSchema, queueAnalysisRunCommandSchema, returnArtifactCommandSchema, submitArtifactCommandSchema, updateProjectCommandSchema } from '@precast/schemas';
+import { approveArtifactCommandSchema, archiveProjectCommandSchema, cancelAnalysisRunCommandSchema, createDesignBasisRevisionCommandSchema, createDesignCheckRevisionCommandSchema, createDocumentationSetRevisionCommandSchema, createEstimateRevisionCommandSchema, createLoadModelRevisionCommandSchema, createProductModelRevisionCommandSchema, createProjectCommandSchema, createReleasePackageRevisionCommandSchema, freezeSourceRevisionCommandSchema, queueAnalysisRunCommandSchema, releaseProductionPackageCommandSchema, returnArtifactCommandSchema, submitArtifactCommandSchema, updateProjectCommandSchema } from '@precast/schemas';
 import { AuthorizationError } from './authorization';
 import { cancelAnalysisRun, createLoadModelRevision, queueAnalysisRun } from './analysisCommands';
 import { createDesignCheckRevision } from './designCheckCommands';
 import { createEstimateRevision } from './estimateCommands';
 import { createDocumentationSetRevision } from './documentationCommands';
+import { createReleasePackageRevision, releaseProductionPackage } from './releaseCommands';
 import { approveArtifact, archiveProject, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from './workflowCommands';
 
 if (getApps().length === 0) initializeApp();
@@ -17,6 +18,7 @@ export { cancelAnalysisRun, canonicalizeLoadSettings, createLoadModelRevision, q
 export { buildDesignCheckRegister, createDesignCheckRevision } from './designCheckCommands';
 export { buildEngineeringEstimate, buildEstimateExportManifest, createEstimateRevision, estimateBlockingConditions } from './estimateCommands';
 export { buildDocumentationExportManifest, buildDocumentationSet, createDocumentationSetRevision, documentationBlockingConditions } from './documentationCommands';
+export { buildReleasePackagePayload, buildRevitDraftingDxf, createReleasePackageRevision, inspectRevitDraftingDxf, releaseProductionPackage } from './releaseCommands';
 export { approveArtifact, archiveProject, canonicalizeProductModel, computeArtifactSnapshotHash, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from './workflowCommands';
 
 function callable<T>(schema: { safeParse(value: unknown): { success: true; data: T } | { success: false } }, handler: (uid: string, command: T) => Promise<unknown>) {
@@ -46,6 +48,8 @@ export const cancelAnalysisRunCommand = callable(cancelAnalysisRunCommandSchema,
 export const createDesignCheckRevisionCommand = callable(createDesignCheckRevisionCommandSchema, (uid, command) => createDesignCheckRevision(getFirestore(), uid, command));
 export const createEstimateRevisionCommand = callable(createEstimateRevisionCommandSchema, (uid, command) => createEstimateRevision(getFirestore(), uid, command));
 export const createDocumentationSetRevisionCommand = callable(createDocumentationSetRevisionCommandSchema, (uid, command) => createDocumentationSetRevision(getFirestore(), uid, command));
+export const createReleasePackageRevisionCommand = callable(createReleasePackageRevisionCommandSchema, (uid, command) => createReleasePackageRevision(getFirestore(), uid, command));
+export const releaseProductionPackageCommand = callable(releaseProductionPackageCommandSchema, (uid, command) => releaseProductionPackage(getFirestore(), uid, command));
 export const freezeSourceRevisionCommand = callable(freezeSourceRevisionCommandSchema, (uid, command) => freezeSourceRevision(getFirestore(), uid, command));
 export const updateProjectCommand = callable(updateProjectCommandSchema, (uid, command) => updateProject(getFirestore(), uid, command));
 export const archiveProjectCommand = callable(archiveProjectCommandSchema, (uid, command) => archiveProject(getFirestore(), uid, command));

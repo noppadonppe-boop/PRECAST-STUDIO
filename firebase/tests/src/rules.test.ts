@@ -20,6 +20,7 @@ async function seed() {
     await setDoc(doc(db, 'organizations/org-a/members/pm-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/members/qs-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/members/detailer-1'), { status: 'active', orgRoles: [] });
+    await setDoc(doc(db, 'organizations/org-a/members/production-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-b/members/intruder-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a'), { code: 'PC-26014', status: 'active' });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/engineer-1'), {
@@ -39,6 +40,9 @@ async function seed() {
     });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/detailer-1'), {
       status: 'active', roles: ['detailer'], capabilities: [], effectiveFrom: now,
+    });
+    await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/production-1'), {
+      status: 'active', roles: ['productionManager'], capabilities: ['productionRelease'], effectiveFrom: now,
     });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/designBasisVersions/db-r02'), {
       status: 'submitted', createdBy: 'engineer-1', revision: 'DB-R02', snapshotHash: `sha256:${'a'.repeat(64)}`,
@@ -176,6 +180,21 @@ describe('M7 Documentation Set controls', () => {
     await assertFails(updateDoc(drawingSet, { 'payload.preflight.overallStatus': 'PASS' }));
     await assertFails(updateDoc(drawingSet, { status: 'approved', locked: true }));
     await assertFails(deleteDoc(drawingSet));
+  });
+});
+
+describe('M8 Export and Production Release controls', () => {
+  it('allows internal release reads but denies forged worker evidence, manifests, approval and release writes', async () => {
+    await environment.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      await setDoc(doc(db, 'organizations/org-a/projects/project-a/exportJobs/export-r01'), { status: 'completed', immutableStorage: true });
+      await setDoc(doc(db, 'organizations/org-a/projects/project-a/releasePackages/rel-r01'), { status: 'approved', locked: true, createdBy: 'production-1', payload: { preflight: { overallStatus: 'PASS' } } });
+    });
+    const production = environment.authenticatedContext('production-1').firestore(); const releasePackage = doc(production, 'organizations/org-a/projects/project-a/releasePackages/rel-r01');
+    await assertSucceeds(getDoc(doc(production, 'organizations/org-a/projects/project-a/exportJobs/export-r01'))); await assertSucceeds(getDoc(releasePackage));
+    await assertFails(setDoc(doc(production, 'organizations/org-a/projects/project-a/exportJobs/forged'), { status: 'completed', revitVerification: { status: 'PASS' } }));
+    await assertFails(setDoc(doc(production, 'organizations/org-a/projects/project-a/releasePackages/forged'), { status: 'released' }));
+    await assertFails(updateDoc(releasePackage, { status: 'released', releasedBy: 'production-1' })); await assertFails(updateDoc(releasePackage, { 'payload.preflight.overallStatus': 'FAIL' })); await assertFails(deleteDoc(releasePackage));
   });
 });
 

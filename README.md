@@ -1,6 +1,6 @@
 # Precast Engineering Web App
 
-M7 Calculation Report and Shop Drawing controls for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, general FEM solver, authoritative design result, issued engineering document, production DXF exporter, or Native Revit integration.
+M8 controlled issue and Production Release controls for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, general FEM solver, authoritative design result, issued engineering document, live export worker, or Native Revit integration.
 
 ## Source of truth
 
@@ -27,7 +27,7 @@ pnpm check
 pnpm dev
 ```
 
-Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted M7 behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. Complete the M5 G3/G4 sequence, then use `?as=detailer` at G6 to generate the internal-review Documentation Set. The `NOT_CHECKED` design, lifting and reinforcement evidence deliberately blocks submission and rendering. No production credential is required.
+Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. Use `?as=detailer` for G6 and `?as=production` for G7. The `NOT_CHECKED` design, lifting and reinforcement evidence deliberately blocks documentation approval, package composition and Production Release. No production credential is required.
 
 ## Workspace map
 
@@ -39,11 +39,11 @@ packages/schemas/         Versioned Zod command/calculation contracts
 packages/ui/              Product tokens and shared UI primitives
 firebase/                 Firestore/Storage rules, indexes and emulator configuration
 firebase/tests/           Rules tests for tenant isolation and authoritative transitions
-services/                 Worker boundaries and enforced M6/M7 export policy
+services/                 Worker boundaries and enforced M6-M8 export/release policy
 knowledge/                Approved product and engineering source of truth
 ```
 
-## Security model through M7
+## Security model through M8
 
 - Deny by default in Firestore and Storage Rules.
 - Organization and project membership are separate and project membership can expire.
@@ -76,7 +76,10 @@ knowledge/                Approved product and engineering source of truth
 - The canonical Calculation Report register contains 13 ordered source-linked sections; every panel drawing retains geometry, openings, anchors, material, weight, volume, COG and upstream IDs.
 - G6 preflight has eight required categories. `FAIL` and `NOT_CHECKED` results remain explicit and block submit, approval and rendering.
 - The shared `REVIT-DRAFTING-01` profile defines deterministic R2018 2D Model Space DXF conventions, millimetres, Z=0, semantic `PC-*` layers and PDF/A/JSON companions. It is labelled “Revit-ready CAD import,” never Native Revit.
-- M7 only supplies the validated profile/fixture and UI state (`preflightState: notRun`); no DXF binary, Revit automation or production add-in is generated.
+- M8 adds a deterministic R2018/mm DXF builder and structural preflight for verified worker use; the unsafe local fixture still emits no production file.
+- Release Package composition accepts only a completed server-authoritative export result bound to the current approved/locked G6 hash, complete required file roles, immutable storage, checksums and `PASS` evidence from an actual target Revit Drafting View import plus sibling PDF/A comparison.
+- Production Manager composition/submission, independent Engineering Checker approval and a distinct Production Manager release actor enforce separation of duties. A released package is locked and cannot be overwritten.
+- Direct client writes to export jobs and release packages remain denied. The local fixture has no export/Revit attestation, so G7 visibly remains blocked and no manifest, checksum register or production archive is issued.
 
 ## Validation commands
 
@@ -89,4 +92,4 @@ pnpm test:e2e
 pnpm build
 ```
 
-See the [M7 completion and M8 handoff](docs/M7_HANDOFF.md) before extending the application. Earlier handoffs remain as historical context.
+See the [M8 completion and M9 handoff](docs/M8_HANDOFF.md) before extending the application. Earlier handoffs remain as historical context.

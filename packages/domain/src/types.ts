@@ -42,7 +42,7 @@ export type ArtifactType =
   | 'drawingSet'
   | 'releasePackage';
 
-export type ArtifactStatus = 'draft' | 'submitted' | 'approved' | 'accepted' | 'returned' | 'superseded';
+export type ArtifactStatus = 'draft' | 'submitted' | 'approved' | 'accepted' | 'returned' | 'released' | 'superseded';
 
 export type ProjectStatus = 'active' | 'onHold' | 'completed' | 'archived';
 
@@ -62,6 +62,7 @@ export interface ProjectRecord {
   currentCalculationReportId?: string;
   currentEstimateVersionId?: string;
   currentDrawingSetId?: string;
+  currentReleasePackageId?: string;
   gateStates: Partial<Record<Gate, GateState>>;
   assignedUserIds: string[];
   dueAt?: string;
@@ -314,6 +315,63 @@ export interface DocumentationSetPayload {
   };
 }
 
+export type ReleaseCheckStatus = 'PASS' | 'FAIL' | 'NOT_CHECKED';
+export type ReleaseFileRole = 'calculationPdfa' | 'shopDrawingPdfa' | 'shopDrawingDxf' | 'schedule' | 'audit' | 'bim';
+
+export interface ReleaseFileRecord {
+  path: string;
+  role: ReleaseFileRole;
+  mediaType: string;
+  sha256: string;
+  sizeBytes: number;
+  sourceSnapshotHash: string;
+  drawingId?: string | undefined;
+  drawingNumber?: string | undefined;
+  revision: string;
+}
+
+export interface ReleasePackagePayload {
+  schemaVersion: '1.0.0';
+  engine: 'precast-release-manifest@1.0.0';
+  issuePurpose: 'productionRelease';
+  packageName: string;
+  exportJobId: string;
+  upstream: {
+    designBasisVersionId: string;
+    designBasisSnapshotHash: string;
+    modelVersionId: string;
+    modelSnapshotHash: string;
+    calculationReportId: string;
+    calculationSnapshotHash: string;
+    drawingSetId: string;
+    drawingSetSnapshotHash: string;
+  };
+  exportProfileId: 'REVIT-DRAFTING-01';
+  files: ReleaseFileRecord[];
+  manifestSha256: string;
+  checksumsSha256: string;
+  revitVerification: {
+    status: ReleaseCheckStatus;
+    target: 'Autodesk Revit';
+    targetVersion: string;
+    workflow: 'DraftingViewCurrentViewOnly';
+    sizeToleranceMm: number;
+    visualComparison: ReleaseCheckStatus;
+    dxfHashes: string[];
+    verifiedAt: string;
+    verifiedBy: string;
+  };
+  preflight: {
+    overallStatus: ReleaseCheckStatus;
+    checks: Array<{
+      id: string;
+      category: 'g6Approval' | 'upstreamAlignment' | 'fileCompleteness' | 'checksumIntegrity' | 'revitDxf' | 'immutableStorage';
+      status: ReleaseCheckStatus;
+      message: string;
+    }>;
+  };
+}
+
 export interface EngineeringIssue {
   id: string;
   orgId: string;
@@ -408,7 +466,7 @@ export interface ApprovalSnapshot {
 
 export interface CommandReceipt {
   idempotencyKey: string;
-  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'createDesignCheckRevision' | 'createEstimateRevision' | 'createDocumentationSetRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
+  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'createDesignCheckRevision' | 'createEstimateRevision' | 'createDocumentationSetRevision' | 'createReleasePackageRevision' | 'releaseProductionPackage' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
   actorUid: string;
   resourceId: string;
   resultState: string;

@@ -32,7 +32,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
         : requestedIdentity === 'pm' ? localEmulatorIdentities.pm
           : requestedIdentity === 'qs' ? localEmulatorIdentities.qs
             : requestedIdentity === 'detailer' ? localEmulatorIdentities.detailer
-              : localEmulatorIdentities.checker;
+              : requestedIdentity === 'production' ? localEmulatorIdentities.production
+                : localEmulatorIdentities.checker;
     const { email, password, orgId } = identity;
     void signInWithEmailAndPassword(firebaseAuth, email, password).then(({ user }) => {
       if (cancelled) return;

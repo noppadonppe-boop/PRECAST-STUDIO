@@ -281,6 +281,39 @@ export const createDocumentationSetRevisionCommandSchema = commandIdentitySchema
   expectedModelHash: snapshotHashSchema, calculationReportId: entityIdSchema, expectedCalculationHash: snapshotHashSchema,
 });
 
+const releaseStatusSchema = z.enum(['PASS', 'FAIL', 'NOT_CHECKED']);
+export const releaseFileSchema = z.object({
+  path: z.string().trim().min(3).max(240).refine((value) => !value.startsWith('/') && !value.includes('..') && !value.includes('\\'), 'Release paths must be relative, normalized, and traversal-free.'),
+  role: z.enum(['calculationPdfa', 'shopDrawingPdfa', 'shopDrawingDxf', 'schedule', 'audit', 'bim']), mediaType: z.string().trim().min(3).max(100), sha256: snapshotHashSchema,
+  sizeBytes: z.number().int().positive().max(2_000_000_000), sourceSnapshotHash: snapshotHashSchema, drawingId: entityIdSchema.optional(), drawingNumber: z.string().trim().min(3).max(80).optional(), revision: z.string().trim().min(2).max(24),
+});
+
+export const exportJobResultSchema = z.object({
+  schemaVersion: z.literal('1.0.0'), worker: z.literal('precast-export-worker@1.0.0'), status: z.literal('completed'), sourceDrawingSetId: entityIdSchema, sourceDrawingSetHash: snapshotHashSchema,
+  immutableStorage: z.literal(true), files: z.array(releaseFileSchema).min(5).max(2000),
+  revitVerification: z.object({ status: releaseStatusSchema, target: z.literal('Autodesk Revit'), targetVersion: z.string().trim().min(4).max(40), workflow: z.literal('DraftingViewCurrentViewOnly'), sizeToleranceMm: z.number().nonnegative().max(5), visualComparison: releaseStatusSchema, dxfHashes: z.array(snapshotHashSchema).min(1).max(500), verifiedAt: z.string().datetime(), verifiedBy: z.string().trim().min(3).max(120) }),
+});
+
+export const releasePackagePayloadSchema = z.object({
+  schemaVersion: z.literal('1.0.0'), engine: z.literal('precast-release-manifest@1.0.0'), issuePurpose: z.literal('productionRelease'), packageName: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._-]{2,100}$/), exportJobId: entityIdSchema,
+  upstream: z.object({ designBasisVersionId: entityIdSchema, designBasisSnapshotHash: snapshotHashSchema, modelVersionId: entityIdSchema, modelSnapshotHash: snapshotHashSchema, calculationReportId: entityIdSchema, calculationSnapshotHash: snapshotHashSchema, drawingSetId: entityIdSchema, drawingSetSnapshotHash: snapshotHashSchema }),
+  exportProfileId: z.literal('REVIT-DRAFTING-01'), files: z.array(releaseFileSchema).min(5).max(2000), manifestSha256: snapshotHashSchema, checksumsSha256: snapshotHashSchema,
+  revitVerification: exportJobResultSchema.shape.revitVerification,
+  preflight: z.object({ overallStatus: releaseStatusSchema, checks: z.array(z.object({ id: entityIdSchema, category: z.enum(['g6Approval', 'upstreamAlignment', 'fileCompleteness', 'checksumIntegrity', 'revitDxf', 'immutableStorage']), status: releaseStatusSchema, message: z.string().trim().min(3).max(500) })).length(6) }),
+}).superRefine((payload, context) => {
+  const paths = payload.files.map((file) => file.path);
+  if (new Set(paths).size !== paths.length) context.addIssue({ code: 'custom', message: 'Release package file paths must be unique.' });
+  const categories = payload.preflight.checks.map((check) => check.category);
+  if (new Set(categories).size !== 6) context.addIssue({ code: 'custom', message: 'Release preflight must contain all six categories.' });
+  const derived = payload.preflight.checks.some((check) => check.status === 'FAIL') ? 'FAIL' : payload.preflight.checks.some((check) => check.status === 'NOT_CHECKED') ? 'NOT_CHECKED' : 'PASS';
+  if (payload.preflight.overallStatus !== derived) context.addIssue({ code: 'custom', message: 'Release preflight overall status must match its checks.' });
+  const dxfHashes = payload.files.filter((file) => file.role === 'shopDrawingDxf').map((file) => file.sha256).sort();
+  if (dxfHashes.join('|') !== [...payload.revitVerification.dxfHashes].sort().join('|')) context.addIssue({ code: 'custom', message: 'Revit verification hashes must cover every DXF exactly.' });
+});
+
+export const createReleasePackageRevisionCommandSchema = commandIdentitySchema.extend({ releasePackageId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/), revision: z.string().trim().min(2).max(24), exportJobId: entityIdSchema, expectedDrawingSetHash: snapshotHashSchema });
+export const releaseProductionPackageCommandSchema = commandIdentitySchema.extend({ releasePackageId: entityIdSchema, expectedSnapshotHash: snapshotHashSchema, recipient: z.string().trim().min(3).max(160), productionQueue: z.string().trim().min(2).max(120) });
+
 export const freezeSourceRevisionCommandSchema = commandIdentitySchema.extend({
   sourceRevisionId: z.string().min(1),
   expectedSnapshotHash: snapshotHashSchema,
@@ -333,6 +366,9 @@ export type CancelAnalysisRunCommand = z.infer<typeof cancelAnalysisRunCommandSc
 export type CreateDesignCheckRevisionCommand = z.infer<typeof createDesignCheckRevisionCommandSchema>;
 export type CreateEstimateRevisionCommand = z.infer<typeof createEstimateRevisionCommandSchema>;
 export type CreateDocumentationSetRevisionCommand = z.infer<typeof createDocumentationSetRevisionCommandSchema>;
+export type CreateReleasePackageRevisionCommand = z.infer<typeof createReleasePackageRevisionCommandSchema>;
+export type ReleaseProductionPackageCommand = z.infer<typeof releaseProductionPackageCommandSchema>;
+export type ExportJobResult = z.infer<typeof exportJobResultSchema>;
 export type FreezeSourceRevisionCommand = z.infer<typeof freezeSourceRevisionCommandSchema>;
 export type UpdateProjectCommand = z.infer<typeof updateProjectCommandSchema>;
 export type ArchiveProjectCommand = z.infer<typeof archiveProjectCommandSchema>;

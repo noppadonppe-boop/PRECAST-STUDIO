@@ -5,8 +5,8 @@ import { gateLabels, gates, type Gate, type PermissionContext } from '@precast/d
 import { activeOrganization, projects } from '../fixtures/workspace';
 import { useAuth } from '../auth/AuthContext';
 import {
-  cancelAnalysisRun, createDesignCheckRevision, createDocumentationSetRevision, createEstimateRevision, freezeSourceRevision, queueAnalysisRun, saveLoadModelDraft, saveProductModelDraft, submitAnalysis, submitCalculation, submitDesignBasis, submitDocumentationSet, submitEstimate, submitProductModel, submitSourceRevision, uploadSourceFile, validateSourceFile,
-  watchAnalysisRun, watchCalculation, watchDesignBasis, watchDocumentationSet, watchEstimate, watchLoadModel, watchProductModel, watchSourceRevision, type AnalysisRunState, type CalculationState, type DesignBasisState, type DocumentationSetState, type EstimateState, type LoadModelState, type ProductModelState, type SourceRevisionState,
+  cancelAnalysisRun, createDesignCheckRevision, createDocumentationSetRevision, createEstimateRevision, createReleasePackageRevision, freezeSourceRevision, queueAnalysisRun, releaseProductionPackage, saveLoadModelDraft, saveProductModelDraft, submitAnalysis, submitCalculation, submitDesignBasis, submitDocumentationSet, submitEstimate, submitProductModel, submitReleasePackage, submitSourceRevision, uploadSourceFile, validateSourceFile,
+  watchAnalysisRun, watchCalculation, watchDesignBasis, watchDocumentationSet, watchEstimate, watchLoadModel, watchProductModel, watchReleasePackage, watchSourceRevision, type AnalysisRunState, type CalculationState, type DesignBasisState, type DocumentationSetState, type EstimateState, type LoadModelState, type ProductModelState, type ReleasePackageState, type SourceRevisionState,
 } from '../data/workflowRepository';
 import { Can } from '../permissions/guards';
 import { confirmModelLoadPaths, mergePanels, splitPanel } from '../data/panelization';
@@ -19,7 +19,7 @@ const stageDescriptions: Record<Gate, string> = {
   G4: 'The versioned Design Check register binds every panel, connection and construction-stage item to approved analysis evidence. Unresolved FAIL or NOT CHECKED items block approval.',
   G5: 'Traceable model-linked quantity takeoff and versioned Price Book workflow exposes design and rate uncertainty before commercial review.',
   G6: 'Calculation Report outline, model-linked Shop Drawing register and deterministic preflight preserve every unresolved design dependency before issue.',
-  G7: 'No production release can be issued from this local emulator workspace.',
+  G7: 'Immutable package manifests, checksums, independent technical approval and a distinct Production Release actor protect the factory handoff.',
 };
 
 function tone(status: string) {
@@ -37,6 +37,7 @@ export function StageWorkspace() {
   const [calculation, setCalculation] = useState<CalculationState | null>(null);
   const [estimate, setEstimate] = useState<EstimateState | null>(null);
   const [documentationSet, setDocumentationSet] = useState<DocumentationSetState | null>(null);
+  const [releasePackage, setReleasePackage] = useState<ReleasePackageState | null>(null);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -46,7 +47,7 @@ export function StageWorkspace() {
   const project = projects.find((item) => item.id === projectId);
   const gate = gates.find((item) => item.toLowerCase() === gateId);
   const membership = projectMemberships.find((item) => item.projectId === projectId);
-  const activeArtifact = gate === 'G0' ? source : gate === 'G1' ? designBasis : gate === 'G3' ? analysisRun ?? loadModel : gate === 'G4' ? calculation : gate === 'G5' ? estimate ?? productModel : gate === 'G6' ? documentationSet ?? calculation ?? productModel : productModel;
+  const activeArtifact = gate === 'G0' ? source : gate === 'G1' ? designBasis : gate === 'G3' ? analysisRun ?? loadModel : gate === 'G4' ? calculation : gate === 'G5' ? estimate ?? productModel : gate === 'G6' ? documentationSet ?? calculation ?? productModel : releasePackage ?? documentationSet ?? productModel;
   const selectedDrawing = documentationSet?.payload.drawings.find((drawing) => drawing.id === selectedDrawingId) ?? documentationSet?.payload.drawings[0];
   const permissionContext = useMemo<PermissionContext | null>(() => activeArtifact === null || membership === undefined ? null : {
     userId: user.uid, orgId: membership.orgId, projectId: membership.projectId, roles: membership.roles,
@@ -75,6 +76,10 @@ export function StageWorkspace() {
     }
     if (gate === 'G6') {
       const unsubscribes = [watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError), watchCalculation(organizationMembership.orgId, projectId, 'calc-r01', setCalculation, showError), watchDocumentationSet(organizationMembership.orgId, projectId, 'ds-r01', setDocumentationSet, showError)];
+      return () => { for (const unsubscribe of unsubscribes) unsubscribe(); };
+    }
+    if (gate === 'G7') {
+      const unsubscribes = [watchDocumentationSet(organizationMembership.orgId, projectId, 'ds-r01', setDocumentationSet, showError), watchReleasePackage(organizationMembership.orgId, projectId, 'rel-r01', setReleasePackage, showError)];
       return () => { for (const unsubscribe of unsubscribes) unsubscribe(); };
     }
   }, [gate, mode, organizationMembership.orgId, projectId]);
@@ -157,9 +162,14 @@ export function StageWorkspace() {
     void run(() => createDocumentationSetRevision({ orgId: organizationMembership.orgId, projectId, drawingSetId: 'ds-r01', revision: 'DS-R01', modelHash: productModel.draftHash, calculation }), 'Documentation Set generated with report outline, model-linked drawings and deterministic preflight evidence.');
   }
 
+  function generateReleasePackage() {
+    if (documentationSet?.snapshotHash === undefined || projectId === undefined) return;
+    void run(() => createReleasePackageRevision({ orgId: organizationMembership.orgId, projectId, releasePackageId: 'rel-r01', revision: 'REL-R01', exportJobId: 'export-r01', drawingSetHash: documentationSet.snapshotHash! }), 'Release Package composed from approved worker outputs and immutable upstream snapshots.');
+  }
+
   return <>
-    <div className="project-heading"><div><Link to={`/org/${activeOrganization.id}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>{gate === 'G6' ? 'M7 documentation controls' : gate === 'G5' ? 'M6 estimating controls' : gate === 'G3' ? 'M5 G3 verification' : gate === 'G4' ? 'M5 design checks' : gate === 'G2' ? 'M3 controlled workflow' : gate === 'G0' || gate === 'G1' ? 'M2 controlled workflow' : 'Read-only scaffold'}</StatusBadge></div>
-    <Surface className="revision-context" ariaLabel="Current revision context"><div><small>SOURCE</small><strong>{source?.revision ?? project.sourceRevision}</strong><span>{source?.locked ? 'Accepted & locked' : 'Controlled reference'}</span></div><i>→</i><div><small>DESIGN BASIS</small><strong>{designBasis?.revision ?? project.designBasisRevision}</strong><span>{designBasis?.locked ? 'Approved & locked' : 'Project context'}</span></div><i>→</i><div><small>MODEL</small><strong>{productModel?.revision ?? project.modelRevision}</strong><span>{productModel?.locked ? 'Approved & locked' : 'Version reference'}</span></div><i>→</i><div><small>ANALYSIS / CALC</small><strong>{analysisRun?.revision ?? project.analysisRevision} / {calculation?.revision ?? '—'}</strong><span>{calculation?.payload.overallStatus ?? analysisRun?.status ?? 'NOT CHECKED'}</span></div>{gate === 'G6' && <><i>→</i><div><small>DRAWING SET</small><strong>{documentationSet?.revision ?? '—'}</strong><span>{documentationSet?.documentationState ?? 'Not generated'}</span></div></>}</Surface>
+    <div className="project-heading"><div><Link to={`/org/${activeOrganization.id}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>{gate === 'G7' ? 'M8 release controls' : gate === 'G6' ? 'M7 documentation controls' : gate === 'G5' ? 'M6 estimating controls' : gate === 'G3' ? 'M5 G3 verification' : gate === 'G4' ? 'M5 design checks' : gate === 'G2' ? 'M3 controlled workflow' : gate === 'G0' || gate === 'G1' ? 'M2 controlled workflow' : 'Read-only scaffold'}</StatusBadge></div>
+    <Surface className="revision-context" ariaLabel="Current revision context"><div><small>SOURCE</small><strong>{source?.revision ?? project.sourceRevision}</strong><span>{source?.locked ? 'Accepted & locked' : 'Controlled reference'}</span></div><i>→</i><div><small>DESIGN BASIS</small><strong>{designBasis?.revision ?? project.designBasisRevision}</strong><span>{designBasis?.locked ? 'Approved & locked' : 'Project context'}</span></div><i>→</i><div><small>MODEL</small><strong>{productModel?.revision ?? project.modelRevision}</strong><span>{productModel?.locked ? 'Approved & locked' : 'Version reference'}</span></div><i>→</i><div><small>ANALYSIS / CALC</small><strong>{analysisRun?.revision ?? project.analysisRevision} / {calculation?.revision ?? '—'}</strong><span>{calculation?.payload.overallStatus ?? analysisRun?.status ?? 'NOT CHECKED'}</span></div>{(gate === 'G6' || gate === 'G7') && <><i>→</i><div><small>DRAWING SET</small><strong>{documentationSet?.revision ?? '—'}</strong><span>{documentationSet?.documentationState ?? 'Not generated'}</span></div></>}{gate === 'G7' && <><i>→</i><div><small>RELEASE</small><strong>{releasePackage?.revision ?? '—'}</strong><span>{releasePackage?.releaseState ?? 'Not composed'}</span></div></>}</Surface>
     {notice !== '' && <div className={`toast ${error ? 'toast--error' : ''}`} role="status">{notice}</div>}
 
     {gate === 'G0' && mode === 'emulator' && source !== null && permissionContext !== null && <Surface className="m2-workspace">
@@ -253,6 +263,22 @@ export function StageWorkspace() {
       </>}
     </Surface>}
 
-    <Surface className="stage-placeholder"><EmptyState icon={gate} title={gate === 'G0' || gate === 'G1' || gate === 'G2' || gate === 'G3' || gate === 'G4' || gate === 'G5' || gate === 'G6' ? `${gate} evidence and controls` : `${gate} workspace is safely scaffolded`} detail={stageDescriptions[gate]} /><div className="stage-link-row">{gates.map((item) => <Link className={item === gate ? 'active' : ''} key={item} to={`/org/${activeOrganization.id}/projects/${project.id}/stages/${item.toLowerCase()}`}>{item}</Link>)}</div></Surface>
+    {gate === 'G7' && mode === 'emulator' && permissionContext !== null && <Surface className="m2-workspace m8-workspace">
+      <div className="section-heading"><div><p className="eyebrow">CONTROLLED PRODUCTION RELEASE</p><h2>{releasePackage?.revision ?? 'No Release Package revision'}</h2><p>Only worker-produced files with immutable SHA-256 evidence, aligned approved revisions, passed Revit import verification and independent technical approval can reach Production Release.</p></div><StatusBadge tone={releasePackage?.status === 'released' ? 'success' : releasePackage?.status === 'approved' ? 'info' : 'warning'}>{releasePackage?.releaseState ?? 'blocked upstream'}</StatusBadge></div>
+      <div className="release-readiness" aria-label="G7 release readiness">
+        <article><StatusBadge tone={documentationSet?.status === 'approved' && documentationSet.locked ? 'success' : 'warning'}>{documentationSet?.status === 'approved' && documentationSet.locked ? 'PASS' : 'NOT_CHECKED'}</StatusBadge><div><strong>Independent G6 approval</strong><p>{documentationSet?.revision ?? 'No Documentation Set'} · {documentationSet?.status ?? 'not generated'}{documentationSet?.locked ? ' · locked' : ''}</p></div></article>
+        <article><StatusBadge tone={documentationSet?.payload.preflight.overallStatus === 'PASS' ? 'success' : 'warning'}>{documentationSet?.payload.preflight.overallStatus ?? 'NOT_CHECKED'}</StatusBadge><div><strong>Drawing/report preflight</strong><p>Design, reinforcement, lifting, identity and dimensional evidence.</p></div></article>
+        <article><StatusBadge tone={releasePackage === null ? 'warning' : 'success'}>{releasePackage === null ? 'NOT_CHECKED' : 'PASS'}</StatusBadge><div><strong>Immutable export worker</strong><p>Binary files, sizes, source hashes and normalized package paths.</p></div></article>
+        <article><StatusBadge tone={releasePackage?.payload.revitVerification.status === 'PASS' ? 'success' : 'warning'}>{releasePackage?.payload.revitVerification.status ?? 'NOT_CHECKED'}</StatusBadge><div><strong>Actual Revit import verification</strong><p>{releasePackage === null ? 'No external Revit test-matrix attestation.' : `${releasePackage.payload.revitVerification.target} ${releasePackage.payload.revitVerification.targetVersion} · ${releasePackage.payload.revitVerification.workflow}`}</p></div></article>
+      </div>
+      {releasePackage === null ? <div className="blocking-list"><strong>Production Release blocked</strong><p>G6 Documentation Set must be approved and locked with PASS design and drawing preflight.</p><p>Export worker files and actual Revit Drafting View import/PDF comparison evidence are not available.</p><p>No manifest, checksum register or production archive has been issued.</p></div> : <>
+        <div className="release-hashes"><div><small>MANIFEST SHA-256</small><code>{releasePackage.payload.manifestSha256}</code></div><div><small>CHECKSUM REGISTER SHA-256</small><code>{releasePackage.payload.checksumsSha256}</code></div></div>
+        <div className="release-file-table" role="table" aria-label="Immutable release files"><div className="release-file-row release-file-head" role="row"><span>Package path</span><span>Role</span><span>Revision</span><span>Size</span><span>SHA-256</span></div>{releasePackage.payload.files.map((file) => <div className="release-file-row" role="row" key={file.path}><span><b>{file.path}</b><small>{file.mediaType}</small></span><span>{file.role}</span><span>{file.revision}</span><span>{file.sizeBytes.toLocaleString()} B</span><code>{file.sha256}</code></div>)}</div>
+        <div className="actor-separation"><div><small>PACKAGE COMPOSED BY</small><b>{releasePackage.createdBy}</b></div><i>→</i><div><small>TECHNICAL APPROVAL</small><b>{releasePackage.approvedBy ?? 'Pending independent checker'}</b></div><i>→</i><div><small>PRODUCTION RELEASE</small><b>{releasePackage.releasedBy ?? 'Pending Production Manager'}</b></div></div>
+      </>}
+      <div className="m2-actions"><Can action="create" resource="releasePackage" context={permissionContext}><Button type="button" disabled={saving || releasePackage !== null || documentationSet?.status !== 'approved' || !documentationSet.locked || documentationSet.snapshotHash === undefined || documentationSet.payload.preflight.overallStatus !== 'PASS' || documentationSet.blockingConditions.length > 0} onClick={generateReleasePackage}>Compose immutable Release Package</Button></Can>{releasePackage !== null && <Button type="button" disabled={saving || releasePackage.status !== 'draft'} onClick={() => void run(() => submitReleasePackage({ orgId: organizationMembership.orgId, projectId: project.id, releasePackage, assignedTo: 'checker-narin' }), `${releasePackage.revision} submitted for independent technical approval.`)}>Submit for technical approval</Button>}{releasePackage !== null && <Can action="release" resource="releasePackage" context={permissionContext}><Button type="button" disabled={saving || releasePackage.status !== 'approved' || releasePackage.snapshotHash === undefined} onClick={() => void run(() => releaseProductionPackage({ orgId: organizationMembership.orgId, projectId: project.id, releasePackage, recipient: 'Rama IX Precast Factory', productionQueue: 'QUEUE-RAMA9' }), `${releasePackage.revision} released immutably to production.`)}>Release to Production</Button></Can>}<span className="design-boundary">Technical approval and Production Release require distinct actors; released packages cannot be overwritten.</span></div>
+    </Surface>}
+
+    <Surface className="stage-placeholder"><EmptyState icon={gate} title={`${gate} evidence and controls`} detail={stageDescriptions[gate]} /><div className="stage-link-row">{gates.map((item) => <Link className={item === gate ? 'active' : ''} key={item} to={`/org/${activeOrganization.id}/projects/${project.id}/stages/${item.toLowerCase()}`}>{item}</Link>)}</div></Surface>
   </>;
 }

@@ -24,6 +24,7 @@ await ensureUser('bim-arin', 'bim@precast.local', 'อรินทร์ ศร�
 await ensureUser('pm-malee', 'pm@precast.local', 'มาลี รัตนวงศ์');
 await ensureUser('qs-siriporn', 'qs@precast.local', 'ศิริพร ตั้งมั่น');
 await ensureUser('detailer-kawin', 'detailer@precast.local', 'กวิน พงษ์ศักดิ์');
+await ensureUser('production-preecha', 'production@precast.local', 'ปรีชา โรงงาน');
 
 const now = Timestamp.now();
 const stable = (value) => Array.isArray(value) ? `[${value.map(stable).join(',')}]` : value !== null && typeof value === 'object'
@@ -84,16 +85,16 @@ const analysisReviewHash = hash({ artifactType: 'analysis', artifactId: 'an-r01'
 
 const batch = db.batch();
 batch.set(db.doc('organizations/org-siam'), { id: 'org-siam', name: 'Siam Precast Engineering', updatedAt: now });
-for (const [uid, orgRoles] of [['checker-narin', ['orgAdmin']], ['engineer-supachai', []], ['bim-arin', []], ['pm-malee', []], ['qs-siriporn', []], ['detailer-kawin', []]]) {
+for (const [uid, orgRoles] of [['checker-narin', ['orgAdmin']], ['engineer-supachai', []], ['bim-arin', []], ['pm-malee', []], ['qs-siriporn', []], ['detailer-kawin', []], ['production-preecha', []]]) {
   batch.set(db.doc(`organizations/org-siam/members/${uid}`), { uid, orgId: 'org-siam', status: 'active', orgRoles, projectIds: ['p-rama9'], updatedAt: now, updatedBy: 'seed' });
 }
 batch.set(db.doc('organizations/org-siam/projects/p-rama9'), {
   id: 'p-rama9', orgId: 'org-siam', code: 'PC-26014', name: 'Rama IX Modular Residence', productFamilyId: 'type-2-residential', status: 'active', currentStage: 'analysis',
   currentSourceRevisionId: 'src-r02', currentDesignBasisVersionId: 'db-r02', currentModelVersionId: 'pm-r01', currentLoadModelVersionId: 'load-r01', gateStates: { G0: 'approved', G1: 'approved', G2: 'approved', G3: 'inProgress', G4: 'notStarted', G5: 'notStarted', G6: 'notStarted', G7: 'notStarted' },
-  assignedUserIds: ['checker-narin', 'engineer-supachai', 'bim-arin', 'pm-malee', 'qs-siriporn', 'detailer-kawin'], updatedAt: now, updatedBy: 'seed',
+  assignedUserIds: ['checker-narin', 'engineer-supachai', 'bim-arin', 'pm-malee', 'qs-siriporn', 'detailer-kawin', 'production-preecha'], updatedAt: now, updatedBy: 'seed',
 });
-for (const [uid, roles] of [['checker-narin', ['engineeringChecker']], ['engineer-supachai', ['structuralEngineer']], ['bim-arin', ['bimCoordinator']], ['pm-malee', ['projectManager']], ['qs-siriporn', ['costEstimator']], ['detailer-kawin', ['detailer']]]) {
-  batch.set(db.doc(`organizations/org-siam/projects/p-rama9/members/${uid}`), { uid, orgId: 'org-siam', projectId: 'p-rama9', status: 'active', roles, capabilities: [], effectiveFrom: now, updatedAt: now, updatedBy: 'seed' });
+for (const [uid, roles] of [['checker-narin', ['engineeringChecker']], ['engineer-supachai', ['structuralEngineer']], ['bim-arin', ['bimCoordinator']], ['pm-malee', ['projectManager']], ['qs-siriporn', ['costEstimator']], ['detailer-kawin', ['detailer']], ['production-preecha', ['productionManager']]]) {
+  batch.set(db.doc(`organizations/org-siam/projects/p-rama9/members/${uid}`), { uid, orgId: 'org-siam', projectId: 'p-rama9', status: 'active', roles, capabilities: uid === 'production-preecha' ? ['productionRelease'] : [], effectiveFrom: now, updatedAt: now, updatedBy: 'seed' });
 }
 batch.set(db.doc('organizations/org-siam/priceBooks/pb-th-2026'), { id: 'pb-th-2026', revision: 'PB-R01', status: 'approved', currency: 'THB', items: [
   { id: 'pb-concrete', costCode: 'CONC-C40', description: 'C40 precast concrete', category: 'material', unit: 'm3', currency: 'THB', baseRate: 2650, sourceType: 'supplierQuote', sourceRef: 'SQ-CONC-2026-08', effectiveFrom: '2026-08-01', effectiveTo: '2026-12-31', taxIncluded: false, status: 'approved' },
