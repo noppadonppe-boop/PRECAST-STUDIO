@@ -1,0 +1,1517 @@
+<style>
+  #precast-ux {
+    --pc-accent: #f26a2e;
+    --pc-radius: 14px;
+    --pc-bg: light-dark(#eef1f4, #11161d);
+    --pc-window: light-dark(#ffffff, #18202a);
+    --pc-panel: light-dark(#f7f8fa, #202a35);
+    --pc-panel-2: light-dark(#ffffff, #151c24);
+    --pc-text: light-dark(#18202a, #edf2f7);
+    --pc-muted: light-dark(#667180, #9eabb9);
+    --pc-line: light-dark(#dfe4e9, #34404d);
+    --pc-shadow: light-dark(rgba(21, 30, 40, .13), rgba(0, 0, 0, .34));
+    --pc-success: light-dark(#16875f, #4fd1a4);
+    --pc-warning: light-dark(#a96500, #ffc45c);
+    --pc-danger: light-dark(#c4473a, #ff7f73);
+    --pc-blue: light-dark(#2267a8, #67b7ff);
+    color-scheme: light dark;
+    color: var(--pc-text);
+    font-family: Inter, "Noto Sans Thai", "Segoe UI", sans-serif;
+  }
+
+  #precast-ux * { box-sizing: border-box; }
+
+  #precast-ux .pc-window {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    min-height: 760px;
+    overflow: hidden;
+    background: var(--pc-window);
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    box-shadow: 0 18px 50px var(--pc-shadow);
+  }
+
+  #precast-ux .pc-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 20px 14px;
+    color: light-dark(#f7fafc, #f7fafc);
+    background: light-dark(#17212b, #0d1218);
+  }
+
+  #precast-ux .pc-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 8px 10px;
+  }
+
+  #precast-ux .pc-brand-mark {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 9px;
+    color: #fff;
+    background: var(--pc-accent);
+  }
+
+  #precast-ux .pc-brand strong { display: block; font-weight: 500; letter-spacing: .04em; }
+  #precast-ux .pc-brand small { display: block; margin-top: 2px; color: #aeb9c5; }
+
+  #precast-ux .pc-project {
+    padding: 12px;
+    border-radius: 10px;
+    background: light-dark(#222f3c, #151c24);
+  }
+
+  #precast-ux .pc-project-label { margin-bottom: 5px; color: #9daab8; }
+  #precast-ux .pc-project-name { font-weight: 500; }
+  #precast-ux .pc-project-code { margin-top: 4px; color: #b9c3cd; }
+
+  #precast-ux .pc-app-switcher { display: grid; gap: 4px; }
+  #precast-ux .pc-app-switch {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 9px;
+    color: #bec8d2;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+  }
+  #precast-ux .pc-app-switch:hover { background: rgba(255,255,255,.07); }
+  #precast-ux .pc-app-switch[aria-pressed="true"] { color: #fff; background: rgba(255,255,255,.12); }
+
+  #precast-ux .pc-nav-label {
+    padding: 0 10px;
+    color: #8d9baa;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  #precast-ux .pc-stages { display: grid; gap: 4px; }
+
+  #precast-ux .pc-stage {
+    display: grid;
+    grid-template-columns: 28px 1fr 18px;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 9px;
+    color: #bec8d2;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-stage:hover { background: rgba(255,255,255,.07); }
+  #precast-ux .pc-stage[aria-pressed="true"] { color: #fff; background: rgba(255,255,255,.12); }
+
+  #precast-ux .pc-stage-number {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.24);
+    border-radius: 50%;
+  }
+
+  #precast-ux .pc-stage[aria-pressed="true"] .pc-stage-number {
+    border-color: var(--pc-accent);
+    color: #fff;
+    background: var(--pc-accent);
+  }
+
+  #precast-ux .pc-stage-state { color: #7e8d9d; }
+  #precast-ux .pc-stage.is-done .pc-stage-state { color: #6ee7b7; }
+  #precast-ux .pc-sidebar-foot { margin-top: auto; padding: 0 9px; color: #8d9baa; }
+
+  #precast-ux[data-app-view="portfolio"] .pc-project,
+  #precast-ux[data-app-view="portfolio"] .pc-design-navigation,
+  #precast-ux[data-app-view="portfolio"] .pc-project-view,
+  #precast-ux[data-app-view="portfolio"] .pc-team-view,
+  #precast-ux[data-app-view="portfolio"] .pc-project-actions,
+  #precast-ux[data-app-view="portfolio"] .pc-team-actions { display: none; }
+  #precast-ux[data-app-view="project"] .pc-portfolio-view,
+  #precast-ux[data-app-view="project"] .pc-team-view,
+  #precast-ux[data-app-view="project"] .pc-portfolio-actions,
+  #precast-ux[data-app-view="project"] .pc-team-actions { display: none; }
+  #precast-ux[data-app-view="team"] .pc-project,
+  #precast-ux[data-app-view="team"] .pc-design-navigation,
+  #precast-ux[data-app-view="team"] .pc-project-view,
+  #precast-ux[data-app-view="team"] .pc-portfolio-view,
+  #precast-ux[data-app-view="team"] .pc-project-actions,
+  #precast-ux[data-app-view="team"] .pc-portfolio-actions { display: none; }
+
+  #precast-ux .pc-app { min-width: 0; background: var(--pc-bg); }
+
+  #precast-ux .pc-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 66px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--pc-line);
+    background: var(--pc-window);
+  }
+
+  #precast-ux .pc-crumb { color: var(--pc-muted); }
+  #precast-ux .pc-crumb strong { color: var(--pc-text); font-weight: 500; }
+  #precast-ux .pc-top-actions { display: flex; align-items: center; gap: 8px; }
+
+  #precast-ux .pc-avatar {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: light-dark(#48566a, #536275);
+  }
+
+  #precast-ux .pc-main { padding: 18px; }
+
+  #precast-ux .pc-portfolio-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  #precast-ux .pc-portfolio-head h1 { margin: 0 0 4px; font-size: 22px; font-weight: 500; }
+  #precast-ux .pc-portfolio-head p { margin: 0; color: var(--pc-muted); }
+  #precast-ux .pc-portfolio-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  #precast-ux .pc-portfolio-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  #precast-ux .pc-search-wrap { position: relative; width: min(360px, 100%); }
+  #precast-ux .pc-search-wrap > svg { position: absolute; left: 10px; top: 11px; color: var(--pc-muted); }
+  #precast-ux .pc-search {
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 10px 7px 34px;
+    border: 1px solid var(--pc-line);
+    border-radius: 9px;
+    color: var(--pc-text);
+    background: var(--pc-panel-2);
+  }
+  #precast-ux .pc-project-list {
+    overflow: hidden;
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+  }
+  #precast-ux .pc-project-table { width: 100%; border-collapse: collapse; }
+  #precast-ux .pc-project-table th,
+  #precast-ux .pc-project-table td { padding: 13px 14px; border-bottom: 1px solid var(--pc-line); text-align: left; vertical-align: middle; }
+  #precast-ux .pc-project-table th { color: var(--pc-muted); font-weight: 400; background: var(--pc-panel); }
+  #precast-ux .pc-project-table tr:last-child td { border-bottom: 0; }
+  #precast-ux .pc-project-table strong { display: block; font-weight: 500; }
+  #precast-ux .pc-project-table small { display: block; margin-top: 3px; color: var(--pc-muted); }
+  #precast-ux .pc-project-table tbody tr:hover { background: color-mix(in srgb, var(--pc-accent) 5%, transparent); }
+  #precast-ux .pc-stage-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    color: var(--pc-blue);
+    background: color-mix(in srgb, var(--pc-blue) 11%, transparent);
+    white-space: nowrap;
+  }
+  #precast-ux .pc-stage-chip.is-production { color: var(--pc-success); background: color-mix(in srgb, var(--pc-success) 11%, transparent); }
+  #precast-ux .pc-stage-chip.is-warning { color: var(--pc-warning); background: color-mix(in srgb, var(--pc-warning) 11%, transparent); }
+  #precast-ux .pc-mini-progress { width: 110px; height: 5px; overflow: hidden; border-radius: 99px; background: var(--pc-line); }
+  #precast-ux .pc-mini-progress span { display: block; height: 100%; background: var(--pc-accent); }
+  #precast-ux .pc-open-project {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    color: var(--pc-text);
+    background: var(--pc-panel-2);
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-team-layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 14px; }
+  #precast-ux .pc-team-list,
+  #precast-ux .pc-access-editor {
+    overflow: hidden;
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+  }
+  #precast-ux .pc-team-table { width: 100%; border-collapse: collapse; }
+  #precast-ux .pc-team-table th,
+  #precast-ux .pc-team-table td { padding: 12px 13px; border-bottom: 1px solid var(--pc-line); text-align: left; vertical-align: middle; }
+  #precast-ux .pc-team-table th { color: var(--pc-muted); font-weight: 400; background: var(--pc-panel); }
+  #precast-ux .pc-team-table tr:last-child td { border-bottom: 0; }
+  #precast-ux .pc-team-table tbody tr { cursor: pointer; }
+  #precast-ux .pc-team-table tbody tr:hover,
+  #precast-ux .pc-team-table tbody tr.is-selected { background: color-mix(in srgb, var(--pc-accent) 8%, transparent); }
+  #precast-ux .pc-member { display: flex; align-items: center; gap: 9px; }
+  #precast-ux .pc-member-name strong { display: block; font-weight: 500; }
+  #precast-ux .pc-member-name small { display: block; margin-top: 2px; color: var(--pc-muted); }
+  #precast-ux .pc-role-list { display: flex; flex-wrap: wrap; gap: 5px; }
+  #precast-ux .pc-role-chip {
+    display: inline-flex;
+    padding: 4px 7px;
+    border-radius: 999px;
+    color: var(--pc-blue);
+    background: color-mix(in srgb, var(--pc-blue) 11%, transparent);
+  }
+  #precast-ux .pc-role-chip.is-approval { color: var(--pc-success); background: color-mix(in srgb, var(--pc-success) 11%, transparent); }
+  #precast-ux .pc-role-chip.is-admin { color: var(--pc-warning); background: color-mix(in srgb, var(--pc-warning) 11%, transparent); }
+  #precast-ux .pc-access-head { padding: 16px; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-access-head strong { display: block; font-weight: 500; }
+  #precast-ux .pc-access-head span { display: block; margin-top: 4px; color: var(--pc-muted); }
+  #precast-ux .pc-access-body { display: grid; gap: 14px; padding: 16px; }
+  #precast-ux .pc-role-options { display: grid; gap: 7px; }
+  #precast-ux .pc-role-option {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    gap: 7px;
+    align-items: start;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--pc-line);
+  }
+  #precast-ux .pc-role-option:last-child { border-bottom: 0; }
+  #precast-ux .pc-role-option input { margin-top: 3px; }
+  #precast-ux .pc-role-option strong { display: block; font-weight: 500; }
+  #precast-ux .pc-role-option small { display: block; margin-top: 2px; color: var(--pc-muted); }
+  #precast-ux .pc-permission-note {
+    padding: 10px 11px;
+    border-radius: 9px;
+    color: var(--pc-blue);
+    background: color-mix(in srgb, var(--pc-blue) 10%, var(--pc-panel));
+  }
+  #precast-ux .pc-permission-note.is-conflict { color: var(--pc-danger); background: color-mix(in srgb, var(--pc-danger) 10%, var(--pc-panel)); }
+  #precast-ux .pc-team-state { display: inline-flex; align-items: center; gap: 5px; color: var(--pc-success); }
+  #precast-ux .pc-team-state.is-invited { color: var(--pc-warning); }
+  #precast-ux .pc-team-state.is-suspended { color: var(--pc-danger); }
+  #precast-ux .pc-permission-matrix { margin-top: 14px; overflow-x: auto; border: 1px solid var(--pc-line); border-radius: var(--pc-radius); background: var(--pc-panel-2); }
+  #precast-ux .pc-permission-matrix table { width: 100%; min-width: 820px; border-collapse: collapse; }
+  #precast-ux .pc-permission-matrix th,
+  #precast-ux .pc-permission-matrix td { padding: 10px; border-bottom: 1px solid var(--pc-line); text-align: center; }
+  #precast-ux .pc-permission-matrix th { color: var(--pc-muted); font-weight: 400; background: var(--pc-panel); }
+  #precast-ux .pc-permission-matrix th:first-child,
+  #precast-ux .pc-permission-matrix td:first-child { text-align: left; }
+  #precast-ux .pc-permission-matrix tr:last-child td { border-bottom: 0; }
+
+  #precast-ux .pc-heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 14px;
+  }
+
+  #precast-ux .pc-heading-row h1 { margin: 0 0 4px; font-size: 22px; font-weight: 500; }
+  #precast-ux .pc-heading-row p { margin: 0; color: var(--pc-muted); }
+
+  #precast-ux .pc-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: var(--pc-success);
+    background: color-mix(in srgb, var(--pc-success) 12%, transparent);
+    white-space: nowrap;
+  }
+
+  #precast-ux .pc-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  #precast-ux .pc-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 14px;
+  }
+
+  #precast-ux .pc-viewer,
+  #precast-ux .pc-inspector,
+  #precast-ux .pc-summary {
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+  }
+
+  #precast-ux .pc-viewer { min-width: 0; overflow: hidden; }
+
+  #precast-ux .pc-viewer-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 52px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--pc-line);
+  }
+
+  #precast-ux .pc-tool-group { display: flex; align-items: center; gap: 6px; }
+  #precast-ux .pc-shop-tools,
+  #precast-ux .pc-cost-tools { display: none; }
+  #precast-ux[data-stage="shop"] .pc-model-tools { display: none; }
+  #precast-ux[data-stage="shop"] .pc-shop-tools { display: flex; }
+  #precast-ux[data-stage="cost"] .pc-model-tools { display: none; }
+  #precast-ux[data-stage="cost"] .pc-cost-tools { display: flex; }
+
+  #precast-ux .pc-tool,
+  #precast-ux .pc-view-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 6px 9px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    color: var(--pc-text);
+    background: var(--pc-panel-2);
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-view-toggle[aria-pressed="true"] {
+    border-color: color-mix(in srgb, var(--pc-accent) 60%, var(--pc-line));
+    color: var(--pc-accent);
+    background: color-mix(in srgb, var(--pc-accent) 10%, var(--pc-panel-2));
+  }
+
+  #precast-ux .pc-canvas {
+    position: relative;
+    display: grid;
+    min-height: 500px;
+    place-items: center;
+    overflow: hidden;
+    background-color: light-dark(#f4f6f8, #111820);
+    background-image:
+      linear-gradient(light-dark(rgba(30,50,70,.055), rgba(255,255,255,.035)) 1px, transparent 1px),
+      linear-gradient(90deg, light-dark(rgba(30,50,70,.055), rgba(255,255,255,.035)) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  #precast-ux .pc-canvas svg { width: min(92%, 760px); height: auto; overflow: visible; }
+  #precast-ux .pc-canvas .pc-model-label { fill: var(--pc-text); font-size: 12px; font-weight: 500; }
+  #precast-ux .pc-canvas .pc-dim { fill: var(--pc-muted); font-size: 11px; }
+  #precast-ux .pc-gridline { stroke: var(--pc-line); stroke-width: 1; }
+  #precast-ux .pc-shell-edge { stroke: light-dark(#596879, #a5b3c3); stroke-width: 1.5; }
+  #precast-ux .pc-shell-face { fill: light-dark(#d7dde3, #435161); }
+  #precast-ux .pc-shell-face.side { fill: light-dark(#c4cdd5, #354352); }
+  #precast-ux .pc-shell-face.floor { fill: light-dark(#e6eaee, #293541); }
+  #precast-ux .pc-joint { stroke: var(--pc-accent); stroke-width: 4; stroke-dasharray: 7 5; }
+  #precast-ux .pc-opening { fill: light-dark(#f4f6f8, #111820); stroke: light-dark(#6f7d8c, #a4b1be); stroke-width: 1.5; }
+  #precast-ux .pc-selected-face { fill: color-mix(in srgb, var(--pc-accent) 28%, light-dark(#d7dde3, #435161)); }
+  #precast-ux .pc-load { stroke: var(--pc-blue); stroke-width: 2.3; marker-end: url(#pc-arrow); }
+  #precast-ux .pc-load-label { fill: var(--pc-blue); font-size: 11px; }
+  #precast-ux .pc-rebar { stroke: var(--pc-success); stroke-width: 2; }
+  #precast-ux .pc-rebar-heavy { stroke: var(--pc-warning); stroke-width: 4; }
+  #precast-ux .pc-hot { fill: color-mix(in srgb, var(--pc-danger) 52%, transparent); }
+  #precast-ux .pc-warm { fill: color-mix(in srgb, var(--pc-warning) 38%, transparent); }
+  #precast-ux .pc-cool { fill: color-mix(in srgb, var(--pc-blue) 32%, transparent); }
+  #precast-ux .pc-node { fill: var(--pc-accent); }
+  #precast-ux .pc-mesh { stroke: color-mix(in srgb, var(--pc-blue) 55%, transparent); stroke-width: .7; fill: none; }
+  #precast-ux [data-stage-layer] { display: none; }
+  #precast-ux[data-stage="intake"] [data-stage-layer="intake"],
+  #precast-ux[data-stage="panel"] [data-stage-layer="panel"],
+  #precast-ux[data-stage="loads"] [data-stage-layer="loads"],
+  #precast-ux[data-stage="analysis"] [data-stage-layer="analysis"],
+  #precast-ux[data-stage="design"] [data-stage-layer="design"],
+  #precast-ux[data-stage="report"] [data-stage-layer="report"] { display: block; }
+  #precast-ux[data-view="iso"] .pc-plan-view { display: none; }
+  #precast-ux[data-view="plan"] .pc-iso-view { display: none; }
+  #precast-ux .pc-shop-sheet,
+  #precast-ux .pc-calc-sheet,
+  #precast-ux .pc-package-sheet,
+  #precast-ux .pc-boq-panel { display: none; }
+  #precast-ux[data-stage="shop"] .pc-canvas > svg,
+  #precast-ux[data-stage="shop"] .pc-canvas-note,
+  #precast-ux[data-stage="shop"] .pc-scale { display: none; }
+  #precast-ux[data-stage="cost"] .pc-canvas > svg,
+  #precast-ux[data-stage="cost"] .pc-canvas-note,
+  #precast-ux[data-stage="cost"] .pc-scale { display: none; }
+  #precast-ux[data-stage="shop"][data-doc-view="drawing"] .pc-shop-sheet { display: grid; }
+  #precast-ux[data-stage="shop"][data-doc-view="calculation"] .pc-calc-sheet { display: block; }
+  #precast-ux[data-stage="shop"][data-doc-view="package"] .pc-package-sheet { display: grid; }
+  #precast-ux[data-stage="cost"][data-cost-view="takeoff"] .pc-boq-takeoff { display: block; }
+  #precast-ux[data-stage="cost"][data-cost-view="summary"] .pc-boq-summary { display: grid; }
+  #precast-ux[data-stage="cost"][data-cost-view="assumptions"] .pc-boq-assumptions { display: block; }
+
+  #precast-ux .pc-boq-panel {
+    width: min(96%, 820px);
+    overflow: hidden;
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+    box-shadow: 0 10px 28px var(--pc-shadow);
+  }
+  #precast-ux .pc-boq-panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 15px 17px; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-boq-panel-head strong { display: block; font-weight: 500; }
+  #precast-ux .pc-boq-panel-head span { display: block; margin-top: 3px; color: var(--pc-muted); }
+  #precast-ux .pc-boq-table-wrap { overflow-x: auto; }
+  #precast-ux .pc-boq-table { width: 100%; min-width: 720px; border-collapse: collapse; }
+  #precast-ux .pc-boq-table th,
+  #precast-ux .pc-boq-table td { padding: 10px 11px; border-bottom: 1px solid var(--pc-line); text-align: left; }
+  #precast-ux .pc-boq-table th { color: var(--pc-muted); font-weight: 400; background: var(--pc-panel); }
+  #precast-ux .pc-boq-table td:nth-child(n+4),
+  #precast-ux .pc-boq-table th:nth-child(n+4) { text-align: right; font-variant-numeric: tabular-nums; }
+  #precast-ux .pc-boq-table tbody tr { cursor: pointer; }
+  #precast-ux .pc-boq-table tbody tr:hover,
+  #precast-ux .pc-boq-table tbody tr.is-selected { background: color-mix(in srgb, var(--pc-accent) 8%, transparent); }
+  #precast-ux .pc-boq-table tfoot td { font-weight: 500; background: var(--pc-panel); }
+  #precast-ux .pc-boq-source { color: var(--pc-muted); }
+
+  #precast-ux .pc-boq-summary { grid-template-columns: minmax(0, 1fr) 270px; padding: 22px; gap: 24px; }
+  #precast-ux .pc-cost-bars { display: grid; gap: 13px; }
+  #precast-ux .pc-cost-bar-row { display: grid; grid-template-columns: 130px 1fr 90px; align-items: center; gap: 10px; }
+  #precast-ux .pc-cost-bar-track { height: 10px; overflow: hidden; border-radius: 99px; background: var(--pc-line); }
+  #precast-ux .pc-cost-bar-track span { display: block; height: 100%; background: var(--pc-accent); }
+  #precast-ux .pc-cost-bar-row strong { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+  #precast-ux .pc-estimate-box { padding-left: 22px; border-left: 1px solid var(--pc-line); }
+  #precast-ux .pc-estimate-total { margin: 7px 0 15px; font-size: 25px; font-weight: 500; }
+  #precast-ux .pc-range-track { position: relative; height: 8px; margin: 22px 0 8px; border-radius: 99px; background: color-mix(in srgb, var(--pc-warning) 40%, var(--pc-line)); }
+  #precast-ux .pc-range-marker { position: absolute; left: 50%; top: -5px; width: 2px; height: 18px; background: var(--pc-text); }
+  #precast-ux .pc-range-labels { display: flex; justify-content: space-between; color: var(--pc-muted); }
+  #precast-ux .pc-boq-assumptions { padding: 20px 22px; }
+  #precast-ux .pc-assumption-list { display: grid; gap: 0; margin-top: 12px; }
+  #precast-ux .pc-assumption-row { display: grid; grid-template-columns: 90px 1fr 110px; gap: 12px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-assumption-row:last-child { border-bottom: 0; }
+
+  #precast-ux .pc-shop-sheet {
+    grid-template-columns: minmax(0, 1fr) 150px;
+    width: min(94%, 790px);
+    min-height: 430px;
+    padding: 14px;
+    border: 1px solid light-dark(#5b6570, #aeb7c1);
+    color: light-dark(#18202a, #e8edf2);
+    background: light-dark(#ffffff, #202832);
+    box-shadow: 0 10px 28px var(--pc-shadow);
+  }
+  #precast-ux .pc-drawing-body { position: relative; min-width: 0; border: 1px solid light-dark(#7b858f, #9ca8b4); }
+  #precast-ux .pc-drawing-body svg { width: 100%; height: 100%; }
+  #precast-ux .pc-title-block { display: grid; align-content: end; border: 1px solid light-dark(#7b858f, #9ca8b4); border-left: 0; }
+  #precast-ux .pc-title-cell { padding: 8px; border-top: 1px solid light-dark(#7b858f, #9ca8b4); }
+  #precast-ux .pc-title-cell:first-child { border-top: 0; }
+  #precast-ux .pc-title-cell small { display: block; color: var(--pc-muted); }
+  #precast-ux .pc-title-cell strong { display: block; margin-top: 3px; font-weight: 500; }
+  #precast-ux .pc-dwg-line { stroke: light-dark(#26313b, #e6edf4); stroke-width: 1.4; fill: none; }
+  #precast-ux .pc-dwg-thin { stroke: light-dark(#64717e, #aeb9c4); stroke-width: .8; fill: none; }
+  #precast-ux .pc-dwg-rebar { stroke: var(--pc-accent); stroke-width: 1.4; fill: none; }
+  #precast-ux .pc-dwg-text { fill: light-dark(#26313b, #e6edf4); font-size: 9px; }
+  #precast-ux .pc-dwg-note { fill: var(--pc-accent); font-size: 9px; }
+
+  #precast-ux .pc-calc-sheet {
+    width: min(88%, 690px);
+    min-height: 440px;
+    padding: 30px 34px;
+    border: 1px solid light-dark(#aab2ba, #7d8996);
+    color: light-dark(#18202a, #e8edf2);
+    background: light-dark(#ffffff, #202832);
+    box-shadow: 0 10px 28px var(--pc-shadow);
+  }
+  #precast-ux .pc-report-kicker { color: var(--pc-accent); text-transform: uppercase; letter-spacing: .08em; }
+  #precast-ux .pc-calc-sheet h2 { margin: 10px 0 6px; font-size: 23px; font-weight: 500; }
+  #precast-ux .pc-calc-sheet > p { margin: 0 0 20px; color: var(--pc-muted); }
+  #precast-ux .pc-report-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 20px; padding: 14px 0; border-top: 1px solid var(--pc-line); border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-report-meta span { color: var(--pc-muted); }
+  #precast-ux .pc-report-outline { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 18px; margin-top: 18px; }
+  #precast-ux .pc-report-outline div { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-report-signatures { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+  #precast-ux .pc-signature { padding-top: 20px; border-top: 1px solid var(--pc-line); color: var(--pc-muted); text-align: center; }
+
+  #precast-ux .pc-package-sheet {
+    grid-template-columns: minmax(0, 1fr) 210px;
+    width: min(92%, 760px);
+    min-height: 420px;
+    overflow: hidden;
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+    box-shadow: 0 10px 28px var(--pc-shadow);
+  }
+  #precast-ux .pc-package-tree { padding: 22px 24px; }
+  #precast-ux .pc-package-tree h2 { margin: 0 0 5px; font-size: 20px; font-weight: 500; }
+  #precast-ux .pc-package-tree > p { margin: 0 0 18px; color: var(--pc-muted); }
+  #precast-ux .pc-folder-tree { display: grid; gap: 8px; }
+  #precast-ux .pc-folder { display: grid; grid-template-columns: 24px 1fr auto; align-items: center; gap: 7px; }
+  #precast-ux .pc-folder-file { padding-left: 30px; color: var(--pc-muted); }
+  #precast-ux .pc-package-side { padding: 20px 16px; border-left: 1px solid var(--pc-line); background: var(--pc-panel); }
+  #precast-ux .pc-package-side strong { display: block; font-weight: 500; }
+  #precast-ux .pc-package-side p { color: var(--pc-muted); }
+  #precast-ux .pc-hash { overflow-wrap: anywhere; color: var(--pc-muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+
+  #precast-ux .pc-format-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  #precast-ux .pc-format-option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 7px 8px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    background: var(--pc-panel);
+  }
+  #precast-ux .pc-format-option input { width: auto; min-height: auto; }
+
+  #precast-ux .pc-canvas-note {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    color: var(--pc-muted);
+    background: color-mix(in srgb, var(--pc-panel-2) 92%, transparent);
+  }
+
+  #precast-ux .pc-scale {
+    position: absolute;
+    right: 16px;
+    bottom: 18px;
+    width: 82px;
+    border-top: 2px solid var(--pc-text);
+    color: var(--pc-muted);
+    text-align: center;
+  }
+
+  #precast-ux .pc-inspector { overflow: hidden; }
+  #precast-ux .pc-inspector-head { padding: 14px 15px; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-inspector-head strong { font-weight: 500; }
+  #precast-ux .pc-inspector-head div { margin-top: 3px; color: var(--pc-muted); }
+  #precast-ux .pc-inspector-body { display: grid; gap: 13px; padding: 15px; }
+  #precast-ux .pc-field { display: grid; gap: 5px; }
+  #precast-ux .pc-field label { color: var(--pc-muted); }
+
+  #precast-ux .pc-field input,
+  #precast-ux .pc-field select {
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 9px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    color: var(--pc-text);
+    background: var(--pc-panel);
+  }
+
+  #precast-ux .pc-two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  #precast-ux .pc-section-label { color: var(--pc-muted); text-transform: uppercase; letter-spacing: .06em; }
+
+  #precast-ux .pc-check-list { display: grid; gap: 8px; }
+  #precast-ux .pc-check-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--pc-line);
+  }
+
+  #precast-ux .pc-check-row:last-child { border-bottom: 0; }
+  #precast-ux .pc-pass { color: var(--pc-success); }
+  #precast-ux .pc-warn { color: var(--pc-warning); }
+  #precast-ux .pc-fail { color: var(--pc-danger); }
+
+  #precast-ux .pc-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 9px;
+    color: #fff;
+    background: var(--pc-accent);
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid var(--pc-line);
+    border-radius: 9px;
+    color: var(--pc-text);
+    background: var(--pc-panel-2);
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-block { width: 100%; }
+  #precast-ux .pc-footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  #precast-ux .pc-summary { padding: 13px 15px; }
+  #precast-ux .pc-summary-label { color: var(--pc-muted); }
+  #precast-ux .pc-summary-value { margin-top: 5px; font-size: 20px; font-weight: 500; }
+  #precast-ux .pc-summary-context { margin-top: 2px; color: var(--pc-muted); }
+  #precast-ux .pc-progress-track { height: 5px; margin-top: 9px; overflow: hidden; border-radius: 99px; background: var(--pc-line); }
+  #precast-ux .pc-progress-fill { width: 64%; height: 100%; background: var(--pc-accent); transition: width .35s ease; }
+
+  #precast-ux[data-compact="true"] .pc-main { padding: 12px; }
+  #precast-ux[data-compact="true"] .pc-workspace { gap: 9px; }
+  #precast-ux[data-compact="true"] .pc-canvas { min-height: 440px; }
+
+  @media (max-width: 820px) {
+    #precast-ux .pc-window { grid-template-columns: 1fr; }
+    #precast-ux .pc-sidebar { gap: 10px; }
+    #precast-ux .pc-stages { grid-template-columns: repeat(3, 1fr); }
+    #precast-ux .pc-stage { grid-template-columns: 24px 1fr; }
+    #precast-ux .pc-stage-state { display: none; }
+    #precast-ux .pc-sidebar-foot { display: none; }
+    #precast-ux .pc-workspace { grid-template-columns: 1fr; }
+    #precast-ux .pc-inspector { order: 2; }
+    #precast-ux .pc-portfolio-metrics { grid-template-columns: repeat(2, 1fr); }
+    #precast-ux .pc-project-list { overflow-x: auto; }
+    #precast-ux .pc-project-table { min-width: 760px; }
+    #precast-ux .pc-team-layout { grid-template-columns: 1fr; }
+    #precast-ux .pc-team-list { overflow-x: auto; }
+    #precast-ux .pc-team-table { min-width: 700px; }
+  }
+
+  @media (max-width: 560px) {
+    #precast-ux .pc-topbar,
+    #precast-ux .pc-heading-row,
+    #precast-ux .pc-viewer-toolbar { align-items: stretch; flex-direction: column; }
+    #precast-ux .pc-stages { grid-template-columns: 1fr 1fr; }
+    #precast-ux .pc-footer-grid { grid-template-columns: 1fr; }
+    #precast-ux .pc-top-actions { flex-wrap: wrap; }
+    #precast-ux .pc-canvas { min-height: 360px; }
+    #precast-ux .pc-portfolio-head,
+    #precast-ux .pc-portfolio-controls { align-items: stretch; flex-direction: column; }
+    #precast-ux .pc-portfolio-metrics { grid-template-columns: 1fr 1fr; }
+    #precast-ux .pc-shop-sheet { grid-template-columns: 1fr; }
+    #precast-ux .pc-title-block { grid-template-columns: 1fr 1fr; border-left: 1px solid light-dark(#7b858f, #9ca8b4); border-top: 0; }
+    #precast-ux .pc-package-sheet { grid-template-columns: 1fr; }
+    #precast-ux .pc-package-side { border-left: 0; border-top: 1px solid var(--pc-line); }
+    #precast-ux .pc-report-outline,
+    #precast-ux .pc-report-signatures { grid-template-columns: 1fr; }
+    #precast-ux .pc-boq-summary { grid-template-columns: 1fr; }
+    #precast-ux .pc-estimate-box { padding-left: 0; padding-top: 18px; border-left: 0; border-top: 1px solid var(--pc-line); }
+    #precast-ux .pc-assumption-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div id="precast-ux" data-app-view="team" data-stage="cost" data-cost-view="takeoff" data-doc-view="drawing" data-view="iso" data-compact="false">
+  <section class="pc-window" aria-label="ต้นแบบหน้าจอ Precast Studio">
+    <aside class="pc-sidebar">
+      <div class="pc-brand">
+        <div class="pc-brand-mark"><i data-lucide="boxes" aria-hidden="true"></i></div>
+        <div><strong>PRECAST STUDIO</strong><small>Engineering Platform</small></div>
+      </div>
+
+      <nav class="pc-app-switcher" aria-label="ส่วนหลักของระบบ">
+        <button class="pc-app-switch" type="button" data-app-button="portfolio" aria-pressed="false"><i data-lucide="layout-dashboard" aria-hidden="true"></i><span>ทุกโครงการ</span></button>
+        <button class="pc-app-switch" type="button" data-app-button="project" aria-pressed="false"><i data-lucide="ruler" aria-hidden="true"></i><span>พื้นที่ออกแบบ</span></button>
+        <button class="pc-app-switch" type="button" data-app-button="team" aria-pressed="true"><i data-lucide="shield-check" aria-hidden="true"></i><span>ทีมและสิทธิ์</span></button>
+      </nav>
+
+      <div class="pc-project">
+        <div class="pc-project-label">โครงการปัจจุบัน</div>
+        <div class="pc-project-name">Senior Living Module</div>
+        <div class="pc-project-code">PM-T2-36X2-B01 · Rev B.03</div>
+      </div>
+
+      <div class="pc-design-navigation">
+        <div class="pc-nav-label">ขั้นตอนการออกแบบ</div>
+        <nav class="pc-stages" aria-label="ขั้นตอนการออกแบบพรีคาสท์">
+          <button class="pc-stage is-done" type="button" data-stage-button="intake" aria-pressed="false">
+            <span class="pc-stage-number">1</span><span>รับแบบ BIM</span><span class="pc-stage-state">✓</span>
+          </button>
+          <button class="pc-stage is-done" type="button" data-stage-button="criteria" aria-pressed="false">
+            <span class="pc-stage-number">2</span><span>Design Criteria</span><span class="pc-stage-state">✓</span>
+          </button>
+          <button class="pc-stage is-done" type="button" data-stage-button="panel" aria-pressed="false">
+            <span class="pc-stage-number">3</span><span>แบ่งชิ้นงาน</span><span class="pc-stage-state">✓</span>
+          </button>
+          <button class="pc-stage" type="button" data-stage-button="loads" aria-pressed="false">
+            <span class="pc-stage-number">4</span><span>แรงและจุดรองรับ</span><span class="pc-stage-state">✓</span>
+          </button>
+          <button class="pc-stage" type="button" data-stage-button="analysis" aria-pressed="false">
+            <span class="pc-stage-number">5</span><span>วิเคราะห์ FEM</span><span class="pc-stage-state">✓</span>
+          </button>
+          <button class="pc-stage" type="button" data-stage-button="design" aria-pressed="false">
+            <span class="pc-stage-number">6</span><span>ออกแบบเหล็ก</span><span class="pc-stage-state">✓</span>
+          </button>
+          <button class="pc-stage" type="button" data-stage-button="cost" aria-pressed="true">
+            <span class="pc-stage-number">7</span><span>BOQ & Estimate</span><span class="pc-stage-state">●</span>
+          </button>
+          <button class="pc-stage" type="button" data-stage-button="report" aria-pressed="false">
+            <span class="pc-stage-number">8</span><span>รายการคำนวณ</span><span class="pc-stage-state">○</span>
+          </button>
+          <button class="pc-stage" type="button" data-stage-button="shop" aria-pressed="false">
+            <span class="pc-stage-number">9</span><span>Drawing & Export</span><span class="pc-stage-state">○</span>
+          </button>
+        </nav>
+      </div>
+
+      <div class="pc-sidebar-foot">Prototype workspace · Internal review</div>
+    </aside>
+
+    <div class="pc-app">
+      <header class="pc-topbar">
+        <div class="pc-crumb"><span id="pc-crumb-prefix">Portfolio</span> / <strong id="pc-crumb-current">All projects</strong></div>
+        <div class="pc-top-actions pc-project-actions">
+          <button class="pc-secondary" type="button"><i data-lucide="history" aria-hidden="true"></i> Revision</button>
+          <button class="pc-secondary" type="button"><i data-lucide="message-square" aria-hidden="true"></i> Review</button>
+          <div class="pc-avatar" aria-label="ผู้ใช้งาน KS">KS</div>
+        </div>
+        <div class="pc-top-actions pc-portfolio-actions">
+          <button class="pc-secondary" type="button" data-open-team><i data-lucide="users" aria-hidden="true"></i> ทีมงาน</button>
+          <button class="pc-secondary" type="button"><i data-lucide="bell" aria-hidden="true"></i> งานรอตรวจ 3</button>
+          <div class="pc-avatar" aria-label="ผู้ใช้งาน KS">KS</div>
+        </div>
+        <div class="pc-top-actions pc-team-actions">
+          <button class="pc-secondary" type="button"><i data-lucide="scroll-text" aria-hidden="true"></i> Audit log</button>
+          <button class="pc-action" type="button"><i data-lucide="user-plus" aria-hidden="true"></i> เชิญผู้ใช้</button>
+          <div class="pc-avatar" aria-label="ผู้ใช้งาน KS">KS</div>
+        </div>
+      </header>
+
+      <main class="pc-main pc-portfolio-view">
+        <div class="pc-portfolio-head">
+          <div><h1>โครงการทั้งหมด</h1><p>ติดตามงานออกแบบ วิเคราะห์ Shop Drawing และสถานะการผลิตในมุมมองเดียว</p></div>
+          <button class="pc-action" type="button"><i data-lucide="plus" aria-hidden="true"></i> สร้างโครงการ</button>
+        </div>
+
+        <div class="pc-portfolio-metrics">
+          <div class="pc-summary"><div class="pc-summary-label">โครงการที่กำลังทำ</div><div class="pc-summary-value">8</div><div class="pc-summary-context">จากทั้งหมด 14 โครงการ</div></div>
+          <div class="pc-summary"><div class="pc-summary-label">รอวิศวกรตรวจ</div><div class="pc-summary-value">3</div><div class="pc-summary-context">Analysis 2 · Drawing 1</div></div>
+          <div class="pc-summary"><div class="pc-summary-label">ประมาณการโครงการ Active</div><div class="pc-summary-value">8.4M</div><div class="pc-summary-context">THB · 5 Current · 3 Out of date</div></div>
+          <div class="pc-summary"><div class="pc-summary-label">Released to production</div><div class="pc-summary-value">126</div><div class="pc-summary-context">ชิ้นงานพร้อมเข้าคิวผลิต</div></div>
+        </div>
+
+        <div class="pc-portfolio-controls">
+          <div class="pc-search-wrap"><i data-lucide="search" aria-hidden="true"></i><input class="pc-search" id="pc-project-search" type="search" placeholder="ค้นหาชื่อโครงการหรือรหัส"></div>
+          <div class="pc-tool-group">
+            <button class="pc-view-toggle" type="button" aria-pressed="true">กำลังดำเนินการ</button>
+            <button class="pc-view-toggle" type="button" aria-pressed="false">ทั้งหมด</button>
+          </div>
+        </div>
+
+        <section class="pc-project-list" aria-label="รายการโครงการ">
+          <table class="pc-project-table">
+            <thead><tr><th>โครงการ</th><th>ขั้นตอนปัจจุบัน</th><th>ความคืบหน้า</th><th>ผู้รับผิดชอบ</th><th>อัปเดต</th><th></th></tr></thead>
+            <tbody id="pc-project-rows">
+              <tr data-project-row="PM-T2-36X2-B01"><td><strong>Senior Living Module</strong><small>PM-T2-36X2-B01 · Rev B.03</small></td><td><span class="pc-stage-chip">● ออกแบบเหล็ก</span></td><td><div class="pc-mini-progress"><span style="width:72%"></span></div><small>72%</small></td><td>ก้อง / ทีมโครงสร้าง</td><td>วันนี้ 10:42</td><td><button class="pc-open-project" type="button" data-open-project="Senior Living Module|PM-T2-36X2-B01 · Rev B.03|design">เปิดงาน</button></td></tr>
+              <tr data-project-row="PM-VL-48-A02"><td><strong>Pool Villa Type A</strong><small>PM-VL-48-A02 · Rev C.01</small></td><td><span class="pc-stage-chip is-warning">● Checker review</span></td><td><div class="pc-mini-progress"><span style="width:86%"></span></div><small>86%</small></td><td>พีรพงศ์ / checker</td><td>เมื่อวาน 16:20</td><td><button class="pc-open-project" type="button" data-open-project="Pool Villa Type A|PM-VL-48-A02 · Rev C.01|report">เปิดงาน</button></td></tr>
+              <tr data-project-row="PM-OF-24-C04"><td><strong>Site Office 24</strong><small>PM-OF-24-C04 · Rev A.05</small></td><td><span class="pc-stage-chip is-production">✓ Released to production</span></td><td><div class="pc-mini-progress"><span style="width:100%"></span></div><small>100%</small></td><td>วรัญญา / production</td><td>2 ก.ย. 2026</td><td><button class="pc-open-project" type="button" data-open-project="Site Office 24|PM-OF-24-C04 · Rev A.05|shop">เปิดงาน</button></td></tr>
+              <tr data-project-row="PM-RS-60-D01"><td><strong>Resort Cluster 01</strong><small>PM-RS-60-D01 · Rev A.02</small></td><td><span class="pc-stage-chip">● กำหนดแรง</span></td><td><div class="pc-mini-progress"><span style="width:48%"></span></div><small>48%</small></td><td>สหรัฐ / analysis</td><td>1 ก.ย. 2026</td><td><button class="pc-open-project" type="button" data-open-project="Resort Cluster 01|PM-RS-60-D01 · Rev A.02|loads">เปิดงาน</button></td></tr>
+              <tr data-project-row="PM-HS-32-A07"><td><strong>Compact House 32</strong><small>PM-HS-32-A07 · Rev B.01</small></td><td><span class="pc-stage-chip">● แบ่งชิ้นงาน</span></td><td><div class="pc-mini-progress"><span style="width:31%"></span></div><small>31%</small></td><td>ณัฐ / panelization</td><td>30 ส.ค. 2026</td><td><button class="pc-open-project" type="button" data-open-project="Compact House 32|PM-HS-32-A07 · Rev B.01|panel">เปิดงาน</button></td></tr>
+            </tbody>
+          </table>
+        </section>
+      </main>
+
+      <main class="pc-main pc-team-view">
+        <div class="pc-portfolio-head">
+          <div><h1>ทีมและสิทธิ์การเข้าถึง</h1><p>กำหนด Role รายโครงการ พร้อมตรวจ Separation of Duties ก่อนบันทึก</p></div>
+          <span class="pc-stage-chip is-production"><i data-lucide="badge-check" aria-hidden="true"></i> Role Matrix v1 · Approved</span>
+        </div>
+
+        <div class="pc-portfolio-metrics">
+          <div class="pc-summary"><div class="pc-summary-label">สมาชิกทั้งหมด</div><div class="pc-summary-value">18</div><div class="pc-summary-context">Active 16 · Invited 1 · Suspended 1</div></div>
+          <div class="pc-summary"><div class="pc-summary-label">Engineering approvers</div><div class="pc-summary-value">3</div><div class="pc-summary-context">ครอบคลุม 8 active projects</div></div>
+          <div class="pc-summary"><div class="pc-summary-label">สิทธิ์ชั่วคราว</div><div class="pc-summary-value">2</div><div class="pc-summary-context">หมดอายุภายใน 30 วัน</div></div>
+          <div class="pc-summary"><div class="pc-summary-label">Access warnings</div><div class="pc-summary-value">1</div><div class="pc-summary-context">รอตรวจ role conflict</div></div>
+        </div>
+
+        <div class="pc-portfolio-controls">
+          <div class="pc-search-wrap"><i data-lucide="search" aria-hidden="true"></i><input class="pc-search" id="pc-member-search" type="search" placeholder="ค้นหาชื่อ อีเมล หรือ Role"></div>
+          <div class="pc-tool-group"><button class="pc-view-toggle" type="button" aria-pressed="true">Active</button><button class="pc-view-toggle" type="button" aria-pressed="false">ทั้งหมด</button></div>
+        </div>
+
+        <div class="pc-team-layout">
+          <section class="pc-team-list" aria-label="รายชื่อผู้ใช้งาน">
+            <table class="pc-team-table">
+              <thead><tr><th>ผู้ใช้</th><th>บทบาทใน Senior Living</th><th>สถานะ</th><th>สิทธิ์ถึง</th></tr></thead>
+              <tbody id="pc-member-rows">
+                <tr class="is-selected" data-member-row data-member="ก้อง สุวรรณ|kong@example.com|Project Manager,Structural Engineer|active"><td><div class="pc-member"><div class="pc-avatar">KS</div><div class="pc-member-name"><strong>ก้อง สุวรรณ</strong><small>kong@example.com</small></div></div></td><td><div class="pc-role-list"><span class="pc-role-chip">Project Manager</span><span class="pc-role-chip">Structural Engineer</span></div></td><td><span class="pc-team-state">● Active</span></td><td>ไม่มีกำหนด</td></tr>
+                <tr data-member-row data-member="พีรพงศ์ พรหม|peeraphong@example.com|Engineering Checker|active"><td><div class="pc-member"><div class="pc-avatar">PP</div><div class="pc-member-name"><strong>พีรพงศ์ พรหม</strong><small>peeraphong@example.com</small></div></div></td><td><div class="pc-role-list"><span class="pc-role-chip is-approval">Engineering Checker</span></div></td><td><span class="pc-team-state">● Active</span></td><td>ไม่มีกำหนด</td></tr>
+                <tr data-member-row data-member="อรยา เมธา|oraya@example.com|BIM Coordinator,Detailer|active"><td><div class="pc-member"><div class="pc-avatar">OM</div><div class="pc-member-name"><strong>อรยา เมธา</strong><small>oraya@example.com</small></div></div></td><td><div class="pc-role-list"><span class="pc-role-chip">BIM Coordinator</span><span class="pc-role-chip">Detailer</span></div></td><td><span class="pc-team-state">● Active</span></td><td>31 ธ.ค. 2026</td></tr>
+                <tr data-member-row data-member="ชลิดา การช่าง|chaleeda@example.com|Cost Estimator,Commercial Approver|active"><td><div class="pc-member"><div class="pc-avatar">CK</div><div class="pc-member-name"><strong>ชลิดา การช่าง</strong><small>chaleeda@example.com</small></div></div></td><td><div class="pc-role-list"><span class="pc-role-chip">Cost Estimator</span><span class="pc-role-chip is-approval">Commercial Approver</span></div></td><td><span class="pc-team-state">● Active</span></td><td>ไม่มีกำหนด</td></tr>
+                <tr data-member-row data-member="โรงงาน Line A|factory-a@example.com|Production Manager|invited"><td><div class="pc-member"><div class="pc-avatar">FA</div><div class="pc-member-name"><strong>โรงงาน Line A</strong><small>factory-a@example.com</small></div></div></td><td><div class="pc-role-list"><span class="pc-role-chip">Production Manager</span></div></td><td><span class="pc-team-state is-invited">● Invited</span></td><td>30 ก.ย. 2026</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <aside class="pc-access-editor" aria-label="แก้ไขสิทธิ์ผู้ใช้ที่เลือก">
+            <div class="pc-access-head"><strong id="pc-selected-member">ก้อง สุวรรณ</strong><span id="pc-selected-email">kong@example.com · Senior Living Module</span></div>
+            <div class="pc-access-body">
+              <div class="pc-field"><label for="pc-member-status">สถานะการเข้าถึง</label><select id="pc-member-status"><option>Active</option><option>Suspended</option></select></div>
+              <div class="pc-section-label">Project roles</div>
+              <div class="pc-role-options">
+                <label class="pc-role-option"><input type="checkbox" data-role-check="Project Manager" checked><span><strong>Project Manager</strong><small>จัดทีม Gate และการออกเอกสารด้านบริหาร</small></span></label>
+                <label class="pc-role-option"><input type="checkbox" data-role-check="Structural Engineer" checked><span><strong>Structural Engineer</strong><small>แก้ Design Criteria, FEM และ Design Draft</small></span></label>
+                <label class="pc-role-option"><input type="checkbox" data-role-check="Engineering Checker"><span><strong>Engineering Checker</strong><small>อนุมัติได้เฉพาะงานที่ตนไม่ได้จัดทำ</small></span></label>
+                <label class="pc-role-option"><input type="checkbox" data-role-check="Cost Estimator"><span><strong>Cost Estimator</strong><small>BOQ, Rate และ Estimate Draft</small></span></label>
+                <label class="pc-role-option"><input type="checkbox" data-role-check="Production Manager"><span><strong>Production Manager</strong><small>Release package หลัง Technical Approval</small></span></label>
+              </div>
+              <div class="pc-field"><label for="pc-access-expiry">สิทธิ์ถึงวันที่</label><input id="pc-access-expiry" type="date"></div>
+              <div class="pc-permission-note" id="pc-sod-note" role="status">การมอบหลาย Role ทำได้ แต่ผู้ใช้ยังอนุมัติ Revision ที่ตนสร้างไม่ได้</div>
+              <button class="pc-action pc-block" type="button" id="pc-save-permissions">ตรวจและบันทึกสิทธิ์</button>
+            </div>
+          </aside>
+        </div>
+
+        <section class="pc-permission-matrix" aria-label="สรุปสิทธิ์การอนุมัติ">
+          <table><thead><tr><th>Artifact</th><th>Author</th><th>Review</th><th>Approve</th><th>Issue / Release</th></tr></thead><tbody>
+            <tr><td>Design Basis / FEM</td><td>Structural Engineer</td><td>Engineering Checker</td><td>Engineering Checker</td><td>—</td></tr>
+            <tr><td>BOQ quantities / Estimate</td><td>QS / Cost Estimator</td><td>Engineer + Commercial</td><td>Commercial Approver</td><td>Project Manager</td></tr>
+            <tr><td>Shop Drawing / Calculation</td><td>Detailer / System</td><td>Engineer</td><td>Engineering Checker</td><td>Project Manager</td></tr>
+            <tr><td>Production Package</td><td>System Worker</td><td>Engineering Checker</td><td>Technical approval</td><td>Production Manager</td></tr>
+          </tbody></table>
+        </section>
+      </main>
+
+      <main class="pc-main pc-project-view">
+        <div class="pc-heading-row">
+          <div>
+            <h1 id="pc-page-title">แบ่งชิ้นงานพรีคาสท์</h1>
+            <p id="pc-page-subtitle">กำหนดขอบเขต Panel, Joint, Opening และข้อจำกัดการผลิต</p>
+          </div>
+          <div class="pc-status"><span class="pc-dot"></span><span id="pc-model-status">แบบ BIM เชื่อมต่อแล้ว</span></div>
+        </div>
+
+        <div class="pc-workspace">
+          <section class="pc-viewer" aria-label="พื้นที่แสดงโมเดลสามมิติ">
+            <div class="pc-viewer-toolbar">
+              <div class="pc-tool-group pc-model-tools">
+                <button class="pc-tool" type="button"><i data-lucide="mouse-pointer-2" aria-hidden="true"></i> เลือก</button>
+                <button class="pc-tool" type="button"><i data-lucide="split" aria-hidden="true"></i> แบ่ง Panel</button>
+                <button class="pc-tool" type="button"><i data-lucide="link-2" aria-hidden="true"></i> กำหนด Joint</button>
+              </div>
+              <div class="pc-tool-group pc-shop-tools">
+                <button class="pc-view-toggle" type="button" data-doc-button="drawing" aria-pressed="true"><i data-lucide="drafting-compass" aria-hidden="true"></i> Shop Drawing</button>
+                <button class="pc-view-toggle" type="button" data-doc-button="calculation" aria-pressed="false"><i data-lucide="file-text" aria-hidden="true"></i> Calculation</button>
+                <button class="pc-view-toggle" type="button" data-doc-button="package" aria-pressed="false"><i data-lucide="package-check" aria-hidden="true"></i> Export Package</button>
+              </div>
+              <div class="pc-tool-group pc-cost-tools">
+                <button class="pc-view-toggle" type="button" data-cost-button="takeoff" aria-pressed="true"><i data-lucide="table-2" aria-hidden="true"></i> Quantity Takeoff</button>
+                <button class="pc-view-toggle" type="button" data-cost-button="summary" aria-pressed="false"><i data-lucide="chart-no-axes-column" aria-hidden="true"></i> Cost Summary</button>
+                <button class="pc-view-toggle" type="button" data-cost-button="assumptions" aria-pressed="false"><i data-lucide="list-checks" aria-hidden="true"></i> Assumptions</button>
+              </div>
+              <div class="pc-tool-group pc-model-tools" aria-label="มุมมองโมเดล">
+                <button class="pc-view-toggle" type="button" data-view-button="iso" aria-pressed="true">3D</button>
+                <button class="pc-view-toggle" type="button" data-view-button="plan" aria-pressed="false">Plan</button>
+              </div>
+              <div class="pc-tool-group pc-shop-tools"><span class="pc-stage-chip is-warning">For Approval · Rev B.03</span></div>
+              <div class="pc-tool-group pc-cost-tools"><span class="pc-stage-chip">Engineering estimate · ±15%</span></div>
+            </div>
+
+            <div class="pc-canvas">
+              <svg viewBox="0 0 760 470" role="img" aria-labelledby="pc-model-title pc-model-desc">
+                <title id="pc-model-title">โมเดลอาคารพรีคาสท์สองโมดูล</title>
+                <desc id="pc-model-desc">แสดงการแบ่งผนัง พื้น รอยต่อ จุดยก แรงกระทำ ผลวิเคราะห์ และแนวเหล็กตามขั้นตอนที่เลือก</desc>
+                <defs>
+                  <marker id="pc-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="currentColor" style="color:var(--pc-blue)"></path></marker>
+                  <linearGradient id="pc-heat" x1="0" x2="1"><stop offset="0" stop-color="var(--pc-blue)" stop-opacity=".4"></stop><stop offset=".55" stop-color="var(--pc-warning)" stop-opacity=".48"></stop><stop offset="1" stop-color="var(--pc-danger)" stop-opacity=".62"></stop></linearGradient>
+                </defs>
+
+                <g class="pc-iso-view">
+                  <polygon class="pc-shell-face floor pc-shell-edge" points="130,330 380,210 635,332 380,450"></polygon>
+                  <polygon class="pc-shell-face side pc-shell-edge" points="130,130 380,20 380,210 130,330"></polygon>
+                  <polygon class="pc-shell-face pc-shell-edge pc-selected-face" points="380,20 635,132 635,332 380,210"></polygon>
+                  <line class="pc-joint" x1="380" y1="20" x2="380" y2="450"></line>
+                  <polygon class="pc-opening" points="466,98 535,128 535,246 466,214"></polygon>
+                  <polygon class="pc-opening" points="190,170 260,138 260,215 190,248"></polygon>
+                  <text class="pc-model-label" x="480" y="285">P-W03</text>
+                  <text class="pc-model-label" x="216" y="282">P-W01</text>
+                  <text class="pc-model-label" x="390" y="388">P-F01 / P-F02</text>
+                  <text class="pc-dim" x="355" y="462">6.00 m</text>
+                  <text class="pc-dim" x="643" y="240">2.80 m</text>
+
+                  <g data-stage-layer="intake">
+                    <circle class="pc-node" cx="260" cy="138" r="5"></circle>
+                    <circle class="pc-node" cx="466" cy="98" r="5"></circle>
+                    <text class="pc-load-label" x="270" y="125">ช่องเปิดตรวจสอบแล้ว</text>
+                  </g>
+
+                  <g data-stage-layer="panel">
+                    <circle class="pc-node" cx="380" cy="20" r="5"></circle>
+                    <circle class="pc-node" cx="380" cy="210" r="5"></circle>
+                    <circle class="pc-node" cx="380" cy="450" r="5"></circle>
+                    <text class="pc-load-label" x="394" y="52">J01 · Module Joint</text>
+                  </g>
+
+                  <g data-stage-layer="loads">
+                    <line class="pc-load" x1="205" y1="42" x2="205" y2="125"></line>
+                    <line class="pc-load" x1="305" y1="18" x2="305" y2="91"></line>
+                    <line class="pc-load" x1="455" y1="17" x2="455" y2="74"></line>
+                    <line class="pc-load" x1="555" y1="56" x2="555" y2="112"></line>
+                    <text class="pc-load-label" x="270" y="12">DL + LL + Roof</text>
+                    <line class="pc-load" x1="684" y1="193" x2="625" y2="193"></line>
+                    <text class="pc-load-label" x="650" y="180">Wind</text>
+                  </g>
+
+                  <g data-stage-layer="analysis">
+                    <polygon points="380,20 635,132 635,332 380,210" fill="url(#pc-heat)" opacity=".8"></polygon>
+                    <path class="pc-mesh" d="M380 58L635 171M380 96L635 209M380 134L635 247M380 172L635 285M431 42L431 232M482 65L482 255M533 87L533 278M584 110L584 301"></path>
+                    <circle class="pc-hot" cx="466" cy="98" r="25"></circle>
+                    <circle class="pc-warm" cx="535" cy="246" r="30"></circle>
+                    <text class="pc-load-label" x="478" y="84">U = 0.82</text>
+                  </g>
+
+                  <g data-stage-layer="design">
+                    <path class="pc-rebar" d="M405 48L405 215M425 56L425 222M445 65L445 230M565 116L565 280M585 125L585 288M605 134L605 297"></path>
+                    <path class="pc-rebar" d="M390 82L625 185M390 108L625 211M390 134L625 237M390 160L625 263"></path>
+                    <path class="pc-rebar-heavy" d="M451 83L451 225M548 116L548 270"></path>
+                    <text class="pc-load-label" x="475" y="315">DB10 @ 200 + Opening bars</text>
+                  </g>
+
+                  <g data-stage-layer="report">
+                    <circle cx="505" cy="196" r="48" fill="color-mix(in srgb, var(--pc-success) 18%, transparent)" stroke="var(--pc-success)" stroke-width="2"></circle>
+                    <text class="pc-model-label" x="478" y="192">CHECKED</text>
+                    <text class="pc-dim" x="480" y="211">Rev B.03</text>
+                  </g>
+                </g>
+
+                <g class="pc-plan-view">
+                  <rect class="pc-shell-face floor pc-shell-edge" x="125" y="95" width="510" height="285"></rect>
+                  <line class="pc-joint" x1="380" y1="95" x2="380" y2="380"></line>
+                  <rect class="pc-opening" x="207" y="87" width="80" height="16"></rect>
+                  <rect class="pc-opening" x="486" y="372" width="84" height="16"></rect>
+                  <line class="pc-gridline" x1="125" y1="237" x2="635" y2="237"></line>
+                  <text class="pc-model-label" x="233" y="220">MODULE A</text>
+                  <text class="pc-model-label" x="485" y="220">MODULE B</text>
+                  <text class="pc-load-label" x="390" y="118">J01</text>
+                  <g data-stage-layer="loads">
+                    <line class="pc-load" x1="685" y1="150" x2="635" y2="150"></line>
+                    <line class="pc-load" x1="685" y1="237" x2="635" y2="237"></line>
+                    <line class="pc-load" x1="685" y1="325" x2="635" y2="325"></line>
+                  </g>
+                  <g data-stage-layer="analysis"><rect x="380" y="95" width="255" height="285" fill="url(#pc-heat)" opacity=".75"></rect></g>
+                  <g data-stage-layer="design">
+                    <path class="pc-rebar" d="M150 120H610M150 145H610M150 170H610M150 305H610M150 330H610M150 355H610"></path>
+                    <path class="pc-rebar-heavy" d="M365 105V370M395 105V370"></path>
+                  </g>
+                  <g data-stage-layer="report"><text class="pc-model-label" x="315" y="415">Drawing set ready · 12 sheets</text></g>
+                </g>
+              </svg>
+
+              <section class="pc-boq-panel pc-boq-takeoff" aria-label="ตารางถอดปริมาณและประมาณราคา">
+                <div class="pc-boq-panel-head"><div><strong>BOQ · EST-ENG-004 · Rev 02</strong><span>Model M-Rev06 · Price Book TH-PC-Q3/2026 · THB</span></div><span class="pc-pass">Current</span></div>
+                <div class="pc-boq-table-wrap">
+                  <table class="pc-boq-table">
+                    <thead><tr><th>Cost code / รายการ</th><th>ที่มา</th><th>หน่วย</th><th>ปริมาณ</th><th>สูญเสีย</th><th>ราคาต่อหน่วย</th><th>จำนวนเงิน</th></tr></thead>
+                    <tbody>
+                      <tr class="is-selected" data-boq-row="concrete"><td><strong>MAT-CON-01</strong><br>คอนกรีต LC-1200</td><td class="pc-boq-source">18 panels</td><td>m³</td><td>18.40</td><td>3%</td><td>3,450</td><td>65,384</td></tr>
+                      <tr data-boq-row="rebar"><td><strong>MAT-RBR-01</strong><br>เหล็กเสริมและตะแกรง</td><td class="pc-boq-source">BBS Rev 04</td><td>kg</td><td>1,184</td><td>5%</td><td>27.50</td><td>34,188</td></tr>
+                      <tr data-boq-row="embed"><td><strong>MAT-EMB-02</strong><br>Embedded items / anchors</td><td class="pc-boq-source">Schedule</td><td>set</td><td>18</td><td>0%</td><td>2,850</td><td>51,300</td></tr>
+                      <tr data-boq-row="mold"><td><strong>PRD-MOLD-01</strong><br>แม่พิมพ์และเตรียมผิวหล่อ</td><td class="pc-boq-source">286 m²</td><td>m²</td><td>286</td><td>0%</td><td>420</td><td>120,120</td></tr>
+                      <tr data-boq-row="finish"><td><strong>FIN-SUR-01</strong><br>วัสดุปิดผิวและงานเก็บ</td><td class="pc-boq-source">Allowance</td><td>m²</td><td>286</td><td>5%</td><td>380</td><td>114,114</td></tr>
+                      <tr data-boq-row="transport"><td><strong>LOG-TRN-01</strong><br>ขนส่งโมดูล</td><td class="pc-boq-source">4 trips</td><td>trip</td><td>4</td><td>0%</td><td>8,500</td><td>34,000</td></tr>
+                      <tr data-boq-row="erection"><td><strong>INS-CRN-01</strong><br>เครนและติดตั้ง</td><td class="pc-boq-source">2 days</td><td>day</td><td>2</td><td>0%</td><td>18,000</td><td>36,000</td></tr>
+                    </tbody>
+                    <tfoot><tr><td colspan="6">Direct cost</td><td>455,106</td></tr></tfoot>
+                  </table>
+                </div>
+              </section>
+
+              <section class="pc-boq-panel pc-boq-summary" aria-label="สรุปต้นทุนเบื้องต้น">
+                <div>
+                  <div class="pc-boq-panel-head"><div><strong>Cost breakdown</strong><span>Engineering estimate · Base scenario</span></div></div>
+                  <div class="pc-cost-bars">
+                    <div class="pc-cost-bar-row"><span>วัสดุหลัก</span><div class="pc-cost-bar-track"><span style="width:46%"></span></div><strong>150,872</strong></div>
+                    <div class="pc-cost-bar-row"><span>ผลิต/แม่พิมพ์</span><div class="pc-cost-bar-track"><span style="width:78%"></span></div><strong>120,120</strong></div>
+                    <div class="pc-cost-bar-row"><span>งานผิว</span><div class="pc-cost-bar-track"><span style="width:74%"></span></div><strong>114,114</strong></div>
+                    <div class="pc-cost-bar-row"><span>ขนส่ง/ติดตั้ง</span><div class="pc-cost-bar-track"><span style="width:45%"></span></div><strong>70,000</strong></div>
+                    <div class="pc-cost-bar-row"><span>Indirect 8%</span><div class="pc-cost-bar-track"><span style="width:24%"></span></div><strong>36,408</strong></div>
+                    <div class="pc-cost-bar-row"><span>Contingency 5%</span><div class="pc-cost-bar-track"><span style="width:16%"></span></div><strong>24,576</strong></div>
+                  </div>
+                </div>
+                <aside class="pc-estimate-box">
+                  <span class="pc-boq-source">Estimated cost</span><div class="pc-estimate-total">516,090 THB</div>
+                  <div class="pc-check-list"><div class="pc-check-row"><span>Cost / module</span><strong>258,045</strong></div><div class="pc-check-row"><span>Cost / m²</span><strong>14,336</strong></div><div class="pc-check-row"><span>Markup 18%</span><strong>92,896</strong></div><div class="pc-check-row"><span>Indicative price</span><strong>608,986</strong></div></div>
+                  <div class="pc-range-track"><span class="pc-range-marker"></span></div><div class="pc-range-labels"><span>439k</span><span>Base 516k</span><span>593k</span></div>
+                  <p class="pc-boq-source">Preliminary range ±15% · VAT excluded</p>
+                </aside>
+              </section>
+
+              <section class="pc-boq-panel pc-boq-assumptions" aria-label="สมมติฐานและข้อยกเว้นประมาณราคา">
+                <div class="pc-boq-panel-head"><div><strong>Assumptions & Exclusions</strong><span>ต้องเปิดเผยใน BOQ และ Estimate Summary ทุก Revision</span></div><span class="pc-warn">2 pending</span></div>
+                <div class="pc-assumption-list">
+                  <div class="pc-assumption-row"><span class="pc-stage-chip">Included</span><span>ราคาคอนกรีตและเหล็กจาก Price Book TH-PC-Q3/2026</span><span class="pc-pass">Confirmed</span></div>
+                  <div class="pc-assumption-row"><span class="pc-stage-chip">Allowance</span><span>งานผิวภายนอก 380 THB/m² ก่อนเลือกวัสดุจริง</span><span class="pc-warn">Architect</span></div>
+                  <div class="pc-assumption-row"><span class="pc-stage-chip">Assumption</span><span>ขนส่ง 4 เที่ยว ระยะทางไม่เกิน 80 km</span><span class="pc-warn">Logistics</span></div>
+                  <div class="pc-assumption-row"><span class="pc-stage-chip">Excluded</span><span>ฐานราก งานสาธารณูปโภค และค่าธรรมเนียมราชการ</span><span>Disclosed</span></div>
+                  <div class="pc-assumption-row"><span class="pc-stage-chip">Included</span><span>เครน 25 t ระยะทำงานตาม Lift Plan LP-01</span><span class="pc-pass">Confirmed</span></div>
+                </div>
+              </section>
+
+              <div class="pc-shop-sheet" aria-label="ตัวอย่าง Shop Drawing ของผนัง P-W03">
+                <div class="pc-drawing-body">
+                  <svg viewBox="0 0 590 410" role="img" aria-labelledby="pc-shop-title pc-shop-desc">
+                    <title id="pc-shop-title">Shop Drawing ผนังพรีคาสท์ P-W03</title>
+                    <desc id="pc-shop-desc">แสดงรูปด้าน ขนาด เหล็กเสริม จุดยก ช่องเปิด รายการวัสดุและหน้าตัด</desc>
+                    <rect class="pc-dwg-line" x="62" y="66" width="350" height="214"></rect>
+                    <rect class="pc-dwg-line" x="242" y="138" width="86" height="142"></rect>
+                    <line class="pc-dwg-rebar" x1="83" y1="83" x2="83" y2="264"></line><line class="pc-dwg-rebar" x1="108" y1="83" x2="108" y2="264"></line><line class="pc-dwg-rebar" x1="133" y1="83" x2="133" y2="264"></line><line class="pc-dwg-rebar" x1="158" y1="83" x2="158" y2="264"></line><line class="pc-dwg-rebar" x1="183" y1="83" x2="183" y2="264"></line><line class="pc-dwg-rebar" x1="208" y1="83" x2="208" y2="264"></line><line class="pc-dwg-rebar" x1="350" y1="83" x2="350" y2="264"></line><line class="pc-dwg-rebar" x1="375" y1="83" x2="375" y2="264"></line><line class="pc-dwg-rebar" x1="400" y1="83" x2="400" y2="264"></line>
+                    <line class="pc-dwg-rebar" x1="75" y1="95" x2="400" y2="95"></line><line class="pc-dwg-rebar" x1="75" y1="120" x2="400" y2="120"></line><line class="pc-dwg-rebar" x1="75" y1="250" x2="400" y2="250"></line>
+                    <circle class="pc-dwg-line" cx="145" cy="82" r="7"></circle><circle class="pc-dwg-line" cx="365" cy="82" r="7"></circle>
+                    <line class="pc-dwg-thin" x1="62" y1="45" x2="412" y2="45"></line><line class="pc-dwg-thin" x1="62" y1="38" x2="62" y2="55"></line><line class="pc-dwg-thin" x1="412" y1="38" x2="412" y2="55"></line><text class="pc-dwg-text" x="220" y="38">5,800</text>
+                    <line class="pc-dwg-thin" x1="38" y1="66" x2="38" y2="280"></line><line class="pc-dwg-thin" x1="30" y1="66" x2="48" y2="66"></line><line class="pc-dwg-thin" x1="30" y1="280" x2="48" y2="280"></line><text class="pc-dwg-text" x="18" y="180" transform="rotate(-90 18 180)">2,800</text>
+                    <text class="pc-dwg-text" x="188" y="305">PANEL ELEVATION · P-W03</text>
+                    <text class="pc-dwg-note" x="340" y="151">2-DB12 รอบช่องเปิด</text><line class="pc-dwg-rebar" x1="337" y1="154" x2="318" y2="171"></line>
+                    <text class="pc-dwg-note" x="105" y="72">LA-02</text><text class="pc-dwg-note" x="371" y="72">LA-02</text>
+                    <circle class="pc-dwg-line" cx="472" cy="107" r="42"></circle><line class="pc-dwg-line" x1="430" y1="107" x2="514" y2="107"></line><line class="pc-dwg-rebar" x1="450" y1="85" x2="450" y2="129"></line><line class="pc-dwg-rebar" x1="465" y1="85" x2="465" y2="129"></line><line class="pc-dwg-rebar" x1="480" y1="85" x2="480" y2="129"></line><line class="pc-dwg-rebar" x1="495" y1="85" x2="495" y2="129"></line><text class="pc-dwg-text" x="447" y="163">SECTION A-A</text>
+                    <rect class="pc-dwg-thin" x="438" y="205" width="116" height="118"></rect><line class="pc-dwg-thin" x1="438" y1="229" x2="554" y2="229"></line><line class="pc-dwg-thin" x1="438" y1="253" x2="554" y2="253"></line><line class="pc-dwg-thin" x1="438" y1="277" x2="554" y2="277"></line><line class="pc-dwg-thin" x1="438" y1="301" x2="554" y2="301"></line><text class="pc-dwg-text" x="446" y="220">MARK  SIZE  QTY</text><text class="pc-dwg-text" x="446" y="244">R01  DB10  18</text><text class="pc-dwg-text" x="446" y="268">R02  DB12   4</text><text class="pc-dwg-text" x="446" y="292">LA02  2.5t   2</text><text class="pc-dwg-text" x="446" y="316">EP01  150x150 4</text>
+                    <text class="pc-dwg-text" x="66" y="340">CONCRETE: LC-1200 · fc' 18 MPa</text><text class="pc-dwg-text" x="66" y="356">WEIGHT: 2.84 t · COG: X=2,914 / Y=1,366</text><text class="pc-dwg-text" x="66" y="372">FINISH: F2 EXTERNAL · TOLERANCE: ±5 mm</text>
+                  </svg>
+                </div>
+                <div class="pc-title-block">
+                  <div class="pc-title-cell"><small>PROJECT</small><strong>Senior Living Module</strong></div>
+                  <div class="pc-title-cell"><small>DRAWING</small><strong>WALL PANEL P-W03</strong></div>
+                  <div class="pc-title-cell"><small>DRAWING NO.</small><strong>PM-T2-SD-W03</strong></div>
+                  <div class="pc-title-cell"><small>REVISION</small><strong>B.03 · For Approval</strong></div>
+                  <div class="pc-title-cell"><small>DESIGNED / CHECKED</small><strong>KS / PP</strong></div>
+                  <div class="pc-title-cell"><small>SCALE / SHEET</small><strong>1:25 · A3 · 1/1</strong></div>
+                </div>
+              </div>
+
+              <article class="pc-calc-sheet" aria-label="ตัวอย่างรายงานรายการคำนวณมาตรฐาน">
+                <div class="pc-report-kicker">Structural calculation report</div>
+                <h2>Precast Modular System · Type 2</h2>
+                <p>Design basis, FEM analysis, member checks, connections, lifting and transportation</p>
+                <div class="pc-report-meta">
+                  <div><span>Document no.</span><br><strong>PM-T2-CALC-001</strong></div>
+                  <div><span>Revision / status</span><br><strong>B.03 · For Approval</strong></div>
+                  <div><span>Design basis</span><br><strong>DB-Rev03 · Approved</strong></div>
+                  <div><span>Calculation run</span><br><strong>CALC-2026-0094</strong></div>
+                </div>
+                <div class="pc-report-outline">
+                  <div><span>1. Document control</span><span>3</span></div><div><span>7. FEM model verification</span><span>34</span></div>
+                  <div><span>2. Scope and limitations</span><span>5</span></div><div><span>8. Analysis results</span><span>42</span></div>
+                  <div><span>3. Codes and criteria</span><span>8</span></div><div><span>9. Panel design checks</span><span>55</span></div>
+                  <div><span>4. Materials</span><span>12</span></div><div><span>10. Joints and anchors</span><span>68</span></div>
+                  <div><span>5. Loads and combinations</span><span>16</span></div><div><span>11. Lifting / transport</span><span>76</span></div>
+                  <div><span>6. Analytical model</span><span>27</span></div><div><span>12. Conclusions</span><span>84</span></div>
+                </div>
+                <div class="pc-report-signatures">
+                  <div class="pc-signature">Designed by · KS</div><div class="pc-signature">Checked by · PP</div><div class="pc-signature">Approved by · —</div>
+                </div>
+              </article>
+
+              <section class="pc-package-sheet" aria-label="โครงสร้างชุดไฟล์ส่งมอบ">
+                <div class="pc-package-tree">
+                  <h2>Production package · PR-2026-0094</h2>
+                  <p>Verified package structure พร้อม Manifest และ Checksum</p>
+                  <div class="pc-folder-tree">
+                    <div class="pc-folder"><i data-lucide="folder" aria-hidden="true"></i><strong>01_Calculations</strong><span class="pc-pass">4 files</span></div>
+                    <div class="pc-folder-file">PM-T2-CALC-001_B03.pdf · .docx · results.xlsx · inputs.json</div>
+                    <div class="pc-folder"><i data-lucide="folder" aria-hidden="true"></i><strong>02_Shop_Drawings</strong><span class="pc-pass">36 files</span></div>
+                    <div class="pc-folder-file">18 × DXF R2018 · 18 × PDF/A-2b</div>
+                    <div class="pc-folder"><i data-lucide="folder" aria-hidden="true"></i><strong>03_Schedules</strong><span class="pc-pass">3 files</span></div>
+                    <div class="pc-folder-file">PanelSchedule.xlsx · BBS.xlsx · Rebar.bvbs</div>
+                    <div class="pc-folder"><i data-lucide="folder" aria-hidden="true"></i><strong>04_BIM</strong><span class="pc-pass">2 files</span></div>
+                    <div class="pc-folder-file">PM-T2-FAB-B03.ifc · PM-T2-viewer.glb</div>
+                    <div class="pc-folder"><i data-lucide="file-key-2" aria-hidden="true"></i><strong>manifest.json</strong><span class="pc-pass">Verified</span></div>
+                  </div>
+                </div>
+                <aside class="pc-package-side">
+                  <strong>Preflight summary</strong>
+                  <p class="pc-pass">✓ 48/48 checks passed</p>
+                  <div class="pc-check-list"><div class="pc-check-row"><span>Units</span><span>mm</span></div><div class="pc-check-row"><span>DXF profile</span><span>PC-FAB-01</span></div><div class="pc-check-row"><span>Missing fonts</span><span>0</span></div><div class="pc-check-row"><span>Open polylines</span><span>0</span></div><div class="pc-check-row"><span>Revision match</span><span>B.03</span></div></div>
+                  <p>SHA-256</p><div class="pc-hash">8ad7c3…91b0e2</div>
+                </aside>
+              </section>
+
+              <div class="pc-canvas-note"><i data-lucide="info" aria-hidden="true"></i><span id="pc-canvas-note">เลือก P-W03 · ผนังภายนอกโมดูล B</span></div>
+              <div class="pc-scale">2.00 m</div>
+            </div>
+          </section>
+
+          <aside class="pc-inspector" aria-label="คุณสมบัติและการตรวจสอบ">
+            <div class="pc-inspector-head"><strong id="pc-inspector-title">P-W03 · External wall</strong><div id="pc-inspector-subtitle">Precast lightweight concrete</div></div>
+            <div class="pc-inspector-body" id="pc-inspector-body"></div>
+          </aside>
+        </div>
+
+        <div class="pc-footer-grid" aria-live="polite">
+          <div class="pc-summary"><div class="pc-summary-label" id="pc-metric-1-label">ชิ้นงานทั้งหมด</div><div class="pc-summary-value" id="pc-metric-1-value">18</div><div class="pc-summary-context" id="pc-metric-1-context">ผนัง 10 · พื้น 4 · หลังคา 4</div></div>
+          <div class="pc-summary"><div class="pc-summary-label" id="pc-metric-2-label">น้ำหนักสูงสุด</div><div class="pc-summary-value" id="pc-metric-2-value">4.72 t</div><div class="pc-summary-context" id="pc-metric-2-context">ต่ำกว่าขีดจำกัดเครน 6.00 t</div></div>
+          <div class="pc-summary"><div class="pc-summary-label" id="pc-metric-3-label">ความพร้อมของโมเดล</div><div class="pc-summary-value" id="pc-metric-3-value">64%</div><div class="pc-summary-context" id="pc-metric-3-context">รอกำหนด Load และ Support</div><div class="pc-progress-track"><div class="pc-progress-fill" id="pc-progress"></div></div></div>
+        </div>
+      </main>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const root = document.getElementById('precast-ux');
+  const inspectorBody = document.getElementById('pc-inspector-body');
+  const pageTitle = document.getElementById('pc-page-title');
+  const pageSubtitle = document.getElementById('pc-page-subtitle');
+  const crumb = document.getElementById('pc-crumb-current');
+  const crumbPrefix = document.getElementById('pc-crumb-prefix');
+  const modelStatus = document.getElementById('pc-model-status');
+  const canvasNote = document.getElementById('pc-canvas-note');
+  const inspectorTitle = document.getElementById('pc-inspector-title');
+  const inspectorSubtitle = document.getElementById('pc-inspector-subtitle');
+  const progress = document.getElementById('pc-progress');
+  const projectName = document.querySelector('#precast-ux .pc-project-name');
+  const projectCode = document.querySelector('#precast-ux .pc-project-code');
+  const metricEls = [1,2,3].map(n => ({
+    label: document.getElementById(`pc-metric-${n}-label`),
+    value: document.getElementById(`pc-metric-${n}-value`),
+    context: document.getElementById(`pc-metric-${n}-context`)
+  }));
+
+  const stageData = {
+    intake: {
+      crumb: 'Model Intake', title: 'รับและตรวจสอบแบบสถาปัตย์',
+      subtitle: 'ตรวจ Unit, Level, Grid, Opening และความเปลี่ยนแปลงจาก Revision ก่อนหน้า',
+      status: 'IFC 4.3 · ตรวจสอบแล้ว 14/16 รายการ', note: 'พบ 2 จุดที่ต้องยืนยันตำแหน่งช่องเปิด',
+      inspectorTitle: 'Model validation', inspectorSubtitle: 'Senior_Living_RevB03.ifc',
+      body: `<div class="pc-section-label">คุณภาพข้อมูล</div><div class="pc-check-list"><div class="pc-check-row"><span>Unit และพิกัด</span><span class="pc-pass">ผ่าน</span></div><div class="pc-check-row"><span>Level / Grid</span><span class="pc-pass">ผ่าน</span></div><div class="pc-check-row"><span>ช่องเปิดซ้อนกัน</span><span class="pc-warn">2 จุด</span></div><div class="pc-check-row"><span>วัตถุไม่มี Material</span><span class="pc-warn">3 ชิ้น</span></div></div><button class="pc-secondary pc-block" type="button">เปิด Revision Compare</button>`,
+      metrics: [['วัตถุที่นำเข้า','148','ผนัง 42 · พื้น 8 · ช่องเปิด 31'],['ประเด็นที่พบ','5','Critical 0 · Warning 5'],['ความพร้อมของแบบ','88%','พร้อมเริ่ม Precast Authoring']], progress: 88
+    },
+    criteria: {
+      crumb: 'Design Criteria', title: 'Design Basis และค่าควบคุมการออกแบบ',
+      subtitle: 'ล็อกมาตรฐาน วัสดุ Loading, Serviceability และ Handling Criteria ก่อนสร้าง FEM',
+      status: 'DB-Rev03 · Approved & Locked', note: "ACI/PCI 319-25 · fc′28 18 MPa · fy 400 MPa",
+      inspectorTitle: 'Project design basis', inspectorSubtitle: 'DB-Rev03 · Approved by PP',
+      body: `<div class="pc-field"><label for="pc-design-code">Design standard</label><select id="pc-design-code"><option>ACI/PCI 319-25 + Project Criteria</option></select></div><div class="pc-field"><label for="pc-loading-code">Loading standard</label><select id="pc-loading-code"><option>Project Loading Standard / ASCE 7-22</option></select></div><div class="pc-two-fields"><div class="pc-field"><label for="pc-fc28">fc′ 28-day</label><input id="pc-fc28" value="18 MPa"></div><div class="pc-field"><label for="pc-fclift">fc′ at lifting</label><input id="pc-fclift" value="12 MPa"></div></div><div class="pc-two-fields"><div class="pc-field"><label for="pc-fy">Rebar fy</label><input id="pc-fy" value="400 MPa"></div><div class="pc-field"><label for="pc-density">Density</label><input id="pc-density" value="1,200 kg/m³"></div></div><div class="pc-check-list"><div class="pc-check-row"><span>Required parameters</span><span class="pc-pass">42/42</span></div><div class="pc-check-row"><span>Test-based values</span><span class="pc-pass">Linked</span></div><div class="pc-check-row"><span>Element overrides</span><span>2 documented</span></div></div><button class="pc-secondary pc-block" type="button">เปิด Design Basis Report</button>`,
+      metrics: [['Design basis','DB-Rev03','Approved & Locked'],['Material sets','6','Concrete · Rebar · Steel · Grout'],['Downstream status','Current','Calculation และ Drawing ตรง Revision']], progress: 100
+    },
+    panel: {
+      crumb: 'Panelization', title: 'แบ่งชิ้นงานพรีคาสท์',
+      subtitle: 'กำหนดขอบเขต Panel, Joint, Opening และข้อจำกัดการผลิต',
+      status: 'แบบ BIM เชื่อมต่อแล้ว', note: 'เลือก P-W03 · ผนังภายนอกโมดูล B',
+      inspectorTitle: 'P-W03 · External wall', inspectorSubtitle: 'Precast lightweight concrete',
+      body: `<div class="pc-two-fields"><div class="pc-field"><label for="pc-type">ชนิด</label><select id="pc-type"><option>Load-bearing wall</option><option>Non-bearing wall</option></select></div><div class="pc-field"><label for="pc-thk">หนา</label><input id="pc-thk" value="100 mm"></div></div><div class="pc-field"><label for="pc-mat">วัสดุ</label><select id="pc-mat"><option>LC-1200 / fc' 18 MPa</option></select></div><div class="pc-two-fields"><div class="pc-field"><label for="pc-width">กว้าง</label><input id="pc-width" value="5,800 mm"></div><div class="pc-field"><label for="pc-height">สูง</label><input id="pc-height" value="2,800 mm"></div></div><div class="pc-check-list"><div class="pc-check-row"><span>น้ำหนักชิ้นงาน</span><strong>2.84 t</strong></div><div class="pc-check-row"><span>จุดยก</span><span class="pc-warn">ยังไม่กำหนด</span></div><div class="pc-check-row"><span>Joint</span><span>J01 · Semi-rigid</span></div></div><button class="pc-action pc-block" type="button" data-run-analysis>ยืนยันชิ้นงานและไปขั้นถัดไป</button>`,
+      metrics: [['ชิ้นงานทั้งหมด','18','ผนัง 10 · พื้น 4 · หลังคา 4'],['น้ำหนักสูงสุด','4.72 t','ต่ำกว่าขีดจำกัดเครน 6.00 t'],['ความพร้อมของโมเดล','64%','รอกำหนด Load และ Support']], progress: 64
+    },
+    loads: {
+      crumb: 'Loads & Supports', title: 'กำหนดแรงและสภาพรองรับ',
+      subtitle: 'สร้างกรณีใช้งาน ยก ขนส่ง ติดตั้ง และฐานรากจาก Geometry ชุดเดียว',
+      status: '5 Load cases · 12 Combinations', note: 'Service model · Wind +X แสดงอยู่',
+      inspectorTitle: 'Load scenario', inspectorSubtitle: 'SERVICE · LC-S01',
+      body: `<div class="pc-field"><label for="pc-scenario">Scenario</label><select id="pc-scenario"><option>Service / Final support</option><option>Four-point lifting</option><option>Transportation</option><option>Installation</option></select></div><div class="pc-two-fields"><div class="pc-field"><label for="pc-dl">Superimposed DL</label><input id="pc-dl" value="1.20 kPa"></div><div class="pc-field"><label for="pc-ll">Live load</label><input id="pc-ll" value="2.00 kPa"></div></div><div class="pc-field"><label for="pc-support">Support model</label><select id="pc-support"><option>Foundation springs · FS-01</option></select></div><div class="pc-check-list"><div class="pc-check-row"><span>Load path</span><span class="pc-pass">ต่อเนื่อง</span></div><div class="pc-check-row"><span>Unsupported nodes</span><span class="pc-pass">0</span></div><div class="pc-check-row"><span>Joint stiffness</span><span class="pc-pass">กำหนดแล้ว</span></div></div><button class="pc-action pc-block" type="button" data-run-analysis>สร้าง Mesh และรันวิเคราะห์</button>`,
+      metrics: [['Load cases','5','DL · LL · Wind X/Y · Handling'],['Combinations','12','ULS 7 · SLS 5'],['ความพร้อมของโมเดล','92%','พร้อมสร้าง FEM model']], progress: 92
+    },
+    analysis: {
+      crumb: 'FEM Analysis', title: 'ผลวิเคราะห์โครงสร้าง',
+      subtitle: 'ตรวจการเสียรูป แรงภายใน Reaction และบริเวณวิกฤตก่อนออกแบบเหล็ก',
+      status: 'Analysis completed · 02:18', note: 'SLS-03 · Wall moment Myy · Utilization 0.82',
+      inspectorTitle: 'Analysis result', inspectorSubtitle: 'P-W03 · SLS-03',
+      body: `<div class="pc-field"><label for="pc-result">ผลที่แสดง</label><select id="pc-result"><option>Utilization envelope</option><option>Myy moment</option><option>Nxx membrane force</option><option>Deflection</option></select></div><div class="pc-check-list"><div class="pc-check-row"><span>Max utilization</span><strong class="pc-warn">0.82</strong></div><div class="pc-check-row"><span>Max deflection</span><strong>6.4 mm</strong></div><div class="pc-check-row"><span>Max crack demand</span><strong>0.21 mm</strong></div><div class="pc-check-row"><span>Solver warnings</span><span class="pc-pass">0</span></div></div><button class="pc-secondary pc-block" type="button">ดู Reaction และ Equilibrium</button><button class="pc-action pc-block" type="button" data-next="design">ส่งผลไปออกแบบเหล็ก</button>`,
+      metrics: [['Elements','8,462','Shell 8,124 · Link 338'],['กรณีวิกฤต','SLS-03','Wind +X · Joint J01'],['ผลการวิเคราะห์','ผ่าน','0 Error · 0 Solver warning']], progress: 100
+    },
+    design: {
+      crumb: 'Reinforcement Design', title: 'ออกแบบเหล็กเสริมและจุดต่อ',
+      subtitle: 'เปลี่ยนผล FEM เป็น Reinforcement Zone พร้อมตรวจขั้นต่ำ รอยร้าว และรายละเอียดเฉพาะจุด',
+      status: 'Design checks · 43/46 ผ่าน', note: 'P-W03 · DB10 @ 200 · เพิ่มเหล็กรอบช่องเปิด',
+      inspectorTitle: 'P-W03 · Reinforcement', inspectorSubtitle: 'Design envelope · ULS/SLS',
+      body: `<div class="pc-field"><label for="pc-rebar-pattern">เหล็กหลัก</label><select id="pc-rebar-pattern"><option>DB10 @ 200 EW · 2 faces</option><option>DB12 @ 200 EW · 2 faces</option></select></div><div class="pc-check-list"><div class="pc-check-row"><span>Flexure</span><span class="pc-pass">0.78 · ผ่าน</span></div><div class="pc-check-row"><span>Shear</span><span class="pc-pass">0.54 · ผ่าน</span></div><div class="pc-check-row"><span>Crack width</span><span class="pc-pass">0.21 mm</span></div><div class="pc-check-row"><span>Opening corner</span><span class="pc-warn">เพิ่ม 2-DB12</span></div><div class="pc-check-row"><span>Lifting anchor</span><span class="pc-warn">รอวิศวกรตรวจ</span></div></div><button class="pc-action pc-block" type="button" data-next="cost">ส่งปริมาณไป BOQ</button>`,
+      metrics: [['Design checks','46','ผ่าน 43 · Warning 3'],['เหล็กประมาณการ','1,184 kg','33.1 kg/m²'],['รายการต้องตรวจ','3','Opening · Anchor · J01']], progress: 94
+    },
+    cost: {
+      crumb: 'BOQ & Estimate', title: 'ถอดปริมาณและประมาณราคาเบื้องต้น',
+      subtitle: 'เชื่อมปริมาณกับชิ้นงาน ราคาเข้ากับ Price Book และแสดงสมมติฐานพร้อมช่วงความไม่แน่นอน',
+      status: 'EST-ENG-004 Rev 02 · Current', note: 'MAT-CON-01 · 18 panels · 18.40 m³',
+      inspectorTitle: 'MAT-CON-01 · Concrete', inspectorSubtitle: 'Model-derived quantity · 18 panels',
+      body: `<div class="pc-two-fields"><div class="pc-field"><label for="pc-raw-qty">Raw quantity</label><input id="pc-raw-qty" value="18.40 m³"></div><div class="pc-field"><label for="pc-waste">Waste</label><input id="pc-waste" value="3.0%"></div></div><div class="pc-field"><label for="pc-rate">Unit rate</label><input id="pc-rate" value="3,450 THB/m³"></div><div class="pc-field"><label for="pc-rate-source">Price source</label><select id="pc-rate-source"><option>TH-PC-Q3/2026 · Approved</option><option>Vendor quote VQ-118</option><option>Project override</option></select></div><div class="pc-check-list"><div class="pc-check-row"><span>Payable quantity</span><strong>18.952 m³</strong></div><div class="pc-check-row"><span>Line amount</span><strong>65,384 THB</strong></div><div class="pc-check-row"><span>Element trace</span><span class="pc-pass">18/18 linked</span></div><div class="pc-check-row"><span>Price effective</span><span class="pc-pass">Q3/2026</span></div><div class="pc-check-row"><span>Estimate maturity</span><span>Engineering</span></div></div><button class="pc-action pc-block" type="button" data-recalculate-estimate>คำนวณ BOQ ใหม่</button><button class="pc-secondary pc-block" type="button" data-next="report">ส่งตรวจ Estimate</button>`,
+      metrics: [['Direct cost','455,106 THB','Material · Production · Logistics'],['Estimated cost','516,090 THB','Indirect 8% · Contingency 5%'],['Preliminary range','439k – 593k','Engineering estimate · ±15%']], progress: 86
+    },
+    report: {
+      crumb: 'Review & Report', title: 'ตรวจอนุมัติและออกรายงาน',
+      subtitle: 'รวบรวม Input, Assumption, FEM Result, Design Check และ Revision ไว้ในชุดเดียว',
+      status: 'พร้อมสำหรับ Checker review', note: 'Calculation Package · Rev B.03 · 86 หน้า',
+      inspectorTitle: 'Issue package', inspectorSubtitle: 'For internal design review',
+      body: `<div class="pc-check-list"><div class="pc-check-row"><span>Calculation report</span><span class="pc-pass">พร้อม</span></div><div class="pc-check-row"><span>Panel schedule</span><span class="pc-pass">พร้อม</span></div><div class="pc-check-row"><span>Reinforcement zones</span><span class="pc-pass">พร้อม</span></div><div class="pc-check-row"><span>Joint schedule</span><span class="pc-warn">1 หมายเหตุ</span></div><div class="pc-check-row"><span>BOM / Weight</span><span class="pc-pass">พร้อม</span></div></div><div class="pc-field"><label for="pc-issue">สถานะการออกเอกสาร</label><select id="pc-issue"><option>For internal review</option><option>For approval</option><option>For construction</option></select></div><button class="pc-action pc-block" type="button" data-next="shop">สร้างชุด Shop Drawing</button><button class="pc-secondary pc-block" type="button">Export IFC + PDF + XLSX</button>`,
+      metrics: [['เอกสาร','12 sheets','Calculation report 86 หน้า'],['ประเด็นคงค้าง','1','รายละเอียด Joint J01'],['สถานะ','Checker review','ยังไม่ใช่ For Construction']], progress: 98
+    },
+    shop: {
+      crumb: 'Document & Export Center', title: 'Shop Drawing, Calculation Report และ Production Package',
+      subtitle: 'สร้างไฟล์มาตรฐานหลายรูปแบบ ตรวจ DXF Preflight ล็อก Revision และส่งชุดเอกสารที่ตรวจสอบย้อนกลับได้',
+      status: 'Preflight · 48/48 checks passed', note: 'PM-T2-SD-W03 · Rev B.03 · DXF R2018 / mm',
+      inspectorTitle: 'Export configuration', inspectorSubtitle: 'Factory Standard · PC-EXPORT-02',
+      body: `<div class="pc-two-fields"><div class="pc-field"><label for="pc-export-preset">Export preset</label><select id="pc-export-preset"><option>Factory Standard v2.4</option><option>Consultant Submission</option><option>Archive Package</option></select></div><div class="pc-field"><label for="pc-dxf-version">DXF version</label><select id="pc-dxf-version"><option>AutoCAD 2018</option><option>AutoCAD 2013</option><option>AutoCAD 2010</option></select></div></div><div class="pc-two-fields"><div class="pc-field"><label for="pc-dxf-units">DXF units</label><select id="pc-dxf-units"><option>Millimetres</option><option>Metres</option></select></div><div class="pc-field"><label for="pc-layer-profile">Layer profile</label><select id="pc-layer-profile"><option>PC-FAB-01</option><option>Client-CAD-02</option></select></div></div><div class="pc-section-label">ไฟล์ในชุดส่งมอบ</div><div class="pc-format-grid"><label class="pc-format-option"><input type="checkbox" checked> DXF</label><label class="pc-format-option"><input type="checkbox" checked> PDF/A</label><label class="pc-format-option"><input type="checkbox" checked> DOCX</label><label class="pc-format-option"><input type="checkbox" checked> XLSX</label><label class="pc-format-option"><input type="checkbox" checked> IFC</label><label class="pc-format-option"><input type="checkbox" checked> BVBS</label><label class="pc-format-option"><input type="checkbox" checked> JSON</label><label class="pc-format-option"><input type="checkbox"> GLB</label></div><div class="pc-check-list"><div class="pc-check-row"><span>Drawing / calculation revision</span><span class="pc-pass">B.03 match</span></div><div class="pc-check-row"><span>DXF geometry & fonts</span><span class="pc-pass">ผ่าน</span></div><div class="pc-check-row"><span>Required approvals</span><span class="pc-pass">2/2</span></div><div class="pc-check-row"><span>File naming / manifest</span><span class="pc-pass">ผ่าน</span></div></div><button class="pc-action pc-block" type="button" data-generate-package>Generate verified package</button><button class="pc-secondary pc-block" type="button" data-release-production>Release to Production</button>`,
+      metrics: [['Batch export','48 files','DXF 18 · PDF 19 · Data 11'],['Preflight','48/48 ผ่าน','Units · Layers · Fonts · Revision'],['Production package','พร้อมสร้าง','PR-2026-0094 · Rev B.03']], progress: 98
+    }
+  };
+
+  function refreshIcons() {
+    if (globalThis.lucide && typeof globalThis.lucide.createIcons === 'function') {
+      globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+    }
+  }
+
+  function setStage(stage) {
+    const data = stageData[stage];
+    if (!data) return;
+    root.dataset.stage = stage;
+    document.querySelectorAll('#precast-ux [data-stage-button]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.stageButton === stage));
+    });
+    pageTitle.textContent = data.title;
+    pageSubtitle.textContent = data.subtitle;
+    crumb.textContent = data.crumb;
+    modelStatus.textContent = data.status;
+    canvasNote.textContent = data.note;
+    inspectorTitle.textContent = data.inspectorTitle;
+    inspectorSubtitle.textContent = data.inspectorSubtitle;
+    inspectorBody.innerHTML = data.body;
+    data.metrics.forEach((metric, index) => {
+      metricEls[index].label.textContent = metric[0];
+      metricEls[index].value.textContent = metric[1];
+      metricEls[index].context.textContent = metric[2];
+    });
+    progress.style.width = `${data.progress}%`;
+    inspectorBody.querySelectorAll('[data-next]').forEach(button => button.addEventListener('click', () => setStage(button.dataset.next)));
+    inspectorBody.querySelectorAll('[data-run-analysis]').forEach(button => button.addEventListener('click', runAnalysis));
+    inspectorBody.querySelectorAll('[data-release-production]').forEach(button => button.addEventListener('click', releaseProduction));
+    inspectorBody.querySelectorAll('[data-generate-package]').forEach(button => button.addEventListener('click', generatePackage));
+    inspectorBody.querySelectorAll('[data-recalculate-estimate]').forEach(button => button.addEventListener('click', recalculateEstimate));
+    refreshIcons();
+  }
+
+  function setDocView(view) {
+    root.dataset.docView = view;
+    document.querySelectorAll('#precast-ux [data-doc-button]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.docButton === view));
+    });
+    const notes = {
+      drawing: 'PM-T2-SD-W03 · Rev B.03 · DXF R2018 / mm',
+      calculation: 'PM-T2-CALC-001 · 86 pages · PDF/A-2b + DOCX',
+      package: 'PR-2026-0094 · 48 files · manifest verified'
+    };
+    if (root.dataset.stage === 'shop') modelStatus.textContent = view === 'package' ? 'Package ready · checksum verified' : 'Preflight · 48/48 checks passed';
+    canvasNote.textContent = notes[view] || notes.drawing;
+  }
+
+  function setCostView(view) {
+    root.dataset.costView = view;
+    document.querySelectorAll('#precast-ux [data-cost-button]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.costButton === view));
+    });
+    const status = {
+      takeoff: 'EST-ENG-004 Rev 02 · 7 cost groups · Current',
+      summary: 'Estimated cost 516,090 THB · Preliminary range ±15%',
+      assumptions: 'Assumptions · 3 confirmed · 2 pending'
+    };
+    if (root.dataset.stage === 'cost') modelStatus.textContent = status[view] || status.takeoff;
+  }
+
+  function setAppView(view) {
+    root.dataset.appView = view;
+    document.querySelectorAll('#precast-ux [data-app-button]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.appButton === view));
+    });
+    if (view === 'portfolio') {
+      crumbPrefix.textContent = 'Portfolio';
+      crumb.textContent = 'All projects';
+    } else if (view === 'team') {
+      crumbPrefix.textContent = 'Organization';
+      crumb.textContent = 'Team & Permissions';
+    } else {
+      crumbPrefix.textContent = projectCode.textContent.split(' · ')[0];
+      crumb.textContent = stageData[root.dataset.stage]?.crumb || 'Project Workspace';
+    }
+  }
+
+  function runAnalysis(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = 'กำลังสร้าง Analytical Model…';
+    modelStatus.textContent = 'กำลังตรวจ Mesh และ Boundary Conditions';
+    progress.style.width = '36%';
+    window.setTimeout(() => { button.textContent = 'กำลังรัน FEM Solver…'; progress.style.width = '72%'; }, 650);
+    window.setTimeout(() => setStage('analysis'), 1500);
+  }
+
+  function releaseProduction(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = 'Released · 18 ชิ้นงาน';
+    modelStatus.textContent = 'Released to production · Rev B.03';
+    metricEls[2].value.textContent = 'Released';
+    metricEls[2].context.textContent = 'Production package PR-2026-0094';
+    progress.style.width = '100%';
+    document.querySelector('[data-stage-button="shop"]')?.classList.add('is-done');
+  }
+
+  function generatePackage(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = 'กำลังตรวจและสร้างไฟล์ 0/48…';
+    modelStatus.textContent = 'Generating DXF, PDF/A and data schedules';
+    progress.style.width = '42%';
+    window.setTimeout(() => { button.textContent = 'กำลังสร้าง Manifest 41/48…'; progress.style.width = '84%'; }, 650);
+    window.setTimeout(() => {
+      button.textContent = 'Package ready · 48 files';
+      progress.style.width = '100%';
+      metricEls[2].value.textContent = 'พร้อมส่งผลิต';
+      metricEls[2].context.textContent = 'Manifest + SHA-256 verified';
+      setDocView('package');
+    }, 1450);
+  }
+
+  function recalculateEstimate(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = 'กำลังถอดปริมาณจาก 18 ชิ้นงาน…';
+    modelStatus.textContent = 'Recalculating quantities and resolving Price Book';
+    progress.style.width = '34%';
+    window.setTimeout(() => { button.textContent = 'กำลังตรวจหน่วยและราคา…'; progress.style.width = '76%'; }, 550);
+    window.setTimeout(() => {
+      button.textContent = 'BOQ current · EST-ENG-004 Rev 03';
+      modelStatus.textContent = 'Estimate recalculated · 0 missing rates';
+      progress.style.width = '100%';
+      metricEls[2].value.textContent = '439k – 593k';
+      metricEls[2].context.textContent = 'Rev 03 · Quantity and price trace verified';
+      setCostView('summary');
+    }, 1250);
+  }
+
+  document.querySelectorAll('#precast-ux [data-app-button]').forEach(button => {
+    button.addEventListener('click', () => setAppView(button.dataset.appButton));
+  });
+
+  document.querySelectorAll('#precast-ux [data-open-team]').forEach(button => {
+    button.addEventListener('click', () => setAppView('team'));
+  });
+
+  document.querySelectorAll('#precast-ux [data-open-project]').forEach(button => {
+    button.addEventListener('click', () => {
+      const [name, code, stage] = button.dataset.openProject.split('|');
+      projectName.textContent = name;
+      projectCode.textContent = code;
+      setStage(stage);
+      setAppView('project');
+    });
+  });
+
+  const projectSearch = document.getElementById('pc-project-search');
+  projectSearch.addEventListener('input', () => {
+    const query = projectSearch.value.trim().toLocaleLowerCase('th');
+    document.querySelectorAll('#pc-project-rows tr').forEach(row => {
+      row.hidden = query.length > 0 && !row.textContent.toLocaleLowerCase('th').includes(query);
+    });
+  });
+
+  const memberSearch = document.getElementById('pc-member-search');
+  const memberRows = Array.from(document.querySelectorAll('#precast-ux [data-member-row]'));
+  const selectedMember = document.getElementById('pc-selected-member');
+  const selectedEmail = document.getElementById('pc-selected-email');
+  const roleChecks = Array.from(document.querySelectorAll('#precast-ux [data-role-check]'));
+  const sodNote = document.getElementById('pc-sod-note');
+  const savePermissions = document.getElementById('pc-save-permissions');
+
+  function selectedRoles() {
+    return roleChecks.filter(input => input.checked).map(input => input.dataset.roleCheck);
+  }
+
+  function validateRoleSelection() {
+    const roles = selectedRoles();
+    const hasConflict = roles.includes('Structural Engineer') && roles.includes('Engineering Checker');
+    sodNote.classList.toggle('is-conflict', hasConflict);
+    sodNote.textContent = hasConflict
+      ? 'Role conflict: บุคคลนี้เป็นทั้งผู้จัดทำและ Checker ได้ แต่ระบบจะไม่อนุญาตให้ Approve Revision ที่ตนสร้าง'
+      : 'Role assignment ผ่านการตรวจเบื้องต้น · ระบบยังตรวจ Separation of Duties ซ้ำทุก Revision';
+    return !hasConflict;
+  }
+
+  memberSearch.addEventListener('input', () => {
+    const query = memberSearch.value.trim().toLocaleLowerCase('th');
+    memberRows.forEach(row => { row.hidden = query.length > 0 && !row.textContent.toLocaleLowerCase('th').includes(query); });
+  });
+
+  memberRows.forEach(row => {
+    row.addEventListener('click', () => {
+      memberRows.forEach(peer => peer.classList.toggle('is-selected', peer === row));
+      const [name, email, roles, status] = row.dataset.member.split('|');
+      selectedMember.textContent = name;
+      selectedEmail.textContent = `${email} · Senior Living Module`;
+      document.getElementById('pc-member-status').value = status === 'active' ? 'Active' : 'Suspended';
+      const assigned = roles.split(',');
+      roleChecks.forEach(input => { input.checked = assigned.includes(input.dataset.roleCheck); });
+      validateRoleSelection();
+      savePermissions.disabled = false;
+      savePermissions.textContent = 'ตรวจและบันทึกสิทธิ์';
+    });
+  });
+
+  roleChecks.forEach(input => input.addEventListener('change', validateRoleSelection));
+
+  savePermissions.addEventListener('click', () => {
+    validateRoleSelection();
+    savePermissions.disabled = true;
+    savePermissions.textContent = 'บันทึกแล้ว · Audit event #AE-2048';
+    sodNote.textContent = 'บันทึก Draft role change แล้ว · สิทธิ์จริงจะถูกตรวจซ้ำโดย backend authorization';
+  });
+
+  document.querySelectorAll('#precast-ux [data-stage-button]').forEach(button => {
+    button.addEventListener('click', () => {
+      setAppView('project');
+      setStage(button.dataset.stageButton);
+    });
+  });
+
+  document.querySelectorAll('#precast-ux [data-view-button]').forEach(button => {
+    button.addEventListener('click', () => {
+      root.dataset.view = button.dataset.viewButton;
+      document.querySelectorAll('#precast-ux [data-view-button]').forEach(peer => {
+        peer.setAttribute('aria-pressed', String(peer === button));
+      });
+    });
+  });
+
+  document.querySelectorAll('#precast-ux [data-doc-button]').forEach(button => {
+    button.addEventListener('click', () => setDocView(button.dataset.docButton));
+  });
+
+  document.querySelectorAll('#precast-ux [data-cost-button]').forEach(button => {
+    button.addEventListener('click', () => setCostView(button.dataset.costButton));
+  });
+
+  const designState = { accent: '#f26a2e', radius: 14, compact: false, initialView: '3D isometric' };
+  function renderDesign() {
+    root.style.setProperty('--pc-accent', designState.accent);
+    root.style.setProperty('--pc-radius', `${designState.radius}px`);
+    root.dataset.compact = String(designState.compact);
+    const view = designState.initialView === 'Plan view' ? 'plan' : 'iso';
+    root.dataset.view = view;
+    document.querySelectorAll('#precast-ux [data-view-button]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.viewButton === view));
+    });
+  }
+
+  setStage('cost');
+  setCostView('takeoff');
+  setDocView('drawing');
+  setAppView('team');
+  renderDesign();
+  refreshIcons();
+
+  if (globalThis.Tweak) {
+    const tweak = new Tweak({ container: root, onChange: renderDesign });
+    tweak.addColorPicker(designState, 'accent', { label: 'สีหลักของผลิตภัณฑ์', reference: '--pc-accent' });
+    tweak.addSlider(designState, 'radius', { label: 'ความโค้งของพื้นผิว', min: 4, max: 24, unit: 'px', reference: '--pc-radius' });
+    tweak.addToggle(designState, 'compact', { label: 'โหมดกระชับ', reference: 'layout.compact' });
+    tweak.addSelect(designState, 'initialView', { label: 'มุมมองโมเดล', options: ['3D isometric', 'Plan view'], reference: 'viewer.mode' });
+  }
+})();
+</script>

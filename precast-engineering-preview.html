@@ -1,0 +1,2704 @@
+<!doctype html>
+<html lang="en" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Precast Engineering Web App</title>
+<style>:root{color-scheme:light dark;background:light-dark(rgb(255 255 255), rgb(24 24 24))}html,body{margin:0}body{box-sizing:border-box;padding:1rem;background:inherit}iframe{display:block;width:100%;height:calc(100vh - 2rem);margin:0 auto;border:0}</style>
+</head>
+<body>
+<iframe sandbox="allow-scripts" referrerpolicy="no-referrer" title="Precast Engineering Web App" srcdoc="&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot; data-visualize-standalone&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;meta name=&quot;referrer&quot; content=&quot;no-referrer&quot;&gt;
+&lt;meta http-equiv=&quot;Content-Security-Policy&quot; content=&quot;default-src &#x27;none&#x27;; script-src &#x27;unsafe-inline&#x27; &#x27;unsafe-eval&#x27; &#x27;wasm-unsafe-eval&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src &#x27;unsafe-inline&#x27; blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src &#x27;none&#x27;; object-src &#x27;none&#x27;; base-uri &#x27;none&#x27;; form-action &#x27;none&#x27;&quot;&gt;
+&lt;title&gt;Precast Engineering Web App&lt;/title&gt;
+&lt;style&gt;:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, &quot;Segoe UI&quot;, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, &quot;SF Mono&quot;, Menlo, Consolas, &quot;Liberation Mono&quot;,
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 10px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url(&quot;data:image/svg+xml,%3Csvg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 17 17&#x27;%3E%3Cpath d=&#x27;M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z&#x27;/%3E%3C/svg%3E&quot;);
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme=&quot;light&quot;] {
+  color-scheme: light;
+}
+
+:root[data-theme=&quot;dark&quot;] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html &gt; body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive &gt; .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align=&quot;right&quot;]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align=&quot;center&quot;]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget &gt; :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls &gt; .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls &gt; .form-label &gt; :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover,
+.nav-link:not(:disabled):not([aria-disabled=&quot;true&quot;]):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled=&quot;true&quot;] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type=&quot;file&quot;] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type=&quot;file&quot;]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type=&quot;file&quot;]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type=&quot;color&quot;] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type=&quot;color&quot;]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type=&quot;checkbox&quot;]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type=&quot;checkbox&quot;]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: &quot;&quot;;
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type=&quot;radio&quot;] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type=&quot;radio&quot;]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: &quot;&quot;;
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed=&quot;true&quot;],
+  [aria-selected=&quot;true&quot;],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed=&quot;true&quot;], [aria-selected=&quot;true&quot;], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type=&quot;file&quot;]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type=&quot;color&quot;] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type=&quot;date&quot;],
+    [type=&quot;datetime-local&quot;],
+    [type=&quot;month&quot;],
+    [type=&quot;time&quot;],
+    [type=&quot;week&quot;]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: &quot;&quot;;
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget &gt; svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html&gt;body{padding:0}&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;style&gt;
+  #precast-ux {
+    --pc-accent: #f26a2e;
+    --pc-radius: 14px;
+    --pc-bg: light-dark(#eef1f4, #11161d);
+    --pc-window: light-dark(#ffffff, #18202a);
+    --pc-panel: light-dark(#f7f8fa, #202a35);
+    --pc-panel-2: light-dark(#ffffff, #151c24);
+    --pc-text: light-dark(#18202a, #edf2f7);
+    --pc-muted: light-dark(#667180, #9eabb9);
+    --pc-line: light-dark(#dfe4e9, #34404d);
+    --pc-shadow: light-dark(rgba(21, 30, 40, .13), rgba(0, 0, 0, .34));
+    --pc-success: light-dark(#16875f, #4fd1a4);
+    --pc-warning: light-dark(#a96500, #ffc45c);
+    --pc-danger: light-dark(#c4473a, #ff7f73);
+    --pc-blue: light-dark(#2267a8, #67b7ff);
+    color-scheme: light dark;
+    color: var(--pc-text);
+    font-family: Inter, &quot;Noto Sans Thai&quot;, &quot;Segoe UI&quot;, sans-serif;
+  }
+
+  #precast-ux * { box-sizing: border-box; }
+
+  #precast-ux .pc-window {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    min-height: 760px;
+    overflow: hidden;
+    background: var(--pc-window);
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    box-shadow: 0 18px 50px var(--pc-shadow);
+  }
+
+  #precast-ux .pc-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 20px 14px;
+    color: light-dark(#f7fafc, #f7fafc);
+    background: light-dark(#17212b, #0d1218);
+  }
+
+  #precast-ux .pc-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 8px 10px;
+  }
+
+  #precast-ux .pc-brand-mark {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 9px;
+    color: #fff;
+    background: var(--pc-accent);
+  }
+
+  #precast-ux .pc-brand strong { display: block; font-weight: 500; letter-spacing: .04em; }
+  #precast-ux .pc-brand small { display: block; margin-top: 2px; color: #aeb9c5; }
+
+  #precast-ux .pc-project {
+    padding: 12px;
+    border-radius: 10px;
+    background: light-dark(#222f3c, #151c24);
+  }
+
+  #precast-ux .pc-project-label { margin-bottom: 5px; color: #9daab8; }
+  #precast-ux .pc-project-name { font-weight: 500; }
+  #precast-ux .pc-project-code { margin-top: 4px; color: #b9c3cd; }
+
+  #precast-ux .pc-app-switcher { display: grid; gap: 4px; }
+  #precast-ux .pc-app-switch {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 9px;
+    color: #bec8d2;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+  }
+  #precast-ux .pc-app-switch:hover { background: rgba(255,255,255,.07); }
+  #precast-ux .pc-app-switch[aria-pressed=&quot;true&quot;] { color: #fff; background: rgba(255,255,255,.12); }
+
+  #precast-ux .pc-nav-label {
+    padding: 0 10px;
+    color: #8d9baa;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+  }
+
+  #precast-ux .pc-stages { display: grid; gap: 4px; }
+
+  #precast-ux .pc-stage {
+    display: grid;
+    grid-template-columns: 28px 1fr 18px;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 9px;
+    color: #bec8d2;
+    text-align: left;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-stage:hover { background: rgba(255,255,255,.07); }
+  #precast-ux .pc-stage[aria-pressed=&quot;true&quot;] { color: #fff; background: rgba(255,255,255,.12); }
+
+  #precast-ux .pc-stage-number {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.24);
+    border-radius: 50%;
+  }
+
+  #precast-ux .pc-stage[aria-pressed=&quot;true&quot;] .pc-stage-number {
+    border-color: var(--pc-accent);
+    color: #fff;
+    background: var(--pc-accent);
+  }
+
+  #precast-ux .pc-stage-state { color: #7e8d9d; }
+  #precast-ux .pc-stage.is-done .pc-stage-state { color: #6ee7b7; }
+  #precast-ux .pc-sidebar-foot { margin-top: auto; padding: 0 9px; color: #8d9baa; }
+
+  #precast-ux[data-app-view=&quot;portfolio&quot;] .pc-project,
+  #precast-ux[data-app-view=&quot;portfolio&quot;] .pc-design-navigation,
+  #precast-ux[data-app-view=&quot;portfolio&quot;] .pc-project-view,
+  #precast-ux[data-app-view=&quot;portfolio&quot;] .pc-project-actions { display: none; }
+  #precast-ux[data-app-view=&quot;project&quot;] .pc-portfolio-view,
+  #precast-ux[data-app-view=&quot;project&quot;] .pc-portfolio-actions { display: none; }
+
+  #precast-ux .pc-app { min-width: 0; background: var(--pc-bg); }
+
+  #precast-ux .pc-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 66px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--pc-line);
+    background: var(--pc-window);
+  }
+
+  #precast-ux .pc-crumb { color: var(--pc-muted); }
+  #precast-ux .pc-crumb strong { color: var(--pc-text); font-weight: 500; }
+  #precast-ux .pc-top-actions { display: flex; align-items: center; gap: 8px; }
+
+  #precast-ux .pc-avatar {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: light-dark(#48566a, #536275);
+  }
+
+  #precast-ux .pc-main { padding: 18px; }
+
+  #precast-ux .pc-portfolio-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  #precast-ux .pc-portfolio-head h1 { margin: 0 0 4px; font-size: 22px; font-weight: 500; }
+  #precast-ux .pc-portfolio-head p { margin: 0; color: var(--pc-muted); }
+  #precast-ux .pc-portfolio-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  #precast-ux .pc-portfolio-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  #precast-ux .pc-search-wrap { position: relative; width: min(360px, 100%); }
+  #precast-ux .pc-search-wrap &gt; svg { position: absolute; left: 10px; top: 11px; color: var(--pc-muted); }
+  #precast-ux .pc-search {
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 10px 7px 34px;
+    border: 1px solid var(--pc-line);
+    border-radius: 9px;
+    color: var(--pc-text);
+    background: var(--pc-panel-2);
+  }
+  #precast-ux .pc-project-list {
+    overflow: hidden;
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+  }
+  #precast-ux .pc-project-table { width: 100%; border-collapse: collapse; }
+  #precast-ux .pc-project-table th,
+  #precast-ux .pc-project-table td { padding: 13px 14px; border-bottom: 1px solid var(--pc-line); text-align: left; vertical-align: middle; }
+  #precast-ux .pc-project-table th { color: var(--pc-muted); font-weight: 400; background: var(--pc-panel); }
+  #precast-ux .pc-project-table tr:last-child td { border-bottom: 0; }
+  #precast-ux .pc-project-table strong { display: block; font-weight: 500; }
+  #precast-ux .pc-project-table small { display: block; margin-top: 3px; color: var(--pc-muted); }
+  #precast-ux .pc-project-table tbody tr:hover { background: color-mix(in srgb, var(--pc-accent) 5%, transparent); }
+  #precast-ux .pc-stage-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 8px;
+    border-radius: 999px;
+    color: var(--pc-blue);
+    background: color-mix(in srgb, var(--pc-blue) 11%, transparent);
+    white-space: nowrap;
+  }
+  #precast-ux .pc-stage-chip.is-production { color: var(--pc-success); background: color-mix(in srgb, var(--pc-success) 11%, transparent); }
+  #precast-ux .pc-stage-chip.is-warning { color: var(--pc-warning); background: color-mix(in srgb, var(--pc-warning) 11%, transparent); }
+  #precast-ux .pc-mini-progress { width: 110px; height: 5px; overflow: hidden; border-radius: 99px; background: var(--pc-line); }
+  #precast-ux .pc-mini-progress span { display: block; height: 100%; background: var(--pc-accent); }
+  #precast-ux .pc-open-project {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 6px 10px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    color: var(--pc-text);
+    background: var(--pc-panel-2);
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 14px;
+  }
+
+  #precast-ux .pc-heading-row h1 { margin: 0 0 4px; font-size: 22px; font-weight: 500; }
+  #precast-ux .pc-heading-row p { margin: 0; color: var(--pc-muted); }
+
+  #precast-ux .pc-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: var(--pc-success);
+    background: color-mix(in srgb, var(--pc-success) 12%, transparent);
+    white-space: nowrap;
+  }
+
+  #precast-ux .pc-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  #precast-ux .pc-workspace {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 14px;
+  }
+
+  #precast-ux .pc-viewer,
+  #precast-ux .pc-inspector,
+  #precast-ux .pc-summary {
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+  }
+
+  #precast-ux .pc-viewer { min-width: 0; overflow: hidden; }
+
+  #precast-ux .pc-viewer-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 52px;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--pc-line);
+  }
+
+  #precast-ux .pc-tool-group { display: flex; align-items: center; gap: 6px; }
+  #precast-ux .pc-shop-tools,
+  #precast-ux .pc-cost-tools { display: none; }
+  #precast-ux[data-stage=&quot;shop&quot;] .pc-model-tools { display: none; }
+  #precast-ux[data-stage=&quot;shop&quot;] .pc-shop-tools { display: flex; }
+  #precast-ux[data-stage=&quot;cost&quot;] .pc-model-tools { display: none; }
+  #precast-ux[data-stage=&quot;cost&quot;] .pc-cost-tools { display: flex; }
+
+  #precast-ux .pc-tool,
+  #precast-ux .pc-view-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 6px 9px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    color: var(--pc-text);
+    background: var(--pc-panel-2);
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-view-toggle[aria-pressed=&quot;true&quot;] {
+    border-color: color-mix(in srgb, var(--pc-accent) 60%, var(--pc-line));
+    color: var(--pc-accent);
+    background: color-mix(in srgb, var(--pc-accent) 10%, var(--pc-panel-2));
+  }
+
+  #precast-ux .pc-canvas {
+    position: relative;
+    display: grid;
+    min-height: 500px;
+    place-items: center;
+    overflow: hidden;
+    background-color: light-dark(#f4f6f8, #111820);
+    background-image:
+      linear-gradient(light-dark(rgba(30,50,70,.055), rgba(255,255,255,.035)) 1px, transparent 1px),
+      linear-gradient(90deg, light-dark(rgba(30,50,70,.055), rgba(255,255,255,.035)) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  #precast-ux .pc-canvas svg { width: min(92%, 760px); height: auto; overflow: visible; }
+  #precast-ux .pc-canvas .pc-model-label { fill: var(--pc-text); font-size: 12px; font-weight: 500; }
+  #precast-ux .pc-canvas .pc-dim { fill: var(--pc-muted); font-size: 11px; }
+  #precast-ux .pc-gridline { stroke: var(--pc-line); stroke-width: 1; }
+  #precast-ux .pc-shell-edge { stroke: light-dark(#596879, #a5b3c3); stroke-width: 1.5; }
+  #precast-ux .pc-shell-face { fill: light-dark(#d7dde3, #435161); }
+  #precast-ux .pc-shell-face.side { fill: light-dark(#c4cdd5, #354352); }
+  #precast-ux .pc-shell-face.floor { fill: light-dark(#e6eaee, #293541); }
+  #precast-ux .pc-joint { stroke: var(--pc-accent); stroke-width: 4; stroke-dasharray: 7 5; }
+  #precast-ux .pc-opening { fill: light-dark(#f4f6f8, #111820); stroke: light-dark(#6f7d8c, #a4b1be); stroke-width: 1.5; }
+  #precast-ux .pc-selected-face { fill: color-mix(in srgb, var(--pc-accent) 28%, light-dark(#d7dde3, #435161)); }
+  #precast-ux .pc-load { stroke: var(--pc-blue); stroke-width: 2.3; marker-end: url(#pc-arrow); }
+  #precast-ux .pc-load-label { fill: var(--pc-blue); font-size: 11px; }
+  #precast-ux .pc-rebar { stroke: var(--pc-success); stroke-width: 2; }
+  #precast-ux .pc-rebar-heavy { stroke: var(--pc-warning); stroke-width: 4; }
+  #precast-ux .pc-hot { fill: color-mix(in srgb, var(--pc-danger) 52%, transparent); }
+  #precast-ux .pc-warm { fill: color-mix(in srgb, var(--pc-warning) 38%, transparent); }
+  #precast-ux .pc-cool { fill: color-mix(in srgb, var(--pc-blue) 32%, transparent); }
+  #precast-ux .pc-node { fill: var(--pc-accent); }
+  #precast-ux .pc-mesh { stroke: color-mix(in srgb, var(--pc-blue) 55%, transparent); stroke-width: .7; fill: none; }
+  #precast-ux [data-stage-layer] { display: none; }
+  #precast-ux[data-stage=&quot;intake&quot;] [data-stage-layer=&quot;intake&quot;],
+  #precast-ux[data-stage=&quot;panel&quot;] [data-stage-layer=&quot;panel&quot;],
+  #precast-ux[data-stage=&quot;loads&quot;] [data-stage-layer=&quot;loads&quot;],
+  #precast-ux[data-stage=&quot;analysis&quot;] [data-stage-layer=&quot;analysis&quot;],
+  #precast-ux[data-stage=&quot;design&quot;] [data-stage-layer=&quot;design&quot;],
+  #precast-ux[data-stage=&quot;report&quot;] [data-stage-layer=&quot;report&quot;] { display: block; }
+  #precast-ux[data-view=&quot;iso&quot;] .pc-plan-view { display: none; }
+  #precast-ux[data-view=&quot;plan&quot;] .pc-iso-view { display: none; }
+  #precast-ux .pc-shop-sheet,
+  #precast-ux .pc-calc-sheet,
+  #precast-ux .pc-package-sheet,
+  #precast-ux .pc-boq-panel { display: none; }
+  #precast-ux[data-stage=&quot;shop&quot;] .pc-canvas &gt; svg,
+  #precast-ux[data-stage=&quot;shop&quot;] .pc-canvas-note,
+  #precast-ux[data-stage=&quot;shop&quot;] .pc-scale { display: none; }
+  #precast-ux[data-stage=&quot;cost&quot;] .pc-canvas &gt; svg,
+  #precast-ux[data-stage=&quot;cost&quot;] .pc-canvas-note,
+  #precast-ux[data-stage=&quot;cost&quot;] .pc-scale { display: none; }
+  #precast-ux[data-stage=&quot;shop&quot;][data-doc-view=&quot;drawing&quot;] .pc-shop-sheet { display: grid; }
+  #precast-ux[data-stage=&quot;shop&quot;][data-doc-view=&quot;calculation&quot;] .pc-calc-sheet { display: block; }
+  #precast-ux[data-stage=&quot;shop&quot;][data-doc-view=&quot;package&quot;] .pc-package-sheet { display: grid; }
+  #precast-ux[data-stage=&quot;cost&quot;][data-cost-view=&quot;takeoff&quot;] .pc-boq-takeoff { display: block; }
+  #precast-ux[data-stage=&quot;cost&quot;][data-cost-view=&quot;summary&quot;] .pc-boq-summary { display: grid; }
+  #precast-ux[data-stage=&quot;cost&quot;][data-cost-view=&quot;assumptions&quot;] .pc-boq-assumptions { display: block; }
+
+  #precast-ux .pc-boq-panel {
+    width: min(96%, 820px);
+    overflow: hidden;
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+    box-shadow: 0 10px 28px var(--pc-shadow);
+  }
+  #precast-ux .pc-boq-panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 15px 17px; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-boq-panel-head strong { display: block; font-weight: 500; }
+  #precast-ux .pc-boq-panel-head span { display: block; margin-top: 3px; color: var(--pc-muted); }
+  #precast-ux .pc-boq-table-wrap { overflow-x: auto; }
+  #precast-ux .pc-boq-table { width: 100%; min-width: 720px; border-collapse: collapse; }
+  #precast-ux .pc-boq-table th,
+  #precast-ux .pc-boq-table td { padding: 10px 11px; border-bottom: 1px solid var(--pc-line); text-align: left; }
+  #precast-ux .pc-boq-table th { color: var(--pc-muted); font-weight: 400; background: var(--pc-panel); }
+  #precast-ux .pc-boq-table td:nth-child(n+4),
+  #precast-ux .pc-boq-table th:nth-child(n+4) { text-align: right; font-variant-numeric: tabular-nums; }
+  #precast-ux .pc-boq-table tbody tr { cursor: pointer; }
+  #precast-ux .pc-boq-table tbody tr:hover,
+  #precast-ux .pc-boq-table tbody tr.is-selected { background: color-mix(in srgb, var(--pc-accent) 8%, transparent); }
+  #precast-ux .pc-boq-table tfoot td { font-weight: 500; background: var(--pc-panel); }
+  #precast-ux .pc-boq-source { color: var(--pc-muted); }
+
+  #precast-ux .pc-boq-summary { grid-template-columns: minmax(0, 1fr) 270px; padding: 22px; gap: 24px; }
+  #precast-ux .pc-cost-bars { display: grid; gap: 13px; }
+  #precast-ux .pc-cost-bar-row { display: grid; grid-template-columns: 130px 1fr 90px; align-items: center; gap: 10px; }
+  #precast-ux .pc-cost-bar-track { height: 10px; overflow: hidden; border-radius: 99px; background: var(--pc-line); }
+  #precast-ux .pc-cost-bar-track span { display: block; height: 100%; background: var(--pc-accent); }
+  #precast-ux .pc-cost-bar-row strong { text-align: right; font-weight: 500; font-variant-numeric: tabular-nums; }
+  #precast-ux .pc-estimate-box { padding-left: 22px; border-left: 1px solid var(--pc-line); }
+  #precast-ux .pc-estimate-total { margin: 7px 0 15px; font-size: 25px; font-weight: 500; }
+  #precast-ux .pc-range-track { position: relative; height: 8px; margin: 22px 0 8px; border-radius: 99px; background: color-mix(in srgb, var(--pc-warning) 40%, var(--pc-line)); }
+  #precast-ux .pc-range-marker { position: absolute; left: 50%; top: -5px; width: 2px; height: 18px; background: var(--pc-text); }
+  #precast-ux .pc-range-labels { display: flex; justify-content: space-between; color: var(--pc-muted); }
+  #precast-ux .pc-boq-assumptions { padding: 20px 22px; }
+  #precast-ux .pc-assumption-list { display: grid; gap: 0; margin-top: 12px; }
+  #precast-ux .pc-assumption-row { display: grid; grid-template-columns: 90px 1fr 110px; gap: 12px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-assumption-row:last-child { border-bottom: 0; }
+
+  #precast-ux .pc-shop-sheet {
+    grid-template-columns: minmax(0, 1fr) 150px;
+    width: min(94%, 790px);
+    min-height: 430px;
+    padding: 14px;
+    border: 1px solid light-dark(#5b6570, #aeb7c1);
+    color: light-dark(#18202a, #e8edf2);
+    background: light-dark(#ffffff, #202832);
+    box-shadow: 0 10px 28px var(--pc-shadow);
+  }
+  #precast-ux .pc-drawing-body { position: relative; min-width: 0; border: 1px solid light-dark(#7b858f, #9ca8b4); }
+  #precast-ux .pc-drawing-body svg { width: 100%; height: 100%; }
+  #precast-ux .pc-title-block { display: grid; align-content: end; border: 1px solid light-dark(#7b858f, #9ca8b4); border-left: 0; }
+  #precast-ux .pc-title-cell { padding: 8px; border-top: 1px solid light-dark(#7b858f, #9ca8b4); }
+  #precast-ux .pc-title-cell:first-child { border-top: 0; }
+  #precast-ux .pc-title-cell small { display: block; color: var(--pc-muted); }
+  #precast-ux .pc-title-cell strong { display: block; margin-top: 3px; font-weight: 500; }
+  #precast-ux .pc-dwg-line { stroke: light-dark(#26313b, #e6edf4); stroke-width: 1.4; fill: none; }
+  #precast-ux .pc-dwg-thin { stroke: light-dark(#64717e, #aeb9c4); stroke-width: .8; fill: none; }
+  #precast-ux .pc-dwg-rebar { stroke: var(--pc-accent); stroke-width: 1.4; fill: none; }
+  #precast-ux .pc-dwg-text { fill: light-dark(#26313b, #e6edf4); font-size: 9px; }
+  #precast-ux .pc-dwg-note { fill: var(--pc-accent); font-size: 9px; }
+
+  #precast-ux .pc-calc-sheet {
+    width: min(88%, 690px);
+    min-height: 440px;
+    padding: 30px 34px;
+    border: 1px solid light-dark(#aab2ba, #7d8996);
+    color: light-dark(#18202a, #e8edf2);
+    background: light-dark(#ffffff, #202832);
+    box-shadow: 0 10px 28px var(--pc-shadow);
+  }
+  #precast-ux .pc-report-kicker { color: var(--pc-accent); text-transform: uppercase; letter-spacing: .08em; }
+  #precast-ux .pc-calc-sheet h2 { margin: 10px 0 6px; font-size: 23px; font-weight: 500; }
+  #precast-ux .pc-calc-sheet &gt; p { margin: 0 0 20px; color: var(--pc-muted); }
+  #precast-ux .pc-report-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 20px; padding: 14px 0; border-top: 1px solid var(--pc-line); border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-report-meta span { color: var(--pc-muted); }
+  #precast-ux .pc-report-outline { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 18px; margin-top: 18px; }
+  #precast-ux .pc-report-outline div { display: flex; justify-content: space-between; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-report-signatures { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+  #precast-ux .pc-signature { padding-top: 20px; border-top: 1px solid var(--pc-line); color: var(--pc-muted); text-align: center; }
+
+  #precast-ux .pc-package-sheet {
+    grid-template-columns: minmax(0, 1fr) 210px;
+    width: min(92%, 760px);
+    min-height: 420px;
+    overflow: hidden;
+    border: 1px solid var(--pc-line);
+    border-radius: var(--pc-radius);
+    background: var(--pc-panel-2);
+    box-shadow: 0 10px 28px var(--pc-shadow);
+  }
+  #precast-ux .pc-package-tree { padding: 22px 24px; }
+  #precast-ux .pc-package-tree h2 { margin: 0 0 5px; font-size: 20px; font-weight: 500; }
+  #precast-ux .pc-package-tree &gt; p { margin: 0 0 18px; color: var(--pc-muted); }
+  #precast-ux .pc-folder-tree { display: grid; gap: 8px; }
+  #precast-ux .pc-folder { display: grid; grid-template-columns: 24px 1fr auto; align-items: center; gap: 7px; }
+  #precast-ux .pc-folder-file { padding-left: 30px; color: var(--pc-muted); }
+  #precast-ux .pc-package-side { padding: 20px 16px; border-left: 1px solid var(--pc-line); background: var(--pc-panel); }
+  #precast-ux .pc-package-side strong { display: block; font-weight: 500; }
+  #precast-ux .pc-package-side p { color: var(--pc-muted); }
+  #precast-ux .pc-hash { overflow-wrap: anywhere; color: var(--pc-muted); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+
+  #precast-ux .pc-format-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  #precast-ux .pc-format-option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 7px 8px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    background: var(--pc-panel);
+  }
+  #precast-ux .pc-format-option input { width: auto; min-height: auto; }
+
+  #precast-ux .pc-canvas-note {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    color: var(--pc-muted);
+    background: color-mix(in srgb, var(--pc-panel-2) 92%, transparent);
+  }
+
+  #precast-ux .pc-scale {
+    position: absolute;
+    right: 16px;
+    bottom: 18px;
+    width: 82px;
+    border-top: 2px solid var(--pc-text);
+    color: var(--pc-muted);
+    text-align: center;
+  }
+
+  #precast-ux .pc-inspector { overflow: hidden; }
+  #precast-ux .pc-inspector-head { padding: 14px 15px; border-bottom: 1px solid var(--pc-line); }
+  #precast-ux .pc-inspector-head strong { font-weight: 500; }
+  #precast-ux .pc-inspector-head div { margin-top: 3px; color: var(--pc-muted); }
+  #precast-ux .pc-inspector-body { display: grid; gap: 13px; padding: 15px; }
+  #precast-ux .pc-field { display: grid; gap: 5px; }
+  #precast-ux .pc-field label { color: var(--pc-muted); }
+
+  #precast-ux .pc-field input,
+  #precast-ux .pc-field select {
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 9px;
+    border: 1px solid var(--pc-line);
+    border-radius: 8px;
+    color: var(--pc-text);
+    background: var(--pc-panel);
+  }
+
+  #precast-ux .pc-two-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  #precast-ux .pc-section-label { color: var(--pc-muted); text-transform: uppercase; letter-spacing: .06em; }
+
+  #precast-ux .pc-check-list { display: grid; gap: 8px; }
+  #precast-ux .pc-check-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--pc-line);
+  }
+
+  #precast-ux .pc-check-row:last-child { border-bottom: 0; }
+  #precast-ux .pc-pass { color: var(--pc-success); }
+  #precast-ux .pc-warn { color: var(--pc-warning); }
+  #precast-ux .pc-fail { color: var(--pc-danger); }
+
+  #precast-ux .pc-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 9px;
+    color: #fff;
+    background: var(--pc-accent);
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid var(--pc-line);
+    border-radius: 9px;
+    color: var(--pc-text);
+    background: var(--pc-panel-2);
+    cursor: pointer;
+  }
+
+  #precast-ux .pc-block { width: 100%; }
+  #precast-ux .pc-footer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+  #precast-ux .pc-summary { padding: 13px 15px; }
+  #precast-ux .pc-summary-label { color: var(--pc-muted); }
+  #precast-ux .pc-summary-value { margin-top: 5px; font-size: 20px; font-weight: 500; }
+  #precast-ux .pc-summary-context { margin-top: 2px; color: var(--pc-muted); }
+  #precast-ux .pc-progress-track { height: 5px; margin-top: 9px; overflow: hidden; border-radius: 99px; background: var(--pc-line); }
+  #precast-ux .pc-progress-fill { width: 64%; height: 100%; background: var(--pc-accent); transition: width .35s ease; }
+
+  #precast-ux[data-compact=&quot;true&quot;] .pc-main { padding: 12px; }
+  #precast-ux[data-compact=&quot;true&quot;] .pc-workspace { gap: 9px; }
+  #precast-ux[data-compact=&quot;true&quot;] .pc-canvas { min-height: 440px; }
+
+  @media (max-width: 820px) {
+    #precast-ux .pc-window { grid-template-columns: 1fr; }
+    #precast-ux .pc-sidebar { gap: 10px; }
+    #precast-ux .pc-stages { grid-template-columns: repeat(3, 1fr); }
+    #precast-ux .pc-stage { grid-template-columns: 24px 1fr; }
+    #precast-ux .pc-stage-state { display: none; }
+    #precast-ux .pc-sidebar-foot { display: none; }
+    #precast-ux .pc-workspace { grid-template-columns: 1fr; }
+    #precast-ux .pc-inspector { order: 2; }
+    #precast-ux .pc-portfolio-metrics { grid-template-columns: repeat(2, 1fr); }
+    #precast-ux .pc-project-list { overflow-x: auto; }
+    #precast-ux .pc-project-table { min-width: 760px; }
+  }
+
+  @media (max-width: 560px) {
+    #precast-ux .pc-topbar,
+    #precast-ux .pc-heading-row,
+    #precast-ux .pc-viewer-toolbar { align-items: stretch; flex-direction: column; }
+    #precast-ux .pc-stages { grid-template-columns: 1fr 1fr; }
+    #precast-ux .pc-footer-grid { grid-template-columns: 1fr; }
+    #precast-ux .pc-top-actions { flex-wrap: wrap; }
+    #precast-ux .pc-canvas { min-height: 360px; }
+    #precast-ux .pc-portfolio-head,
+    #precast-ux .pc-portfolio-controls { align-items: stretch; flex-direction: column; }
+    #precast-ux .pc-portfolio-metrics { grid-template-columns: 1fr 1fr; }
+    #precast-ux .pc-shop-sheet { grid-template-columns: 1fr; }
+    #precast-ux .pc-title-block { grid-template-columns: 1fr 1fr; border-left: 1px solid light-dark(#7b858f, #9ca8b4); border-top: 0; }
+    #precast-ux .pc-package-sheet { grid-template-columns: 1fr; }
+    #precast-ux .pc-package-side { border-left: 0; border-top: 1px solid var(--pc-line); }
+    #precast-ux .pc-report-outline,
+    #precast-ux .pc-report-signatures { grid-template-columns: 1fr; }
+    #precast-ux .pc-boq-summary { grid-template-columns: 1fr; }
+    #precast-ux .pc-estimate-box { padding-left: 0; padding-top: 18px; border-left: 0; border-top: 1px solid var(--pc-line); }
+    #precast-ux .pc-assumption-row { grid-template-columns: 1fr; }
+  }
+&lt;/style&gt;
+
+&lt;div id=&quot;precast-ux&quot; data-app-view=&quot;project&quot; data-stage=&quot;cost&quot; data-cost-view=&quot;takeoff&quot; data-doc-view=&quot;drawing&quot; data-view=&quot;iso&quot; data-compact=&quot;false&quot;&gt;
+  &lt;section class=&quot;pc-window&quot; aria-label=&quot;ต้นแบบหน้าจอ Precast Studio&quot;&gt;
+    &lt;aside class=&quot;pc-sidebar&quot;&gt;
+      &lt;div class=&quot;pc-brand&quot;&gt;
+        &lt;div class=&quot;pc-brand-mark&quot;&gt;&lt;i data-lucide=&quot;boxes&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+        &lt;div&gt;&lt;strong&gt;PRECAST STUDIO&lt;/strong&gt;&lt;small&gt;Engineering Platform&lt;/small&gt;&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;nav class=&quot;pc-app-switcher&quot; aria-label=&quot;ส่วนหลักของระบบ&quot;&gt;
+        &lt;button class=&quot;pc-app-switch&quot; type=&quot;button&quot; data-app-button=&quot;portfolio&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;layout-dashboard&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;ทุกโครงการ&lt;/span&gt;&lt;/button&gt;
+        &lt;button class=&quot;pc-app-switch&quot; type=&quot;button&quot; data-app-button=&quot;project&quot; aria-pressed=&quot;true&quot;&gt;&lt;i data-lucide=&quot;ruler&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span&gt;พื้นที่ออกแบบ&lt;/span&gt;&lt;/button&gt;
+      &lt;/nav&gt;
+
+      &lt;div class=&quot;pc-project&quot;&gt;
+        &lt;div class=&quot;pc-project-label&quot;&gt;โครงการปัจจุบัน&lt;/div&gt;
+        &lt;div class=&quot;pc-project-name&quot;&gt;Senior Living Module&lt;/div&gt;
+        &lt;div class=&quot;pc-project-code&quot;&gt;PM-T2-36X2-B01 · Rev B.03&lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;pc-design-navigation&quot;&gt;
+        &lt;div class=&quot;pc-nav-label&quot;&gt;ขั้นตอนการออกแบบ&lt;/div&gt;
+        &lt;nav class=&quot;pc-stages&quot; aria-label=&quot;ขั้นตอนการออกแบบพรีคาสท์&quot;&gt;
+          &lt;button class=&quot;pc-stage is-done&quot; type=&quot;button&quot; data-stage-button=&quot;intake&quot; aria-pressed=&quot;false&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;1&lt;/span&gt;&lt;span&gt;รับแบบ BIM&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;✓&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button class=&quot;pc-stage is-done&quot; type=&quot;button&quot; data-stage-button=&quot;criteria&quot; aria-pressed=&quot;false&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;2&lt;/span&gt;&lt;span&gt;Design Criteria&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;✓&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button class=&quot;pc-stage is-done&quot; type=&quot;button&quot; data-stage-button=&quot;panel&quot; aria-pressed=&quot;false&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;3&lt;/span&gt;&lt;span&gt;แบ่งชิ้นงาน&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;✓&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button class=&quot;pc-stage&quot; type=&quot;button&quot; data-stage-button=&quot;loads&quot; aria-pressed=&quot;false&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;4&lt;/span&gt;&lt;span&gt;แรงและจุดรองรับ&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;✓&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button class=&quot;pc-stage&quot; type=&quot;button&quot; data-stage-button=&quot;analysis&quot; aria-pressed=&quot;false&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;5&lt;/span&gt;&lt;span&gt;วิเคราะห์ FEM&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;✓&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button class=&quot;pc-stage&quot; type=&quot;button&quot; data-stage-button=&quot;design&quot; aria-pressed=&quot;false&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;6&lt;/span&gt;&lt;span&gt;ออกแบบเหล็ก&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;✓&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button class=&quot;pc-stage&quot; type=&quot;button&quot; data-stage-button=&quot;cost&quot; aria-pressed=&quot;true&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;7&lt;/span&gt;&lt;span&gt;BOQ &amp; Estimate&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;●&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button class=&quot;pc-stage&quot; type=&quot;button&quot; data-stage-button=&quot;report&quot; aria-pressed=&quot;false&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;8&lt;/span&gt;&lt;span&gt;รายการคำนวณ&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;○&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;button class=&quot;pc-stage&quot; type=&quot;button&quot; data-stage-button=&quot;shop&quot; aria-pressed=&quot;false&quot;&gt;
+            &lt;span class=&quot;pc-stage-number&quot;&gt;9&lt;/span&gt;&lt;span&gt;Drawing &amp; Export&lt;/span&gt;&lt;span class=&quot;pc-stage-state&quot;&gt;○&lt;/span&gt;
+          &lt;/button&gt;
+        &lt;/nav&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;pc-sidebar-foot&quot;&gt;Prototype workspace · Internal review&lt;/div&gt;
+    &lt;/aside&gt;
+
+    &lt;div class=&quot;pc-app&quot;&gt;
+      &lt;header class=&quot;pc-topbar&quot;&gt;
+        &lt;div class=&quot;pc-crumb&quot;&gt;&lt;span id=&quot;pc-crumb-prefix&quot;&gt;Portfolio&lt;/span&gt; / &lt;strong id=&quot;pc-crumb-current&quot;&gt;All projects&lt;/strong&gt;&lt;/div&gt;
+        &lt;div class=&quot;pc-top-actions pc-project-actions&quot;&gt;
+          &lt;button class=&quot;pc-secondary&quot; type=&quot;button&quot;&gt;&lt;i data-lucide=&quot;history&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Revision&lt;/button&gt;
+          &lt;button class=&quot;pc-secondary&quot; type=&quot;button&quot;&gt;&lt;i data-lucide=&quot;message-square&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Review&lt;/button&gt;
+          &lt;div class=&quot;pc-avatar&quot; aria-label=&quot;ผู้ใช้งาน KS&quot;&gt;KS&lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;pc-top-actions pc-portfolio-actions&quot;&gt;
+          &lt;button class=&quot;pc-secondary&quot; type=&quot;button&quot;&gt;&lt;i data-lucide=&quot;users&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; ทีมงาน&lt;/button&gt;
+          &lt;button class=&quot;pc-secondary&quot; type=&quot;button&quot;&gt;&lt;i data-lucide=&quot;bell&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; งานรอตรวจ 3&lt;/button&gt;
+          &lt;div class=&quot;pc-avatar&quot; aria-label=&quot;ผู้ใช้งาน KS&quot;&gt;KS&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/header&gt;
+
+      &lt;main class=&quot;pc-main pc-portfolio-view&quot;&gt;
+        &lt;div class=&quot;pc-portfolio-head&quot;&gt;
+          &lt;div&gt;&lt;h1&gt;โครงการทั้งหมด&lt;/h1&gt;&lt;p&gt;ติดตามงานออกแบบ วิเคราะห์ Shop Drawing และสถานะการผลิตในมุมมองเดียว&lt;/p&gt;&lt;/div&gt;
+          &lt;button class=&quot;pc-action&quot; type=&quot;button&quot;&gt;&lt;i data-lucide=&quot;plus&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; สร้างโครงการ&lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;pc-portfolio-metrics&quot;&gt;
+          &lt;div class=&quot;pc-summary&quot;&gt;&lt;div class=&quot;pc-summary-label&quot;&gt;โครงการที่กำลังทำ&lt;/div&gt;&lt;div class=&quot;pc-summary-value&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;pc-summary-context&quot;&gt;จากทั้งหมด 14 โครงการ&lt;/div&gt;&lt;/div&gt;
+          &lt;div class=&quot;pc-summary&quot;&gt;&lt;div class=&quot;pc-summary-label&quot;&gt;รอวิศวกรตรวจ&lt;/div&gt;&lt;div class=&quot;pc-summary-value&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;pc-summary-context&quot;&gt;Analysis 2 · Drawing 1&lt;/div&gt;&lt;/div&gt;
+          &lt;div class=&quot;pc-summary&quot;&gt;&lt;div class=&quot;pc-summary-label&quot;&gt;ประมาณการโครงการ Active&lt;/div&gt;&lt;div class=&quot;pc-summary-value&quot;&gt;8.4M&lt;/div&gt;&lt;div class=&quot;pc-summary-context&quot;&gt;THB · 5 Current · 3 Out of date&lt;/div&gt;&lt;/div&gt;
+          &lt;div class=&quot;pc-summary&quot;&gt;&lt;div class=&quot;pc-summary-label&quot;&gt;Released to production&lt;/div&gt;&lt;div class=&quot;pc-summary-value&quot;&gt;126&lt;/div&gt;&lt;div class=&quot;pc-summary-context&quot;&gt;ชิ้นงานพร้อมเข้าคิวผลิต&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;pc-portfolio-controls&quot;&gt;
+          &lt;div class=&quot;pc-search-wrap&quot;&gt;&lt;i data-lucide=&quot;search&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;input class=&quot;pc-search&quot; id=&quot;pc-project-search&quot; type=&quot;search&quot; placeholder=&quot;ค้นหาชื่อโครงการหรือรหัส&quot;&gt;&lt;/div&gt;
+          &lt;div class=&quot;pc-tool-group&quot;&gt;
+            &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; aria-pressed=&quot;true&quot;&gt;กำลังดำเนินการ&lt;/button&gt;
+            &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; aria-pressed=&quot;false&quot;&gt;ทั้งหมด&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;section class=&quot;pc-project-list&quot; aria-label=&quot;รายการโครงการ&quot;&gt;
+          &lt;table class=&quot;pc-project-table&quot;&gt;
+            &lt;thead&gt;&lt;tr&gt;&lt;th&gt;โครงการ&lt;/th&gt;&lt;th&gt;ขั้นตอนปัจจุบัน&lt;/th&gt;&lt;th&gt;ความคืบหน้า&lt;/th&gt;&lt;th&gt;ผู้รับผิดชอบ&lt;/th&gt;&lt;th&gt;อัปเดต&lt;/th&gt;&lt;th&gt;&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+            &lt;tbody id=&quot;pc-project-rows&quot;&gt;
+              &lt;tr data-project-row=&quot;PM-T2-36X2-B01&quot;&gt;&lt;td&gt;&lt;strong&gt;Senior Living Module&lt;/strong&gt;&lt;small&gt;PM-T2-36X2-B01 · Rev B.03&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;● ออกแบบเหล็ก&lt;/span&gt;&lt;/td&gt;&lt;td&gt;&lt;div class=&quot;pc-mini-progress&quot;&gt;&lt;span style=&quot;width:72%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;small&gt;72%&lt;/small&gt;&lt;/td&gt;&lt;td&gt;ก้อง / ทีมโครงสร้าง&lt;/td&gt;&lt;td&gt;วันนี้ 10:42&lt;/td&gt;&lt;td&gt;&lt;button class=&quot;pc-open-project&quot; type=&quot;button&quot; data-open-project=&quot;Senior Living Module|PM-T2-36X2-B01 · Rev B.03|design&quot;&gt;เปิดงาน&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;
+              &lt;tr data-project-row=&quot;PM-VL-48-A02&quot;&gt;&lt;td&gt;&lt;strong&gt;Pool Villa Type A&lt;/strong&gt;&lt;small&gt;PM-VL-48-A02 · Rev C.01&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;pc-stage-chip is-warning&quot;&gt;● Checker review&lt;/span&gt;&lt;/td&gt;&lt;td&gt;&lt;div class=&quot;pc-mini-progress&quot;&gt;&lt;span style=&quot;width:86%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;small&gt;86%&lt;/small&gt;&lt;/td&gt;&lt;td&gt;พีรพงศ์ / checker&lt;/td&gt;&lt;td&gt;เมื่อวาน 16:20&lt;/td&gt;&lt;td&gt;&lt;button class=&quot;pc-open-project&quot; type=&quot;button&quot; data-open-project=&quot;Pool Villa Type A|PM-VL-48-A02 · Rev C.01|report&quot;&gt;เปิดงาน&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;
+              &lt;tr data-project-row=&quot;PM-OF-24-C04&quot;&gt;&lt;td&gt;&lt;strong&gt;Site Office 24&lt;/strong&gt;&lt;small&gt;PM-OF-24-C04 · Rev A.05&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;pc-stage-chip is-production&quot;&gt;✓ Released to production&lt;/span&gt;&lt;/td&gt;&lt;td&gt;&lt;div class=&quot;pc-mini-progress&quot;&gt;&lt;span style=&quot;width:100%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;small&gt;100%&lt;/small&gt;&lt;/td&gt;&lt;td&gt;วรัญญา / production&lt;/td&gt;&lt;td&gt;2 ก.ย. 2026&lt;/td&gt;&lt;td&gt;&lt;button class=&quot;pc-open-project&quot; type=&quot;button&quot; data-open-project=&quot;Site Office 24|PM-OF-24-C04 · Rev A.05|shop&quot;&gt;เปิดงาน&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;
+              &lt;tr data-project-row=&quot;PM-RS-60-D01&quot;&gt;&lt;td&gt;&lt;strong&gt;Resort Cluster 01&lt;/strong&gt;&lt;small&gt;PM-RS-60-D01 · Rev A.02&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;● กำหนดแรง&lt;/span&gt;&lt;/td&gt;&lt;td&gt;&lt;div class=&quot;pc-mini-progress&quot;&gt;&lt;span style=&quot;width:48%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;small&gt;48%&lt;/small&gt;&lt;/td&gt;&lt;td&gt;สหรัฐ / analysis&lt;/td&gt;&lt;td&gt;1 ก.ย. 2026&lt;/td&gt;&lt;td&gt;&lt;button class=&quot;pc-open-project&quot; type=&quot;button&quot; data-open-project=&quot;Resort Cluster 01|PM-RS-60-D01 · Rev A.02|loads&quot;&gt;เปิดงาน&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;
+              &lt;tr data-project-row=&quot;PM-HS-32-A07&quot;&gt;&lt;td&gt;&lt;strong&gt;Compact House 32&lt;/strong&gt;&lt;small&gt;PM-HS-32-A07 · Rev B.01&lt;/small&gt;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;● แบ่งชิ้นงาน&lt;/span&gt;&lt;/td&gt;&lt;td&gt;&lt;div class=&quot;pc-mini-progress&quot;&gt;&lt;span style=&quot;width:31%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;small&gt;31%&lt;/small&gt;&lt;/td&gt;&lt;td&gt;ณัฐ / panelization&lt;/td&gt;&lt;td&gt;30 ส.ค. 2026&lt;/td&gt;&lt;td&gt;&lt;button class=&quot;pc-open-project&quot; type=&quot;button&quot; data-open-project=&quot;Compact House 32|PM-HS-32-A07 · Rev B.01|panel&quot;&gt;เปิดงาน&lt;/button&gt;&lt;/td&gt;&lt;/tr&gt;
+            &lt;/tbody&gt;
+          &lt;/table&gt;
+        &lt;/section&gt;
+      &lt;/main&gt;
+
+      &lt;main class=&quot;pc-main pc-project-view&quot;&gt;
+        &lt;div class=&quot;pc-heading-row&quot;&gt;
+          &lt;div&gt;
+            &lt;h1 id=&quot;pc-page-title&quot;&gt;แบ่งชิ้นงานพรีคาสท์&lt;/h1&gt;
+            &lt;p id=&quot;pc-page-subtitle&quot;&gt;กำหนดขอบเขต Panel, Joint, Opening และข้อจำกัดการผลิต&lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class=&quot;pc-status&quot;&gt;&lt;span class=&quot;pc-dot&quot;&gt;&lt;/span&gt;&lt;span id=&quot;pc-model-status&quot;&gt;แบบ BIM เชื่อมต่อแล้ว&lt;/span&gt;&lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;pc-workspace&quot;&gt;
+          &lt;section class=&quot;pc-viewer&quot; aria-label=&quot;พื้นที่แสดงโมเดลสามมิติ&quot;&gt;
+            &lt;div class=&quot;pc-viewer-toolbar&quot;&gt;
+              &lt;div class=&quot;pc-tool-group pc-model-tools&quot;&gt;
+                &lt;button class=&quot;pc-tool&quot; type=&quot;button&quot;&gt;&lt;i data-lucide=&quot;mouse-pointer-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; เลือก&lt;/button&gt;
+                &lt;button class=&quot;pc-tool&quot; type=&quot;button&quot;&gt;&lt;i data-lucide=&quot;split&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; แบ่ง Panel&lt;/button&gt;
+                &lt;button class=&quot;pc-tool&quot; type=&quot;button&quot;&gt;&lt;i data-lucide=&quot;link-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; กำหนด Joint&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;pc-tool-group pc-shop-tools&quot;&gt;
+                &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; data-doc-button=&quot;drawing&quot; aria-pressed=&quot;true&quot;&gt;&lt;i data-lucide=&quot;drafting-compass&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Shop Drawing&lt;/button&gt;
+                &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; data-doc-button=&quot;calculation&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;file-text&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Calculation&lt;/button&gt;
+                &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; data-doc-button=&quot;package&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;package-check&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Export Package&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;pc-tool-group pc-cost-tools&quot;&gt;
+                &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; data-cost-button=&quot;takeoff&quot; aria-pressed=&quot;true&quot;&gt;&lt;i data-lucide=&quot;table-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Quantity Takeoff&lt;/button&gt;
+                &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; data-cost-button=&quot;summary&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;chart-no-axes-column&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Cost Summary&lt;/button&gt;
+                &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; data-cost-button=&quot;assumptions&quot; aria-pressed=&quot;false&quot;&gt;&lt;i data-lucide=&quot;list-checks&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt; Assumptions&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;pc-tool-group pc-model-tools&quot; aria-label=&quot;มุมมองโมเดล&quot;&gt;
+                &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; data-view-button=&quot;iso&quot; aria-pressed=&quot;true&quot;&gt;3D&lt;/button&gt;
+                &lt;button class=&quot;pc-view-toggle&quot; type=&quot;button&quot; data-view-button=&quot;plan&quot; aria-pressed=&quot;false&quot;&gt;Plan&lt;/button&gt;
+              &lt;/div&gt;
+              &lt;div class=&quot;pc-tool-group pc-shop-tools&quot;&gt;&lt;span class=&quot;pc-stage-chip is-warning&quot;&gt;For Approval · Rev B.03&lt;/span&gt;&lt;/div&gt;
+              &lt;div class=&quot;pc-tool-group pc-cost-tools&quot;&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;Engineering estimate · ±15%&lt;/span&gt;&lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class=&quot;pc-canvas&quot;&gt;
+              &lt;svg viewBox=&quot;0 0 760 470&quot; role=&quot;img&quot; aria-labelledby=&quot;pc-model-title pc-model-desc&quot;&gt;
+                &lt;title id=&quot;pc-model-title&quot;&gt;โมเดลอาคารพรีคาสท์สองโมดูล&lt;/title&gt;
+                &lt;desc id=&quot;pc-model-desc&quot;&gt;แสดงการแบ่งผนัง พื้น รอยต่อ จุดยก แรงกระทำ ผลวิเคราะห์ และแนวเหล็กตามขั้นตอนที่เลือก&lt;/desc&gt;
+                &lt;defs&gt;
+                  &lt;marker id=&quot;pc-arrow&quot; markerWidth=&quot;8&quot; markerHeight=&quot;8&quot; refX=&quot;7&quot; refY=&quot;4&quot; orient=&quot;auto&quot;&gt;&lt;path d=&quot;M0 0L8 4L0 8Z&quot; fill=&quot;currentColor&quot; style=&quot;color:var(--pc-blue)&quot;&gt;&lt;/path&gt;&lt;/marker&gt;
+                  &lt;linearGradient id=&quot;pc-heat&quot; x1=&quot;0&quot; x2=&quot;1&quot;&gt;&lt;stop offset=&quot;0&quot; stop-color=&quot;var(--pc-blue)&quot; stop-opacity=&quot;.4&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;.55&quot; stop-color=&quot;var(--pc-warning)&quot; stop-opacity=&quot;.48&quot;&gt;&lt;/stop&gt;&lt;stop offset=&quot;1&quot; stop-color=&quot;var(--pc-danger)&quot; stop-opacity=&quot;.62&quot;&gt;&lt;/stop&gt;&lt;/linearGradient&gt;
+                &lt;/defs&gt;
+
+                &lt;g class=&quot;pc-iso-view&quot;&gt;
+                  &lt;polygon class=&quot;pc-shell-face floor pc-shell-edge&quot; points=&quot;130,330 380,210 635,332 380,450&quot;&gt;&lt;/polygon&gt;
+                  &lt;polygon class=&quot;pc-shell-face side pc-shell-edge&quot; points=&quot;130,130 380,20 380,210 130,330&quot;&gt;&lt;/polygon&gt;
+                  &lt;polygon class=&quot;pc-shell-face pc-shell-edge pc-selected-face&quot; points=&quot;380,20 635,132 635,332 380,210&quot;&gt;&lt;/polygon&gt;
+                  &lt;line class=&quot;pc-joint&quot; x1=&quot;380&quot; y1=&quot;20&quot; x2=&quot;380&quot; y2=&quot;450&quot;&gt;&lt;/line&gt;
+                  &lt;polygon class=&quot;pc-opening&quot; points=&quot;466,98 535,128 535,246 466,214&quot;&gt;&lt;/polygon&gt;
+                  &lt;polygon class=&quot;pc-opening&quot; points=&quot;190,170 260,138 260,215 190,248&quot;&gt;&lt;/polygon&gt;
+                  &lt;text class=&quot;pc-model-label&quot; x=&quot;480&quot; y=&quot;285&quot;&gt;P-W03&lt;/text&gt;
+                  &lt;text class=&quot;pc-model-label&quot; x=&quot;216&quot; y=&quot;282&quot;&gt;P-W01&lt;/text&gt;
+                  &lt;text class=&quot;pc-model-label&quot; x=&quot;390&quot; y=&quot;388&quot;&gt;P-F01 / P-F02&lt;/text&gt;
+                  &lt;text class=&quot;pc-dim&quot; x=&quot;355&quot; y=&quot;462&quot;&gt;6.00 m&lt;/text&gt;
+                  &lt;text class=&quot;pc-dim&quot; x=&quot;643&quot; y=&quot;240&quot;&gt;2.80 m&lt;/text&gt;
+
+                  &lt;g data-stage-layer=&quot;intake&quot;&gt;
+                    &lt;circle class=&quot;pc-node&quot; cx=&quot;260&quot; cy=&quot;138&quot; r=&quot;5&quot;&gt;&lt;/circle&gt;
+                    &lt;circle class=&quot;pc-node&quot; cx=&quot;466&quot; cy=&quot;98&quot; r=&quot;5&quot;&gt;&lt;/circle&gt;
+                    &lt;text class=&quot;pc-load-label&quot; x=&quot;270&quot; y=&quot;125&quot;&gt;ช่องเปิดตรวจสอบแล้ว&lt;/text&gt;
+                  &lt;/g&gt;
+
+                  &lt;g data-stage-layer=&quot;panel&quot;&gt;
+                    &lt;circle class=&quot;pc-node&quot; cx=&quot;380&quot; cy=&quot;20&quot; r=&quot;5&quot;&gt;&lt;/circle&gt;
+                    &lt;circle class=&quot;pc-node&quot; cx=&quot;380&quot; cy=&quot;210&quot; r=&quot;5&quot;&gt;&lt;/circle&gt;
+                    &lt;circle class=&quot;pc-node&quot; cx=&quot;380&quot; cy=&quot;450&quot; r=&quot;5&quot;&gt;&lt;/circle&gt;
+                    &lt;text class=&quot;pc-load-label&quot; x=&quot;394&quot; y=&quot;52&quot;&gt;J01 · Module Joint&lt;/text&gt;
+                  &lt;/g&gt;
+
+                  &lt;g data-stage-layer=&quot;loads&quot;&gt;
+                    &lt;line class=&quot;pc-load&quot; x1=&quot;205&quot; y1=&quot;42&quot; x2=&quot;205&quot; y2=&quot;125&quot;&gt;&lt;/line&gt;
+                    &lt;line class=&quot;pc-load&quot; x1=&quot;305&quot; y1=&quot;18&quot; x2=&quot;305&quot; y2=&quot;91&quot;&gt;&lt;/line&gt;
+                    &lt;line class=&quot;pc-load&quot; x1=&quot;455&quot; y1=&quot;17&quot; x2=&quot;455&quot; y2=&quot;74&quot;&gt;&lt;/line&gt;
+                    &lt;line class=&quot;pc-load&quot; x1=&quot;555&quot; y1=&quot;56&quot; x2=&quot;555&quot; y2=&quot;112&quot;&gt;&lt;/line&gt;
+                    &lt;text class=&quot;pc-load-label&quot; x=&quot;270&quot; y=&quot;12&quot;&gt;DL + LL + Roof&lt;/text&gt;
+                    &lt;line class=&quot;pc-load&quot; x1=&quot;684&quot; y1=&quot;193&quot; x2=&quot;625&quot; y2=&quot;193&quot;&gt;&lt;/line&gt;
+                    &lt;text class=&quot;pc-load-label&quot; x=&quot;650&quot; y=&quot;180&quot;&gt;Wind&lt;/text&gt;
+                  &lt;/g&gt;
+
+                  &lt;g data-stage-layer=&quot;analysis&quot;&gt;
+                    &lt;polygon points=&quot;380,20 635,132 635,332 380,210&quot; fill=&quot;url(#pc-heat)&quot; opacity=&quot;.8&quot;&gt;&lt;/polygon&gt;
+                    &lt;path class=&quot;pc-mesh&quot; d=&quot;M380 58L635 171M380 96L635 209M380 134L635 247M380 172L635 285M431 42L431 232M482 65L482 255M533 87L533 278M584 110L584 301&quot;&gt;&lt;/path&gt;
+                    &lt;circle class=&quot;pc-hot&quot; cx=&quot;466&quot; cy=&quot;98&quot; r=&quot;25&quot;&gt;&lt;/circle&gt;
+                    &lt;circle class=&quot;pc-warm&quot; cx=&quot;535&quot; cy=&quot;246&quot; r=&quot;30&quot;&gt;&lt;/circle&gt;
+                    &lt;text class=&quot;pc-load-label&quot; x=&quot;478&quot; y=&quot;84&quot;&gt;U = 0.82&lt;/text&gt;
+                  &lt;/g&gt;
+
+                  &lt;g data-stage-layer=&quot;design&quot;&gt;
+                    &lt;path class=&quot;pc-rebar&quot; d=&quot;M405 48L405 215M425 56L425 222M445 65L445 230M565 116L565 280M585 125L585 288M605 134L605 297&quot;&gt;&lt;/path&gt;
+                    &lt;path class=&quot;pc-rebar&quot; d=&quot;M390 82L625 185M390 108L625 211M390 134L625 237M390 160L625 263&quot;&gt;&lt;/path&gt;
+                    &lt;path class=&quot;pc-rebar-heavy&quot; d=&quot;M451 83L451 225M548 116L548 270&quot;&gt;&lt;/path&gt;
+                    &lt;text class=&quot;pc-load-label&quot; x=&quot;475&quot; y=&quot;315&quot;&gt;DB10 @ 200 + Opening bars&lt;/text&gt;
+                  &lt;/g&gt;
+
+                  &lt;g data-stage-layer=&quot;report&quot;&gt;
+                    &lt;circle cx=&quot;505&quot; cy=&quot;196&quot; r=&quot;48&quot; fill=&quot;color-mix(in srgb, var(--pc-success) 18%, transparent)&quot; stroke=&quot;var(--pc-success)&quot; stroke-width=&quot;2&quot;&gt;&lt;/circle&gt;
+                    &lt;text class=&quot;pc-model-label&quot; x=&quot;478&quot; y=&quot;192&quot;&gt;CHECKED&lt;/text&gt;
+                    &lt;text class=&quot;pc-dim&quot; x=&quot;480&quot; y=&quot;211&quot;&gt;Rev B.03&lt;/text&gt;
+                  &lt;/g&gt;
+                &lt;/g&gt;
+
+                &lt;g class=&quot;pc-plan-view&quot;&gt;
+                  &lt;rect class=&quot;pc-shell-face floor pc-shell-edge&quot; x=&quot;125&quot; y=&quot;95&quot; width=&quot;510&quot; height=&quot;285&quot;&gt;&lt;/rect&gt;
+                  &lt;line class=&quot;pc-joint&quot; x1=&quot;380&quot; y1=&quot;95&quot; x2=&quot;380&quot; y2=&quot;380&quot;&gt;&lt;/line&gt;
+                  &lt;rect class=&quot;pc-opening&quot; x=&quot;207&quot; y=&quot;87&quot; width=&quot;80&quot; height=&quot;16&quot;&gt;&lt;/rect&gt;
+                  &lt;rect class=&quot;pc-opening&quot; x=&quot;486&quot; y=&quot;372&quot; width=&quot;84&quot; height=&quot;16&quot;&gt;&lt;/rect&gt;
+                  &lt;line class=&quot;pc-gridline&quot; x1=&quot;125&quot; y1=&quot;237&quot; x2=&quot;635&quot; y2=&quot;237&quot;&gt;&lt;/line&gt;
+                  &lt;text class=&quot;pc-model-label&quot; x=&quot;233&quot; y=&quot;220&quot;&gt;MODULE A&lt;/text&gt;
+                  &lt;text class=&quot;pc-model-label&quot; x=&quot;485&quot; y=&quot;220&quot;&gt;MODULE B&lt;/text&gt;
+                  &lt;text class=&quot;pc-load-label&quot; x=&quot;390&quot; y=&quot;118&quot;&gt;J01&lt;/text&gt;
+                  &lt;g data-stage-layer=&quot;loads&quot;&gt;
+                    &lt;line class=&quot;pc-load&quot; x1=&quot;685&quot; y1=&quot;150&quot; x2=&quot;635&quot; y2=&quot;150&quot;&gt;&lt;/line&gt;
+                    &lt;line class=&quot;pc-load&quot; x1=&quot;685&quot; y1=&quot;237&quot; x2=&quot;635&quot; y2=&quot;237&quot;&gt;&lt;/line&gt;
+                    &lt;line class=&quot;pc-load&quot; x1=&quot;685&quot; y1=&quot;325&quot; x2=&quot;635&quot; y2=&quot;325&quot;&gt;&lt;/line&gt;
+                  &lt;/g&gt;
+                  &lt;g data-stage-layer=&quot;analysis&quot;&gt;&lt;rect x=&quot;380&quot; y=&quot;95&quot; width=&quot;255&quot; height=&quot;285&quot; fill=&quot;url(#pc-heat)&quot; opacity=&quot;.75&quot;&gt;&lt;/rect&gt;&lt;/g&gt;
+                  &lt;g data-stage-layer=&quot;design&quot;&gt;
+                    &lt;path class=&quot;pc-rebar&quot; d=&quot;M150 120H610M150 145H610M150 170H610M150 305H610M150 330H610M150 355H610&quot;&gt;&lt;/path&gt;
+                    &lt;path class=&quot;pc-rebar-heavy&quot; d=&quot;M365 105V370M395 105V370&quot;&gt;&lt;/path&gt;
+                  &lt;/g&gt;
+                  &lt;g data-stage-layer=&quot;report&quot;&gt;&lt;text class=&quot;pc-model-label&quot; x=&quot;315&quot; y=&quot;415&quot;&gt;Drawing set ready · 12 sheets&lt;/text&gt;&lt;/g&gt;
+                &lt;/g&gt;
+              &lt;/svg&gt;
+
+              &lt;section class=&quot;pc-boq-panel pc-boq-takeoff&quot; aria-label=&quot;ตารางถอดปริมาณและประมาณราคา&quot;&gt;
+                &lt;div class=&quot;pc-boq-panel-head&quot;&gt;&lt;div&gt;&lt;strong&gt;BOQ · EST-ENG-004 · Rev 02&lt;/strong&gt;&lt;span&gt;Model M-Rev06 · Price Book TH-PC-Q3/2026 · THB&lt;/span&gt;&lt;/div&gt;&lt;span class=&quot;pc-pass&quot;&gt;Current&lt;/span&gt;&lt;/div&gt;
+                &lt;div class=&quot;pc-boq-table-wrap&quot;&gt;
+                  &lt;table class=&quot;pc-boq-table&quot;&gt;
+                    &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Cost code / รายการ&lt;/th&gt;&lt;th&gt;ที่มา&lt;/th&gt;&lt;th&gt;หน่วย&lt;/th&gt;&lt;th&gt;ปริมาณ&lt;/th&gt;&lt;th&gt;สูญเสีย&lt;/th&gt;&lt;th&gt;ราคาต่อหน่วย&lt;/th&gt;&lt;th&gt;จำนวนเงิน&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+                    &lt;tbody&gt;
+                      &lt;tr class=&quot;is-selected&quot; data-boq-row=&quot;concrete&quot;&gt;&lt;td&gt;&lt;strong&gt;MAT-CON-01&lt;/strong&gt;&lt;br&gt;คอนกรีต LC-1200&lt;/td&gt;&lt;td class=&quot;pc-boq-source&quot;&gt;18 panels&lt;/td&gt;&lt;td&gt;m³&lt;/td&gt;&lt;td&gt;18.40&lt;/td&gt;&lt;td&gt;3%&lt;/td&gt;&lt;td&gt;3,450&lt;/td&gt;&lt;td&gt;65,384&lt;/td&gt;&lt;/tr&gt;
+                      &lt;tr data-boq-row=&quot;rebar&quot;&gt;&lt;td&gt;&lt;strong&gt;MAT-RBR-01&lt;/strong&gt;&lt;br&gt;เหล็กเสริมและตะแกรง&lt;/td&gt;&lt;td class=&quot;pc-boq-source&quot;&gt;BBS Rev 04&lt;/td&gt;&lt;td&gt;kg&lt;/td&gt;&lt;td&gt;1,184&lt;/td&gt;&lt;td&gt;5%&lt;/td&gt;&lt;td&gt;27.50&lt;/td&gt;&lt;td&gt;34,188&lt;/td&gt;&lt;/tr&gt;
+                      &lt;tr data-boq-row=&quot;embed&quot;&gt;&lt;td&gt;&lt;strong&gt;MAT-EMB-02&lt;/strong&gt;&lt;br&gt;Embedded items / anchors&lt;/td&gt;&lt;td class=&quot;pc-boq-source&quot;&gt;Schedule&lt;/td&gt;&lt;td&gt;set&lt;/td&gt;&lt;td&gt;18&lt;/td&gt;&lt;td&gt;0%&lt;/td&gt;&lt;td&gt;2,850&lt;/td&gt;&lt;td&gt;51,300&lt;/td&gt;&lt;/tr&gt;
+                      &lt;tr data-boq-row=&quot;mold&quot;&gt;&lt;td&gt;&lt;strong&gt;PRD-MOLD-01&lt;/strong&gt;&lt;br&gt;แม่พิมพ์และเตรียมผิวหล่อ&lt;/td&gt;&lt;td class=&quot;pc-boq-source&quot;&gt;286 m²&lt;/td&gt;&lt;td&gt;m²&lt;/td&gt;&lt;td&gt;286&lt;/td&gt;&lt;td&gt;0%&lt;/td&gt;&lt;td&gt;420&lt;/td&gt;&lt;td&gt;120,120&lt;/td&gt;&lt;/tr&gt;
+                      &lt;tr data-boq-row=&quot;finish&quot;&gt;&lt;td&gt;&lt;strong&gt;FIN-SUR-01&lt;/strong&gt;&lt;br&gt;วัสดุปิดผิวและงานเก็บ&lt;/td&gt;&lt;td class=&quot;pc-boq-source&quot;&gt;Allowance&lt;/td&gt;&lt;td&gt;m²&lt;/td&gt;&lt;td&gt;286&lt;/td&gt;&lt;td&gt;5%&lt;/td&gt;&lt;td&gt;380&lt;/td&gt;&lt;td&gt;114,114&lt;/td&gt;&lt;/tr&gt;
+                      &lt;tr data-boq-row=&quot;transport&quot;&gt;&lt;td&gt;&lt;strong&gt;LOG-TRN-01&lt;/strong&gt;&lt;br&gt;ขนส่งโมดูล&lt;/td&gt;&lt;td class=&quot;pc-boq-source&quot;&gt;4 trips&lt;/td&gt;&lt;td&gt;trip&lt;/td&gt;&lt;td&gt;4&lt;/td&gt;&lt;td&gt;0%&lt;/td&gt;&lt;td&gt;8,500&lt;/td&gt;&lt;td&gt;34,000&lt;/td&gt;&lt;/tr&gt;
+                      &lt;tr data-boq-row=&quot;erection&quot;&gt;&lt;td&gt;&lt;strong&gt;INS-CRN-01&lt;/strong&gt;&lt;br&gt;เครนและติดตั้ง&lt;/td&gt;&lt;td class=&quot;pc-boq-source&quot;&gt;2 days&lt;/td&gt;&lt;td&gt;day&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;0%&lt;/td&gt;&lt;td&gt;18,000&lt;/td&gt;&lt;td&gt;36,000&lt;/td&gt;&lt;/tr&gt;
+                    &lt;/tbody&gt;
+                    &lt;tfoot&gt;&lt;tr&gt;&lt;td colspan=&quot;6&quot;&gt;Direct cost&lt;/td&gt;&lt;td&gt;455,106&lt;/td&gt;&lt;/tr&gt;&lt;/tfoot&gt;
+                  &lt;/table&gt;
+                &lt;/div&gt;
+              &lt;/section&gt;
+
+              &lt;section class=&quot;pc-boq-panel pc-boq-summary&quot; aria-label=&quot;สรุปต้นทุนเบื้องต้น&quot;&gt;
+                &lt;div&gt;
+                  &lt;div class=&quot;pc-boq-panel-head&quot;&gt;&lt;div&gt;&lt;strong&gt;Cost breakdown&lt;/strong&gt;&lt;span&gt;Engineering estimate · Base scenario&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-cost-bars&quot;&gt;
+                    &lt;div class=&quot;pc-cost-bar-row&quot;&gt;&lt;span&gt;วัสดุหลัก&lt;/span&gt;&lt;div class=&quot;pc-cost-bar-track&quot;&gt;&lt;span style=&quot;width:46%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;strong&gt;150,872&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-cost-bar-row&quot;&gt;&lt;span&gt;ผลิต/แม่พิมพ์&lt;/span&gt;&lt;div class=&quot;pc-cost-bar-track&quot;&gt;&lt;span style=&quot;width:78%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;strong&gt;120,120&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-cost-bar-row&quot;&gt;&lt;span&gt;งานผิว&lt;/span&gt;&lt;div class=&quot;pc-cost-bar-track&quot;&gt;&lt;span style=&quot;width:74%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;strong&gt;114,114&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-cost-bar-row&quot;&gt;&lt;span&gt;ขนส่ง/ติดตั้ง&lt;/span&gt;&lt;div class=&quot;pc-cost-bar-track&quot;&gt;&lt;span style=&quot;width:45%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;strong&gt;70,000&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-cost-bar-row&quot;&gt;&lt;span&gt;Indirect 8%&lt;/span&gt;&lt;div class=&quot;pc-cost-bar-track&quot;&gt;&lt;span style=&quot;width:24%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;strong&gt;36,408&lt;/strong&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-cost-bar-row&quot;&gt;&lt;span&gt;Contingency 5%&lt;/span&gt;&lt;div class=&quot;pc-cost-bar-track&quot;&gt;&lt;span style=&quot;width:16%&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;strong&gt;24,576&lt;/strong&gt;&lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;aside class=&quot;pc-estimate-box&quot;&gt;
+                  &lt;span class=&quot;pc-boq-source&quot;&gt;Estimated cost&lt;/span&gt;&lt;div class=&quot;pc-estimate-total&quot;&gt;516,090 THB&lt;/div&gt;
+                  &lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Cost / module&lt;/span&gt;&lt;strong&gt;258,045&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Cost / m²&lt;/span&gt;&lt;strong&gt;14,336&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Markup 18%&lt;/span&gt;&lt;strong&gt;92,896&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Indicative price&lt;/span&gt;&lt;strong&gt;608,986&lt;/strong&gt;&lt;/div&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-range-track&quot;&gt;&lt;span class=&quot;pc-range-marker&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-range-labels&quot;&gt;&lt;span&gt;439k&lt;/span&gt;&lt;span&gt;Base 516k&lt;/span&gt;&lt;span&gt;593k&lt;/span&gt;&lt;/div&gt;
+                  &lt;p class=&quot;pc-boq-source&quot;&gt;Preliminary range ±15% · VAT excluded&lt;/p&gt;
+                &lt;/aside&gt;
+              &lt;/section&gt;
+
+              &lt;section class=&quot;pc-boq-panel pc-boq-assumptions&quot; aria-label=&quot;สมมติฐานและข้อยกเว้นประมาณราคา&quot;&gt;
+                &lt;div class=&quot;pc-boq-panel-head&quot;&gt;&lt;div&gt;&lt;strong&gt;Assumptions &amp; Exclusions&lt;/strong&gt;&lt;span&gt;ต้องเปิดเผยใน BOQ และ Estimate Summary ทุก Revision&lt;/span&gt;&lt;/div&gt;&lt;span class=&quot;pc-warn&quot;&gt;2 pending&lt;/span&gt;&lt;/div&gt;
+                &lt;div class=&quot;pc-assumption-list&quot;&gt;
+                  &lt;div class=&quot;pc-assumption-row&quot;&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;Included&lt;/span&gt;&lt;span&gt;ราคาคอนกรีตและเหล็กจาก Price Book TH-PC-Q3/2026&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;Confirmed&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-assumption-row&quot;&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;Allowance&lt;/span&gt;&lt;span&gt;งานผิวภายนอก 380 THB/m² ก่อนเลือกวัสดุจริง&lt;/span&gt;&lt;span class=&quot;pc-warn&quot;&gt;Architect&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-assumption-row&quot;&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;Assumption&lt;/span&gt;&lt;span&gt;ขนส่ง 4 เที่ยว ระยะทางไม่เกิน 80 km&lt;/span&gt;&lt;span class=&quot;pc-warn&quot;&gt;Logistics&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-assumption-row&quot;&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;Excluded&lt;/span&gt;&lt;span&gt;ฐานราก งานสาธารณูปโภค และค่าธรรมเนียมราชการ&lt;/span&gt;&lt;span&gt;Disclosed&lt;/span&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-assumption-row&quot;&gt;&lt;span class=&quot;pc-stage-chip&quot;&gt;Included&lt;/span&gt;&lt;span&gt;เครน 25 t ระยะทำงานตาม Lift Plan LP-01&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;Confirmed&lt;/span&gt;&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/section&gt;
+
+              &lt;div class=&quot;pc-shop-sheet&quot; aria-label=&quot;ตัวอย่าง Shop Drawing ของผนัง P-W03&quot;&gt;
+                &lt;div class=&quot;pc-drawing-body&quot;&gt;
+                  &lt;svg viewBox=&quot;0 0 590 410&quot; role=&quot;img&quot; aria-labelledby=&quot;pc-shop-title pc-shop-desc&quot;&gt;
+                    &lt;title id=&quot;pc-shop-title&quot;&gt;Shop Drawing ผนังพรีคาสท์ P-W03&lt;/title&gt;
+                    &lt;desc id=&quot;pc-shop-desc&quot;&gt;แสดงรูปด้าน ขนาด เหล็กเสริม จุดยก ช่องเปิด รายการวัสดุและหน้าตัด&lt;/desc&gt;
+                    &lt;rect class=&quot;pc-dwg-line&quot; x=&quot;62&quot; y=&quot;66&quot; width=&quot;350&quot; height=&quot;214&quot;&gt;&lt;/rect&gt;
+                    &lt;rect class=&quot;pc-dwg-line&quot; x=&quot;242&quot; y=&quot;138&quot; width=&quot;86&quot; height=&quot;142&quot;&gt;&lt;/rect&gt;
+                    &lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;83&quot; y1=&quot;83&quot; x2=&quot;83&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;108&quot; y1=&quot;83&quot; x2=&quot;108&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;133&quot; y1=&quot;83&quot; x2=&quot;133&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;158&quot; y1=&quot;83&quot; x2=&quot;158&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;183&quot; y1=&quot;83&quot; x2=&quot;183&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;208&quot; y1=&quot;83&quot; x2=&quot;208&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;350&quot; y1=&quot;83&quot; x2=&quot;350&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;375&quot; y1=&quot;83&quot; x2=&quot;375&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;400&quot; y1=&quot;83&quot; x2=&quot;400&quot; y2=&quot;264&quot;&gt;&lt;/line&gt;
+                    &lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;75&quot; y1=&quot;95&quot; x2=&quot;400&quot; y2=&quot;95&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;75&quot; y1=&quot;120&quot; x2=&quot;400&quot; y2=&quot;120&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;75&quot; y1=&quot;250&quot; x2=&quot;400&quot; y2=&quot;250&quot;&gt;&lt;/line&gt;
+                    &lt;circle class=&quot;pc-dwg-line&quot; cx=&quot;145&quot; cy=&quot;82&quot; r=&quot;7&quot;&gt;&lt;/circle&gt;&lt;circle class=&quot;pc-dwg-line&quot; cx=&quot;365&quot; cy=&quot;82&quot; r=&quot;7&quot;&gt;&lt;/circle&gt;
+                    &lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;62&quot; y1=&quot;45&quot; x2=&quot;412&quot; y2=&quot;45&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;62&quot; y1=&quot;38&quot; x2=&quot;62&quot; y2=&quot;55&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;412&quot; y1=&quot;38&quot; x2=&quot;412&quot; y2=&quot;55&quot;&gt;&lt;/line&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;220&quot; y=&quot;38&quot;&gt;5,800&lt;/text&gt;
+                    &lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;38&quot; y1=&quot;66&quot; x2=&quot;38&quot; y2=&quot;280&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;30&quot; y1=&quot;66&quot; x2=&quot;48&quot; y2=&quot;66&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;30&quot; y1=&quot;280&quot; x2=&quot;48&quot; y2=&quot;280&quot;&gt;&lt;/line&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;18&quot; y=&quot;180&quot; transform=&quot;rotate(-90 18 180)&quot;&gt;2,800&lt;/text&gt;
+                    &lt;text class=&quot;pc-dwg-text&quot; x=&quot;188&quot; y=&quot;305&quot;&gt;PANEL ELEVATION · P-W03&lt;/text&gt;
+                    &lt;text class=&quot;pc-dwg-note&quot; x=&quot;340&quot; y=&quot;151&quot;&gt;2-DB12 รอบช่องเปิด&lt;/text&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;337&quot; y1=&quot;154&quot; x2=&quot;318&quot; y2=&quot;171&quot;&gt;&lt;/line&gt;
+                    &lt;text class=&quot;pc-dwg-note&quot; x=&quot;105&quot; y=&quot;72&quot;&gt;LA-02&lt;/text&gt;&lt;text class=&quot;pc-dwg-note&quot; x=&quot;371&quot; y=&quot;72&quot;&gt;LA-02&lt;/text&gt;
+                    &lt;circle class=&quot;pc-dwg-line&quot; cx=&quot;472&quot; cy=&quot;107&quot; r=&quot;42&quot;&gt;&lt;/circle&gt;&lt;line class=&quot;pc-dwg-line&quot; x1=&quot;430&quot; y1=&quot;107&quot; x2=&quot;514&quot; y2=&quot;107&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;450&quot; y1=&quot;85&quot; x2=&quot;450&quot; y2=&quot;129&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;465&quot; y1=&quot;85&quot; x2=&quot;465&quot; y2=&quot;129&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;480&quot; y1=&quot;85&quot; x2=&quot;480&quot; y2=&quot;129&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-rebar&quot; x1=&quot;495&quot; y1=&quot;85&quot; x2=&quot;495&quot; y2=&quot;129&quot;&gt;&lt;/line&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;447&quot; y=&quot;163&quot;&gt;SECTION A-A&lt;/text&gt;
+                    &lt;rect class=&quot;pc-dwg-thin&quot; x=&quot;438&quot; y=&quot;205&quot; width=&quot;116&quot; height=&quot;118&quot;&gt;&lt;/rect&gt;&lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;438&quot; y1=&quot;229&quot; x2=&quot;554&quot; y2=&quot;229&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;438&quot; y1=&quot;253&quot; x2=&quot;554&quot; y2=&quot;253&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;438&quot; y1=&quot;277&quot; x2=&quot;554&quot; y2=&quot;277&quot;&gt;&lt;/line&gt;&lt;line class=&quot;pc-dwg-thin&quot; x1=&quot;438&quot; y1=&quot;301&quot; x2=&quot;554&quot; y2=&quot;301&quot;&gt;&lt;/line&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;446&quot; y=&quot;220&quot;&gt;MARK  SIZE  QTY&lt;/text&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;446&quot; y=&quot;244&quot;&gt;R01  DB10  18&lt;/text&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;446&quot; y=&quot;268&quot;&gt;R02  DB12   4&lt;/text&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;446&quot; y=&quot;292&quot;&gt;LA02  2.5t   2&lt;/text&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;446&quot; y=&quot;316&quot;&gt;EP01  150x150 4&lt;/text&gt;
+                    &lt;text class=&quot;pc-dwg-text&quot; x=&quot;66&quot; y=&quot;340&quot;&gt;CONCRETE: LC-1200 · fc&#x27; 18 MPa&lt;/text&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;66&quot; y=&quot;356&quot;&gt;WEIGHT: 2.84 t · COG: X=2,914 / Y=1,366&lt;/text&gt;&lt;text class=&quot;pc-dwg-text&quot; x=&quot;66&quot; y=&quot;372&quot;&gt;FINISH: F2 EXTERNAL · TOLERANCE: ±5 mm&lt;/text&gt;
+                  &lt;/svg&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;pc-title-block&quot;&gt;
+                  &lt;div class=&quot;pc-title-cell&quot;&gt;&lt;small&gt;PROJECT&lt;/small&gt;&lt;strong&gt;Senior Living Module&lt;/strong&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-title-cell&quot;&gt;&lt;small&gt;DRAWING&lt;/small&gt;&lt;strong&gt;WALL PANEL P-W03&lt;/strong&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-title-cell&quot;&gt;&lt;small&gt;DRAWING NO.&lt;/small&gt;&lt;strong&gt;PM-T2-SD-W03&lt;/strong&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-title-cell&quot;&gt;&lt;small&gt;REVISION&lt;/small&gt;&lt;strong&gt;B.03 · For Approval&lt;/strong&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-title-cell&quot;&gt;&lt;small&gt;DESIGNED / CHECKED&lt;/small&gt;&lt;strong&gt;KS / PP&lt;/strong&gt;&lt;/div&gt;
+                  &lt;div class=&quot;pc-title-cell&quot;&gt;&lt;small&gt;SCALE / SHEET&lt;/small&gt;&lt;strong&gt;1:25 · A3 · 1/1&lt;/strong&gt;&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/div&gt;
+
+              &lt;article class=&quot;pc-calc-sheet&quot; aria-label=&quot;ตัวอย่างรายงานรายการคำนวณมาตรฐาน&quot;&gt;
+                &lt;div class=&quot;pc-report-kicker&quot;&gt;Structural calculation report&lt;/div&gt;
+                &lt;h2&gt;Precast Modular System · Type 2&lt;/h2&gt;
+                &lt;p&gt;Design basis, FEM analysis, member checks, connections, lifting and transportation&lt;/p&gt;
+                &lt;div class=&quot;pc-report-meta&quot;&gt;
+                  &lt;div&gt;&lt;span&gt;Document no.&lt;/span&gt;&lt;br&gt;&lt;strong&gt;PM-T2-CALC-001&lt;/strong&gt;&lt;/div&gt;
+                  &lt;div&gt;&lt;span&gt;Revision / status&lt;/span&gt;&lt;br&gt;&lt;strong&gt;B.03 · For Approval&lt;/strong&gt;&lt;/div&gt;
+                  &lt;div&gt;&lt;span&gt;Design basis&lt;/span&gt;&lt;br&gt;&lt;strong&gt;DB-Rev03 · Approved&lt;/strong&gt;&lt;/div&gt;
+                  &lt;div&gt;&lt;span&gt;Calculation run&lt;/span&gt;&lt;br&gt;&lt;strong&gt;CALC-2026-0094&lt;/strong&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;pc-report-outline&quot;&gt;
+                  &lt;div&gt;&lt;span&gt;1. Document control&lt;/span&gt;&lt;span&gt;3&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;7. FEM model verification&lt;/span&gt;&lt;span&gt;34&lt;/span&gt;&lt;/div&gt;
+                  &lt;div&gt;&lt;span&gt;2. Scope and limitations&lt;/span&gt;&lt;span&gt;5&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;8. Analysis results&lt;/span&gt;&lt;span&gt;42&lt;/span&gt;&lt;/div&gt;
+                  &lt;div&gt;&lt;span&gt;3. Codes and criteria&lt;/span&gt;&lt;span&gt;8&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;9. Panel design checks&lt;/span&gt;&lt;span&gt;55&lt;/span&gt;&lt;/div&gt;
+                  &lt;div&gt;&lt;span&gt;4. Materials&lt;/span&gt;&lt;span&gt;12&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;10. Joints and anchors&lt;/span&gt;&lt;span&gt;68&lt;/span&gt;&lt;/div&gt;
+                  &lt;div&gt;&lt;span&gt;5. Loads and combinations&lt;/span&gt;&lt;span&gt;16&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;11. Lifting / transport&lt;/span&gt;&lt;span&gt;76&lt;/span&gt;&lt;/div&gt;
+                  &lt;div&gt;&lt;span&gt;6. Analytical model&lt;/span&gt;&lt;span&gt;27&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;12. Conclusions&lt;/span&gt;&lt;span&gt;84&lt;/span&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;pc-report-signatures&quot;&gt;
+                  &lt;div class=&quot;pc-signature&quot;&gt;Designed by · KS&lt;/div&gt;&lt;div class=&quot;pc-signature&quot;&gt;Checked by · PP&lt;/div&gt;&lt;div class=&quot;pc-signature&quot;&gt;Approved by · —&lt;/div&gt;
+                &lt;/div&gt;
+              &lt;/article&gt;
+
+              &lt;section class=&quot;pc-package-sheet&quot; aria-label=&quot;โครงสร้างชุดไฟล์ส่งมอบ&quot;&gt;
+                &lt;div class=&quot;pc-package-tree&quot;&gt;
+                  &lt;h2&gt;Production package · PR-2026-0094&lt;/h2&gt;
+                  &lt;p&gt;Verified package structure พร้อม Manifest และ Checksum&lt;/p&gt;
+                  &lt;div class=&quot;pc-folder-tree&quot;&gt;
+                    &lt;div class=&quot;pc-folder&quot;&gt;&lt;i data-lucide=&quot;folder&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;strong&gt;01_Calculations&lt;/strong&gt;&lt;span class=&quot;pc-pass&quot;&gt;4 files&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-folder-file&quot;&gt;PM-T2-CALC-001_B03.pdf · .docx · results.xlsx · inputs.json&lt;/div&gt;
+                    &lt;div class=&quot;pc-folder&quot;&gt;&lt;i data-lucide=&quot;folder&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;strong&gt;02_Shop_Drawings&lt;/strong&gt;&lt;span class=&quot;pc-pass&quot;&gt;36 files&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-folder-file&quot;&gt;18 × DXF R2018 · 18 × PDF/A-2b&lt;/div&gt;
+                    &lt;div class=&quot;pc-folder&quot;&gt;&lt;i data-lucide=&quot;folder&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;strong&gt;03_Schedules&lt;/strong&gt;&lt;span class=&quot;pc-pass&quot;&gt;3 files&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-folder-file&quot;&gt;PanelSchedule.xlsx · BBS.xlsx · Rebar.bvbs&lt;/div&gt;
+                    &lt;div class=&quot;pc-folder&quot;&gt;&lt;i data-lucide=&quot;folder&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;strong&gt;04_BIM&lt;/strong&gt;&lt;span class=&quot;pc-pass&quot;&gt;2 files&lt;/span&gt;&lt;/div&gt;
+                    &lt;div class=&quot;pc-folder-file&quot;&gt;PM-T2-FAB-B03.ifc · PM-T2-viewer.glb&lt;/div&gt;
+                    &lt;div class=&quot;pc-folder&quot;&gt;&lt;i data-lucide=&quot;file-key-2&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;strong&gt;manifest.json&lt;/strong&gt;&lt;span class=&quot;pc-pass&quot;&gt;Verified&lt;/span&gt;&lt;/div&gt;
+                  &lt;/div&gt;
+                &lt;/div&gt;
+                &lt;aside class=&quot;pc-package-side&quot;&gt;
+                  &lt;strong&gt;Preflight summary&lt;/strong&gt;
+                  &lt;p class=&quot;pc-pass&quot;&gt;✓ 48/48 checks passed&lt;/p&gt;
+                  &lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Units&lt;/span&gt;&lt;span&gt;mm&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;DXF profile&lt;/span&gt;&lt;span&gt;PC-FAB-01&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Missing fonts&lt;/span&gt;&lt;span&gt;0&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Open polylines&lt;/span&gt;&lt;span&gt;0&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Revision match&lt;/span&gt;&lt;span&gt;B.03&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                  &lt;p&gt;SHA-256&lt;/p&gt;&lt;div class=&quot;pc-hash&quot;&gt;8ad7c3…91b0e2&lt;/div&gt;
+                &lt;/aside&gt;
+              &lt;/section&gt;
+
+              &lt;div class=&quot;pc-canvas-note&quot;&gt;&lt;i data-lucide=&quot;info&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;span id=&quot;pc-canvas-note&quot;&gt;เลือก P-W03 · ผนังภายนอกโมดูล B&lt;/span&gt;&lt;/div&gt;
+              &lt;div class=&quot;pc-scale&quot;&gt;2.00 m&lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/section&gt;
+
+          &lt;aside class=&quot;pc-inspector&quot; aria-label=&quot;คุณสมบัติและการตรวจสอบ&quot;&gt;
+            &lt;div class=&quot;pc-inspector-head&quot;&gt;&lt;strong id=&quot;pc-inspector-title&quot;&gt;P-W03 · External wall&lt;/strong&gt;&lt;div id=&quot;pc-inspector-subtitle&quot;&gt;Precast lightweight concrete&lt;/div&gt;&lt;/div&gt;
+            &lt;div class=&quot;pc-inspector-body&quot; id=&quot;pc-inspector-body&quot;&gt;&lt;/div&gt;
+          &lt;/aside&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;pc-footer-grid&quot; aria-live=&quot;polite&quot;&gt;
+          &lt;div class=&quot;pc-summary&quot;&gt;&lt;div class=&quot;pc-summary-label&quot; id=&quot;pc-metric-1-label&quot;&gt;ชิ้นงานทั้งหมด&lt;/div&gt;&lt;div class=&quot;pc-summary-value&quot; id=&quot;pc-metric-1-value&quot;&gt;18&lt;/div&gt;&lt;div class=&quot;pc-summary-context&quot; id=&quot;pc-metric-1-context&quot;&gt;ผนัง 10 · พื้น 4 · หลังคา 4&lt;/div&gt;&lt;/div&gt;
+          &lt;div class=&quot;pc-summary&quot;&gt;&lt;div class=&quot;pc-summary-label&quot; id=&quot;pc-metric-2-label&quot;&gt;น้ำหนักสูงสุด&lt;/div&gt;&lt;div class=&quot;pc-summary-value&quot; id=&quot;pc-metric-2-value&quot;&gt;4.72 t&lt;/div&gt;&lt;div class=&quot;pc-summary-context&quot; id=&quot;pc-metric-2-context&quot;&gt;ต่ำกว่าขีดจำกัดเครน 6.00 t&lt;/div&gt;&lt;/div&gt;
+          &lt;div class=&quot;pc-summary&quot;&gt;&lt;div class=&quot;pc-summary-label&quot; id=&quot;pc-metric-3-label&quot;&gt;ความพร้อมของโมเดล&lt;/div&gt;&lt;div class=&quot;pc-summary-value&quot; id=&quot;pc-metric-3-value&quot;&gt;64%&lt;/div&gt;&lt;div class=&quot;pc-summary-context&quot; id=&quot;pc-metric-3-context&quot;&gt;รอกำหนด Load และ Support&lt;/div&gt;&lt;div class=&quot;pc-progress-track&quot;&gt;&lt;div class=&quot;pc-progress-fill&quot; id=&quot;pc-progress&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/main&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+(() =&gt; {
+  const root = document.getElementById(&#x27;precast-ux&#x27;);
+  const inspectorBody = document.getElementById(&#x27;pc-inspector-body&#x27;);
+  const pageTitle = document.getElementById(&#x27;pc-page-title&#x27;);
+  const pageSubtitle = document.getElementById(&#x27;pc-page-subtitle&#x27;);
+  const crumb = document.getElementById(&#x27;pc-crumb-current&#x27;);
+  const crumbPrefix = document.getElementById(&#x27;pc-crumb-prefix&#x27;);
+  const modelStatus = document.getElementById(&#x27;pc-model-status&#x27;);
+  const canvasNote = document.getElementById(&#x27;pc-canvas-note&#x27;);
+  const inspectorTitle = document.getElementById(&#x27;pc-inspector-title&#x27;);
+  const inspectorSubtitle = document.getElementById(&#x27;pc-inspector-subtitle&#x27;);
+  const progress = document.getElementById(&#x27;pc-progress&#x27;);
+  const projectName = document.querySelector(&#x27;#precast-ux .pc-project-name&#x27;);
+  const projectCode = document.querySelector(&#x27;#precast-ux .pc-project-code&#x27;);
+  const metricEls = [1,2,3].map(n =&gt; ({
+    label: document.getElementById(`pc-metric-${n}-label`),
+    value: document.getElementById(`pc-metric-${n}-value`),
+    context: document.getElementById(`pc-metric-${n}-context`)
+  }));
+
+  const stageData = {
+    intake: {
+      crumb: &#x27;Model Intake&#x27;, title: &#x27;รับและตรวจสอบแบบสถาปัตย์&#x27;,
+      subtitle: &#x27;ตรวจ Unit, Level, Grid, Opening และความเปลี่ยนแปลงจาก Revision ก่อนหน้า&#x27;,
+      status: &#x27;IFC 4.3 · ตรวจสอบแล้ว 14/16 รายการ&#x27;, note: &#x27;พบ 2 จุดที่ต้องยืนยันตำแหน่งช่องเปิด&#x27;,
+      inspectorTitle: &#x27;Model validation&#x27;, inspectorSubtitle: &#x27;Senior_Living_RevB03.ifc&#x27;,
+      body: `&lt;div class=&quot;pc-section-label&quot;&gt;คุณภาพข้อมูล&lt;/div&gt;&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Unit และพิกัด&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;ผ่าน&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Level / Grid&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;ผ่าน&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;ช่องเปิดซ้อนกัน&lt;/span&gt;&lt;span class=&quot;pc-warn&quot;&gt;2 จุด&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;วัตถุไม่มี Material&lt;/span&gt;&lt;span class=&quot;pc-warn&quot;&gt;3 ชิ้น&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;pc-secondary pc-block&quot; type=&quot;button&quot;&gt;เปิด Revision Compare&lt;/button&gt;`,
+      metrics: [[&#x27;วัตถุที่นำเข้า&#x27;,&#x27;148&#x27;,&#x27;ผนัง 42 · พื้น 8 · ช่องเปิด 31&#x27;],[&#x27;ประเด็นที่พบ&#x27;,&#x27;5&#x27;,&#x27;Critical 0 · Warning 5&#x27;],[&#x27;ความพร้อมของแบบ&#x27;,&#x27;88%&#x27;,&#x27;พร้อมเริ่ม Precast Authoring&#x27;]], progress: 88
+    },
+    criteria: {
+      crumb: &#x27;Design Criteria&#x27;, title: &#x27;Design Basis และค่าควบคุมการออกแบบ&#x27;,
+      subtitle: &#x27;ล็อกมาตรฐาน วัสดุ Loading, Serviceability และ Handling Criteria ก่อนสร้าง FEM&#x27;,
+      status: &#x27;DB-Rev03 · Approved &amp; Locked&#x27;, note: &quot;ACI/PCI 319-25 · fc′28 18 MPa · fy 400 MPa&quot;,
+      inspectorTitle: &#x27;Project design basis&#x27;, inspectorSubtitle: &#x27;DB-Rev03 · Approved by PP&#x27;,
+      body: `&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-design-code&quot;&gt;Design standard&lt;/label&gt;&lt;select id=&quot;pc-design-code&quot;&gt;&lt;option&gt;ACI/PCI 319-25 + Project Criteria&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-loading-code&quot;&gt;Loading standard&lt;/label&gt;&lt;select id=&quot;pc-loading-code&quot;&gt;&lt;option&gt;Project Loading Standard / ASCE 7-22&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-two-fields&quot;&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-fc28&quot;&gt;fc′ 28-day&lt;/label&gt;&lt;input id=&quot;pc-fc28&quot; value=&quot;18 MPa&quot;&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-fclift&quot;&gt;fc′ at lifting&lt;/label&gt;&lt;input id=&quot;pc-fclift&quot; value=&quot;12 MPa&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-two-fields&quot;&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-fy&quot;&gt;Rebar fy&lt;/label&gt;&lt;input id=&quot;pc-fy&quot; value=&quot;400 MPa&quot;&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-density&quot;&gt;Density&lt;/label&gt;&lt;input id=&quot;pc-density&quot; value=&quot;1,200 kg/m³&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Required parameters&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;42/42&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Test-based values&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;Linked&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Element overrides&lt;/span&gt;&lt;span&gt;2 documented&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;pc-secondary pc-block&quot; type=&quot;button&quot;&gt;เปิด Design Basis Report&lt;/button&gt;`,
+      metrics: [[&#x27;Design basis&#x27;,&#x27;DB-Rev03&#x27;,&#x27;Approved &amp; Locked&#x27;],[&#x27;Material sets&#x27;,&#x27;6&#x27;,&#x27;Concrete · Rebar · Steel · Grout&#x27;],[&#x27;Downstream status&#x27;,&#x27;Current&#x27;,&#x27;Calculation และ Drawing ตรง Revision&#x27;]], progress: 100
+    },
+    panel: {
+      crumb: &#x27;Panelization&#x27;, title: &#x27;แบ่งชิ้นงานพรีคาสท์&#x27;,
+      subtitle: &#x27;กำหนดขอบเขต Panel, Joint, Opening และข้อจำกัดการผลิต&#x27;,
+      status: &#x27;แบบ BIM เชื่อมต่อแล้ว&#x27;, note: &#x27;เลือก P-W03 · ผนังภายนอกโมดูล B&#x27;,
+      inspectorTitle: &#x27;P-W03 · External wall&#x27;, inspectorSubtitle: &#x27;Precast lightweight concrete&#x27;,
+      body: `&lt;div class=&quot;pc-two-fields&quot;&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-type&quot;&gt;ชนิด&lt;/label&gt;&lt;select id=&quot;pc-type&quot;&gt;&lt;option&gt;Load-bearing wall&lt;/option&gt;&lt;option&gt;Non-bearing wall&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-thk&quot;&gt;หนา&lt;/label&gt;&lt;input id=&quot;pc-thk&quot; value=&quot;100 mm&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-mat&quot;&gt;วัสดุ&lt;/label&gt;&lt;select id=&quot;pc-mat&quot;&gt;&lt;option&gt;LC-1200 / fc&#x27; 18 MPa&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-two-fields&quot;&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-width&quot;&gt;กว้าง&lt;/label&gt;&lt;input id=&quot;pc-width&quot; value=&quot;5,800 mm&quot;&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-height&quot;&gt;สูง&lt;/label&gt;&lt;input id=&quot;pc-height&quot; value=&quot;2,800 mm&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;น้ำหนักชิ้นงาน&lt;/span&gt;&lt;strong&gt;2.84 t&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;จุดยก&lt;/span&gt;&lt;span class=&quot;pc-warn&quot;&gt;ยังไม่กำหนด&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Joint&lt;/span&gt;&lt;span&gt;J01 · Semi-rigid&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;pc-action pc-block&quot; type=&quot;button&quot; data-run-analysis&gt;ยืนยันชิ้นงานและไปขั้นถัดไป&lt;/button&gt;`,
+      metrics: [[&#x27;ชิ้นงานทั้งหมด&#x27;,&#x27;18&#x27;,&#x27;ผนัง 10 · พื้น 4 · หลังคา 4&#x27;],[&#x27;น้ำหนักสูงสุด&#x27;,&#x27;4.72 t&#x27;,&#x27;ต่ำกว่าขีดจำกัดเครน 6.00 t&#x27;],[&#x27;ความพร้อมของโมเดล&#x27;,&#x27;64%&#x27;,&#x27;รอกำหนด Load และ Support&#x27;]], progress: 64
+    },
+    loads: {
+      crumb: &#x27;Loads &amp; Supports&#x27;, title: &#x27;กำหนดแรงและสภาพรองรับ&#x27;,
+      subtitle: &#x27;สร้างกรณีใช้งาน ยก ขนส่ง ติดตั้ง และฐานรากจาก Geometry ชุดเดียว&#x27;,
+      status: &#x27;5 Load cases · 12 Combinations&#x27;, note: &#x27;Service model · Wind +X แสดงอยู่&#x27;,
+      inspectorTitle: &#x27;Load scenario&#x27;, inspectorSubtitle: &#x27;SERVICE · LC-S01&#x27;,
+      body: `&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-scenario&quot;&gt;Scenario&lt;/label&gt;&lt;select id=&quot;pc-scenario&quot;&gt;&lt;option&gt;Service / Final support&lt;/option&gt;&lt;option&gt;Four-point lifting&lt;/option&gt;&lt;option&gt;Transportation&lt;/option&gt;&lt;option&gt;Installation&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-two-fields&quot;&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-dl&quot;&gt;Superimposed DL&lt;/label&gt;&lt;input id=&quot;pc-dl&quot; value=&quot;1.20 kPa&quot;&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-ll&quot;&gt;Live load&lt;/label&gt;&lt;input id=&quot;pc-ll&quot; value=&quot;2.00 kPa&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-support&quot;&gt;Support model&lt;/label&gt;&lt;select id=&quot;pc-support&quot;&gt;&lt;option&gt;Foundation springs · FS-01&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Load path&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;ต่อเนื่อง&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Unsupported nodes&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;0&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Joint stiffness&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;กำหนดแล้ว&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;pc-action pc-block&quot; type=&quot;button&quot; data-run-analysis&gt;สร้าง Mesh และรันวิเคราะห์&lt;/button&gt;`,
+      metrics: [[&#x27;Load cases&#x27;,&#x27;5&#x27;,&#x27;DL · LL · Wind X/Y · Handling&#x27;],[&#x27;Combinations&#x27;,&#x27;12&#x27;,&#x27;ULS 7 · SLS 5&#x27;],[&#x27;ความพร้อมของโมเดล&#x27;,&#x27;92%&#x27;,&#x27;พร้อมสร้าง FEM model&#x27;]], progress: 92
+    },
+    analysis: {
+      crumb: &#x27;FEM Analysis&#x27;, title: &#x27;ผลวิเคราะห์โครงสร้าง&#x27;,
+      subtitle: &#x27;ตรวจการเสียรูป แรงภายใน Reaction และบริเวณวิกฤตก่อนออกแบบเหล็ก&#x27;,
+      status: &#x27;Analysis completed · 02:18&#x27;, note: &#x27;SLS-03 · Wall moment Myy · Utilization 0.82&#x27;,
+      inspectorTitle: &#x27;Analysis result&#x27;, inspectorSubtitle: &#x27;P-W03 · SLS-03&#x27;,
+      body: `&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-result&quot;&gt;ผลที่แสดง&lt;/label&gt;&lt;select id=&quot;pc-result&quot;&gt;&lt;option&gt;Utilization envelope&lt;/option&gt;&lt;option&gt;Myy moment&lt;/option&gt;&lt;option&gt;Nxx membrane force&lt;/option&gt;&lt;option&gt;Deflection&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Max utilization&lt;/span&gt;&lt;strong class=&quot;pc-warn&quot;&gt;0.82&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Max deflection&lt;/span&gt;&lt;strong&gt;6.4 mm&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Max crack demand&lt;/span&gt;&lt;strong&gt;0.21 mm&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Solver warnings&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;0&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;pc-secondary pc-block&quot; type=&quot;button&quot;&gt;ดู Reaction และ Equilibrium&lt;/button&gt;&lt;button class=&quot;pc-action pc-block&quot; type=&quot;button&quot; data-next=&quot;design&quot;&gt;ส่งผลไปออกแบบเหล็ก&lt;/button&gt;`,
+      metrics: [[&#x27;Elements&#x27;,&#x27;8,462&#x27;,&#x27;Shell 8,124 · Link 338&#x27;],[&#x27;กรณีวิกฤต&#x27;,&#x27;SLS-03&#x27;,&#x27;Wind +X · Joint J01&#x27;],[&#x27;ผลการวิเคราะห์&#x27;,&#x27;ผ่าน&#x27;,&#x27;0 Error · 0 Solver warning&#x27;]], progress: 100
+    },
+    design: {
+      crumb: &#x27;Reinforcement Design&#x27;, title: &#x27;ออกแบบเหล็กเสริมและจุดต่อ&#x27;,
+      subtitle: &#x27;เปลี่ยนผล FEM เป็น Reinforcement Zone พร้อมตรวจขั้นต่ำ รอยร้าว และรายละเอียดเฉพาะจุด&#x27;,
+      status: &#x27;Design checks · 43/46 ผ่าน&#x27;, note: &#x27;P-W03 · DB10 @ 200 · เพิ่มเหล็กรอบช่องเปิด&#x27;,
+      inspectorTitle: &#x27;P-W03 · Reinforcement&#x27;, inspectorSubtitle: &#x27;Design envelope · ULS/SLS&#x27;,
+      body: `&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-rebar-pattern&quot;&gt;เหล็กหลัก&lt;/label&gt;&lt;select id=&quot;pc-rebar-pattern&quot;&gt;&lt;option&gt;DB10 @ 200 EW · 2 faces&lt;/option&gt;&lt;option&gt;DB12 @ 200 EW · 2 faces&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Flexure&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;0.78 · ผ่าน&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Shear&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;0.54 · ผ่าน&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Crack width&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;0.21 mm&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Opening corner&lt;/span&gt;&lt;span class=&quot;pc-warn&quot;&gt;เพิ่ม 2-DB12&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Lifting anchor&lt;/span&gt;&lt;span class=&quot;pc-warn&quot;&gt;รอวิศวกรตรวจ&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;pc-action pc-block&quot; type=&quot;button&quot; data-next=&quot;cost&quot;&gt;ส่งปริมาณไป BOQ&lt;/button&gt;`,
+      metrics: [[&#x27;Design checks&#x27;,&#x27;46&#x27;,&#x27;ผ่าน 43 · Warning 3&#x27;],[&#x27;เหล็กประมาณการ&#x27;,&#x27;1,184 kg&#x27;,&#x27;33.1 kg/m²&#x27;],[&#x27;รายการต้องตรวจ&#x27;,&#x27;3&#x27;,&#x27;Opening · Anchor · J01&#x27;]], progress: 94
+    },
+    cost: {
+      crumb: &#x27;BOQ &amp; Estimate&#x27;, title: &#x27;ถอดปริมาณและประมาณราคาเบื้องต้น&#x27;,
+      subtitle: &#x27;เชื่อมปริมาณกับชิ้นงาน ราคาเข้ากับ Price Book และแสดงสมมติฐานพร้อมช่วงความไม่แน่นอน&#x27;,
+      status: &#x27;EST-ENG-004 Rev 02 · Current&#x27;, note: &#x27;MAT-CON-01 · 18 panels · 18.40 m³&#x27;,
+      inspectorTitle: &#x27;MAT-CON-01 · Concrete&#x27;, inspectorSubtitle: &#x27;Model-derived quantity · 18 panels&#x27;,
+      body: `&lt;div class=&quot;pc-two-fields&quot;&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-raw-qty&quot;&gt;Raw quantity&lt;/label&gt;&lt;input id=&quot;pc-raw-qty&quot; value=&quot;18.40 m³&quot;&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-waste&quot;&gt;Waste&lt;/label&gt;&lt;input id=&quot;pc-waste&quot; value=&quot;3.0%&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-rate&quot;&gt;Unit rate&lt;/label&gt;&lt;input id=&quot;pc-rate&quot; value=&quot;3,450 THB/m³&quot;&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-rate-source&quot;&gt;Price source&lt;/label&gt;&lt;select id=&quot;pc-rate-source&quot;&gt;&lt;option&gt;TH-PC-Q3/2026 · Approved&lt;/option&gt;&lt;option&gt;Vendor quote VQ-118&lt;/option&gt;&lt;option&gt;Project override&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Payable quantity&lt;/span&gt;&lt;strong&gt;18.952 m³&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Line amount&lt;/span&gt;&lt;strong&gt;65,384 THB&lt;/strong&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Element trace&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;18/18 linked&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Price effective&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;Q3/2026&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Estimate maturity&lt;/span&gt;&lt;span&gt;Engineering&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;pc-action pc-block&quot; type=&quot;button&quot; data-recalculate-estimate&gt;คำนวณ BOQ ใหม่&lt;/button&gt;&lt;button class=&quot;pc-secondary pc-block&quot; type=&quot;button&quot; data-next=&quot;report&quot;&gt;ส่งตรวจ Estimate&lt;/button&gt;`,
+      metrics: [[&#x27;Direct cost&#x27;,&#x27;455,106 THB&#x27;,&#x27;Material · Production · Logistics&#x27;],[&#x27;Estimated cost&#x27;,&#x27;516,090 THB&#x27;,&#x27;Indirect 8% · Contingency 5%&#x27;],[&#x27;Preliminary range&#x27;,&#x27;439k – 593k&#x27;,&#x27;Engineering estimate · ±15%&#x27;]], progress: 86
+    },
+    report: {
+      crumb: &#x27;Review &amp; Report&#x27;, title: &#x27;ตรวจอนุมัติและออกรายงาน&#x27;,
+      subtitle: &#x27;รวบรวม Input, Assumption, FEM Result, Design Check และ Revision ไว้ในชุดเดียว&#x27;,
+      status: &#x27;พร้อมสำหรับ Checker review&#x27;, note: &#x27;Calculation Package · Rev B.03 · 86 หน้า&#x27;,
+      inspectorTitle: &#x27;Issue package&#x27;, inspectorSubtitle: &#x27;For internal design review&#x27;,
+      body: `&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Calculation report&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;พร้อม&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Panel schedule&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;พร้อม&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Reinforcement zones&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;พร้อม&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Joint schedule&lt;/span&gt;&lt;span class=&quot;pc-warn&quot;&gt;1 หมายเหตุ&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;BOM / Weight&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;พร้อม&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-issue&quot;&gt;สถานะการออกเอกสาร&lt;/label&gt;&lt;select id=&quot;pc-issue&quot;&gt;&lt;option&gt;For internal review&lt;/option&gt;&lt;option&gt;For approval&lt;/option&gt;&lt;option&gt;For construction&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;button class=&quot;pc-action pc-block&quot; type=&quot;button&quot; data-next=&quot;shop&quot;&gt;สร้างชุด Shop Drawing&lt;/button&gt;&lt;button class=&quot;pc-secondary pc-block&quot; type=&quot;button&quot;&gt;Export IFC + PDF + XLSX&lt;/button&gt;`,
+      metrics: [[&#x27;เอกสาร&#x27;,&#x27;12 sheets&#x27;,&#x27;Calculation report 86 หน้า&#x27;],[&#x27;ประเด็นคงค้าง&#x27;,&#x27;1&#x27;,&#x27;รายละเอียด Joint J01&#x27;],[&#x27;สถานะ&#x27;,&#x27;Checker review&#x27;,&#x27;ยังไม่ใช่ For Construction&#x27;]], progress: 98
+    },
+    shop: {
+      crumb: &#x27;Document &amp; Export Center&#x27;, title: &#x27;Shop Drawing, Calculation Report และ Production Package&#x27;,
+      subtitle: &#x27;สร้างไฟล์มาตรฐานหลายรูปแบบ ตรวจ DXF Preflight ล็อก Revision และส่งชุดเอกสารที่ตรวจสอบย้อนกลับได้&#x27;,
+      status: &#x27;Preflight · 48/48 checks passed&#x27;, note: &#x27;PM-T2-SD-W03 · Rev B.03 · DXF R2018 / mm&#x27;,
+      inspectorTitle: &#x27;Export configuration&#x27;, inspectorSubtitle: &#x27;Factory Standard · PC-EXPORT-02&#x27;,
+      body: `&lt;div class=&quot;pc-two-fields&quot;&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-export-preset&quot;&gt;Export preset&lt;/label&gt;&lt;select id=&quot;pc-export-preset&quot;&gt;&lt;option&gt;Factory Standard v2.4&lt;/option&gt;&lt;option&gt;Consultant Submission&lt;/option&gt;&lt;option&gt;Archive Package&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-dxf-version&quot;&gt;DXF version&lt;/label&gt;&lt;select id=&quot;pc-dxf-version&quot;&gt;&lt;option&gt;AutoCAD 2018&lt;/option&gt;&lt;option&gt;AutoCAD 2013&lt;/option&gt;&lt;option&gt;AutoCAD 2010&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-two-fields&quot;&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-dxf-units&quot;&gt;DXF units&lt;/label&gt;&lt;select id=&quot;pc-dxf-units&quot;&gt;&lt;option&gt;Millimetres&lt;/option&gt;&lt;option&gt;Metres&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;div class=&quot;pc-field&quot;&gt;&lt;label for=&quot;pc-layer-profile&quot;&gt;Layer profile&lt;/label&gt;&lt;select id=&quot;pc-layer-profile&quot;&gt;&lt;option&gt;PC-FAB-01&lt;/option&gt;&lt;option&gt;Client-CAD-02&lt;/option&gt;&lt;/select&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;pc-section-label&quot;&gt;ไฟล์ในชุดส่งมอบ&lt;/div&gt;&lt;div class=&quot;pc-format-grid&quot;&gt;&lt;label class=&quot;pc-format-option&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; DXF&lt;/label&gt;&lt;label class=&quot;pc-format-option&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; PDF/A&lt;/label&gt;&lt;label class=&quot;pc-format-option&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; DOCX&lt;/label&gt;&lt;label class=&quot;pc-format-option&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; XLSX&lt;/label&gt;&lt;label class=&quot;pc-format-option&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; IFC&lt;/label&gt;&lt;label class=&quot;pc-format-option&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; BVBS&lt;/label&gt;&lt;label class=&quot;pc-format-option&quot;&gt;&lt;input type=&quot;checkbox&quot; checked&gt; JSON&lt;/label&gt;&lt;label class=&quot;pc-format-option&quot;&gt;&lt;input type=&quot;checkbox&quot;&gt; GLB&lt;/label&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-list&quot;&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Drawing / calculation revision&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;B.03 match&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;DXF geometry &amp; fonts&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;ผ่าน&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;Required approvals&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;2/2&lt;/span&gt;&lt;/div&gt;&lt;div class=&quot;pc-check-row&quot;&gt;&lt;span&gt;File naming / manifest&lt;/span&gt;&lt;span class=&quot;pc-pass&quot;&gt;ผ่าน&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;button class=&quot;pc-action pc-block&quot; type=&quot;button&quot; data-generate-package&gt;Generate verified package&lt;/button&gt;&lt;button class=&quot;pc-secondary pc-block&quot; type=&quot;button&quot; data-release-production&gt;Release to Production&lt;/button&gt;`,
+      metrics: [[&#x27;Batch export&#x27;,&#x27;48 files&#x27;,&#x27;DXF 18 · PDF 19 · Data 11&#x27;],[&#x27;Preflight&#x27;,&#x27;48/48 ผ่าน&#x27;,&#x27;Units · Layers · Fonts · Revision&#x27;],[&#x27;Production package&#x27;,&#x27;พร้อมสร้าง&#x27;,&#x27;PR-2026-0094 · Rev B.03&#x27;]], progress: 98
+    }
+  };
+
+  function refreshIcons() {
+    if (globalThis.lucide &amp;&amp; typeof globalThis.lucide.createIcons === &#x27;function&#x27;) {
+      globalThis.lucide.createIcons({ attrs: { width: 16, height: 16 } });
+    }
+  }
+
+  function setStage(stage) {
+    const data = stageData[stage];
+    if (!data) return;
+    root.dataset.stage = stage;
+    document.querySelectorAll(&#x27;#precast-ux [data-stage-button]&#x27;).forEach(button =&gt; {
+      button.setAttribute(&#x27;aria-pressed&#x27;, String(button.dataset.stageButton === stage));
+    });
+    pageTitle.textContent = data.title;
+    pageSubtitle.textContent = data.subtitle;
+    crumb.textContent = data.crumb;
+    modelStatus.textContent = data.status;
+    canvasNote.textContent = data.note;
+    inspectorTitle.textContent = data.inspectorTitle;
+    inspectorSubtitle.textContent = data.inspectorSubtitle;
+    inspectorBody.innerHTML = data.body;
+    data.metrics.forEach((metric, index) =&gt; {
+      metricEls[index].label.textContent = metric[0];
+      metricEls[index].value.textContent = metric[1];
+      metricEls[index].context.textContent = metric[2];
+    });
+    progress.style.width = `${data.progress}%`;
+    inspectorBody.querySelectorAll(&#x27;[data-next]&#x27;).forEach(button =&gt; button.addEventListener(&#x27;click&#x27;, () =&gt; setStage(button.dataset.next)));
+    inspectorBody.querySelectorAll(&#x27;[data-run-analysis]&#x27;).forEach(button =&gt; button.addEventListener(&#x27;click&#x27;, runAnalysis));
+    inspectorBody.querySelectorAll(&#x27;[data-release-production]&#x27;).forEach(button =&gt; button.addEventListener(&#x27;click&#x27;, releaseProduction));
+    inspectorBody.querySelectorAll(&#x27;[data-generate-package]&#x27;).forEach(button =&gt; button.addEventListener(&#x27;click&#x27;, generatePackage));
+    inspectorBody.querySelectorAll(&#x27;[data-recalculate-estimate]&#x27;).forEach(button =&gt; button.addEventListener(&#x27;click&#x27;, recalculateEstimate));
+    refreshIcons();
+  }
+
+  function setDocView(view) {
+    root.dataset.docView = view;
+    document.querySelectorAll(&#x27;#precast-ux [data-doc-button]&#x27;).forEach(button =&gt; {
+      button.setAttribute(&#x27;aria-pressed&#x27;, String(button.dataset.docButton === view));
+    });
+    const notes = {
+      drawing: &#x27;PM-T2-SD-W03 · Rev B.03 · DXF R2018 / mm&#x27;,
+      calculation: &#x27;PM-T2-CALC-001 · 86 pages · PDF/A-2b + DOCX&#x27;,
+      package: &#x27;PR-2026-0094 · 48 files · manifest verified&#x27;
+    };
+    if (root.dataset.stage === &#x27;shop&#x27;) modelStatus.textContent = view === &#x27;package&#x27; ? &#x27;Package ready · checksum verified&#x27; : &#x27;Preflight · 48/48 checks passed&#x27;;
+    canvasNote.textContent = notes[view] || notes.drawing;
+  }
+
+  function setCostView(view) {
+    root.dataset.costView = view;
+    document.querySelectorAll(&#x27;#precast-ux [data-cost-button]&#x27;).forEach(button =&gt; {
+      button.setAttribute(&#x27;aria-pressed&#x27;, String(button.dataset.costButton === view));
+    });
+    const status = {
+      takeoff: &#x27;EST-ENG-004 Rev 02 · 7 cost groups · Current&#x27;,
+      summary: &#x27;Estimated cost 516,090 THB · Preliminary range ±15%&#x27;,
+      assumptions: &#x27;Assumptions · 3 confirmed · 2 pending&#x27;
+    };
+    if (root.dataset.stage === &#x27;cost&#x27;) modelStatus.textContent = status[view] || status.takeoff;
+  }
+
+  function setAppView(view) {
+    root.dataset.appView = view;
+    document.querySelectorAll(&#x27;#precast-ux [data-app-button]&#x27;).forEach(button =&gt; {
+      button.setAttribute(&#x27;aria-pressed&#x27;, String(button.dataset.appButton === view));
+    });
+    if (view === &#x27;portfolio&#x27;) crumb.textContent = &#x27;Portfolio&#x27;;
+    else crumb.textContent = stageData[root.dataset.stage]?.crumb || &#x27;Project Workspace&#x27;;
+    crumbPrefix.textContent = view === &#x27;portfolio&#x27; ? &#x27;Portfolio&#x27; : projectCode.textContent.split(&#x27; · &#x27;)[0];
+    if (view === &#x27;portfolio&#x27;) crumb.textContent = &#x27;All projects&#x27;;
+  }
+
+  function runAnalysis(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = &#x27;กำลังสร้าง Analytical Model…&#x27;;
+    modelStatus.textContent = &#x27;กำลังตรวจ Mesh และ Boundary Conditions&#x27;;
+    progress.style.width = &#x27;36%&#x27;;
+    window.setTimeout(() =&gt; { button.textContent = &#x27;กำลังรัน FEM Solver…&#x27;; progress.style.width = &#x27;72%&#x27;; }, 650);
+    window.setTimeout(() =&gt; setStage(&#x27;analysis&#x27;), 1500);
+  }
+
+  function releaseProduction(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = &#x27;Released · 18 ชิ้นงาน&#x27;;
+    modelStatus.textContent = &#x27;Released to production · Rev B.03&#x27;;
+    metricEls[2].value.textContent = &#x27;Released&#x27;;
+    metricEls[2].context.textContent = &#x27;Production package PR-2026-0094&#x27;;
+    progress.style.width = &#x27;100%&#x27;;
+    document.querySelector(&#x27;[data-stage-button=&quot;shop&quot;]&#x27;)?.classList.add(&#x27;is-done&#x27;);
+  }
+
+  function generatePackage(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = &#x27;กำลังตรวจและสร้างไฟล์ 0/48…&#x27;;
+    modelStatus.textContent = &#x27;Generating DXF, PDF/A and data schedules&#x27;;
+    progress.style.width = &#x27;42%&#x27;;
+    window.setTimeout(() =&gt; { button.textContent = &#x27;กำลังสร้าง Manifest 41/48…&#x27;; progress.style.width = &#x27;84%&#x27;; }, 650);
+    window.setTimeout(() =&gt; {
+      button.textContent = &#x27;Package ready · 48 files&#x27;;
+      progress.style.width = &#x27;100%&#x27;;
+      metricEls[2].value.textContent = &#x27;พร้อมส่งผลิต&#x27;;
+      metricEls[2].context.textContent = &#x27;Manifest + SHA-256 verified&#x27;;
+      setDocView(&#x27;package&#x27;);
+    }, 1450);
+  }
+
+  function recalculateEstimate(event) {
+    const button = event.currentTarget;
+    button.disabled = true;
+    button.textContent = &#x27;กำลังถอดปริมาณจาก 18 ชิ้นงาน…&#x27;;
+    modelStatus.textContent = &#x27;Recalculating quantities and resolving Price Book&#x27;;
+    progress.style.width = &#x27;34%&#x27;;
+    window.setTimeout(() =&gt; { button.textContent = &#x27;กำลังตรวจหน่วยและราคา…&#x27;; progress.style.width = &#x27;76%&#x27;; }, 550);
+    window.setTimeout(() =&gt; {
+      button.textContent = &#x27;BOQ current · EST-ENG-004 Rev 03&#x27;;
+      modelStatus.textContent = &#x27;Estimate recalculated · 0 missing rates&#x27;;
+      progress.style.width = &#x27;100%&#x27;;
+      metricEls[2].value.textContent = &#x27;439k – 593k&#x27;;
+      metricEls[2].context.textContent = &#x27;Rev 03 · Quantity and price trace verified&#x27;;
+      setCostView(&#x27;summary&#x27;);
+    }, 1250);
+  }
+
+  document.querySelectorAll(&#x27;#precast-ux [data-app-button]&#x27;).forEach(button =&gt; {
+    button.addEventListener(&#x27;click&#x27;, () =&gt; setAppView(button.dataset.appButton));
+  });
+
+  document.querySelectorAll(&#x27;#precast-ux [data-open-project]&#x27;).forEach(button =&gt; {
+    button.addEventListener(&#x27;click&#x27;, () =&gt; {
+      const [name, code, stage] = button.dataset.openProject.split(&#x27;|&#x27;);
+      projectName.textContent = name;
+      projectCode.textContent = code;
+      setStage(stage);
+      setAppView(&#x27;project&#x27;);
+    });
+  });
+
+  const projectSearch = document.getElementById(&#x27;pc-project-search&#x27;);
+  projectSearch.addEventListener(&#x27;input&#x27;, () =&gt; {
+    const query = projectSearch.value.trim().toLocaleLowerCase(&#x27;th&#x27;);
+    document.querySelectorAll(&#x27;#pc-project-rows tr&#x27;).forEach(row =&gt; {
+      row.hidden = query.length &gt; 0 &amp;&amp; !row.textContent.toLocaleLowerCase(&#x27;th&#x27;).includes(query);
+    });
+  });
+
+  document.querySelectorAll(&#x27;#precast-ux [data-stage-button]&#x27;).forEach(button =&gt; {
+    button.addEventListener(&#x27;click&#x27;, () =&gt; {
+      setAppView(&#x27;project&#x27;);
+      setStage(button.dataset.stageButton);
+    });
+  });
+
+  document.querySelectorAll(&#x27;#precast-ux [data-view-button]&#x27;).forEach(button =&gt; {
+    button.addEventListener(&#x27;click&#x27;, () =&gt; {
+      root.dataset.view = button.dataset.viewButton;
+      document.querySelectorAll(&#x27;#precast-ux [data-view-button]&#x27;).forEach(peer =&gt; {
+        peer.setAttribute(&#x27;aria-pressed&#x27;, String(peer === button));
+      });
+    });
+  });
+
+  document.querySelectorAll(&#x27;#precast-ux [data-doc-button]&#x27;).forEach(button =&gt; {
+    button.addEventListener(&#x27;click&#x27;, () =&gt; setDocView(button.dataset.docButton));
+  });
+
+  document.querySelectorAll(&#x27;#precast-ux [data-cost-button]&#x27;).forEach(button =&gt; {
+    button.addEventListener(&#x27;click&#x27;, () =&gt; setCostView(button.dataset.costButton));
+  });
+
+  const designState = { accent: &#x27;#f26a2e&#x27;, radius: 14, compact: false, initialView: &#x27;3D isometric&#x27; };
+  function renderDesign() {
+    root.style.setProperty(&#x27;--pc-accent&#x27;, designState.accent);
+    root.style.setProperty(&#x27;--pc-radius&#x27;, `${designState.radius}px`);
+    root.dataset.compact = String(designState.compact);
+    const view = designState.initialView === &#x27;Plan view&#x27; ? &#x27;plan&#x27; : &#x27;iso&#x27;;
+    root.dataset.view = view;
+    document.querySelectorAll(&#x27;#precast-ux [data-view-button]&#x27;).forEach(button =&gt; {
+      button.setAttribute(&#x27;aria-pressed&#x27;, String(button.dataset.viewButton === view));
+    });
+  }
+
+  setStage(&#x27;cost&#x27;);
+  setCostView(&#x27;takeoff&#x27;);
+  setDocView(&#x27;drawing&#x27;);
+  setAppView(&#x27;project&#x27;);
+  renderDesign();
+  refreshIcons();
+
+  if (globalThis.Tweak) {
+    const tweak = new Tweak({ container: root, onChange: renderDesign });
+    tweak.addColorPicker(designState, &#x27;accent&#x27;, { label: &#x27;สีหลักของผลิตภัณฑ์&#x27;, reference: &#x27;--pc-accent&#x27; });
+    tweak.addSlider(designState, &#x27;radius&#x27;, { label: &#x27;ความโค้งของพื้นผิว&#x27;, min: 4, max: 24, unit: &#x27;px&#x27;, reference: &#x27;--pc-radius&#x27; });
+    tweak.addToggle(designState, &#x27;compact&#x27;, { label: &#x27;โหมดกระชับ&#x27;, reference: &#x27;layout.compact&#x27; });
+    tweak.addSelect(designState, &#x27;initialView&#x27;, { label: &#x27;มุมมองโมเดล&#x27;, options: [&#x27;3D isometric&#x27;, &#x27;Plan view&#x27;], reference: &#x27;viewer.mode&#x27; });
+  }
+})();
+&lt;/script&gt;
+
+&lt;script src=&quot;https://unpkg.com/@floating-ui/core@1.7.3/dist/floating-ui.core.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script src=&quot;https://unpkg.com/@floating-ui/dom@1.7.4/dist/floating-ui.dom.umd.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  if (window.FloatingUIDOM == null) {
+    return;
+  }
+  const { autoUpdate, computePosition, flip, offset, shift, size } =
+    window.FloatingUIDOM;
+  const tooltipPlacements = new Set([&quot;top&quot;, &quot;right&quot;, &quot;bottom&quot;, &quot;left&quot;]);
+  const tooltipId = `codex-visualization-tooltip-${
+    window.crypto?.randomUUID?.() ?? Date.now().toString(36)
+  }`;
+  const tooltipGap = 5;
+  const hoverDelay = 700;
+  const skipDelay = 300;
+  let activeTrigger = null;
+  let pendingTrigger = null;
+  let tooltip = null;
+  let openTimeout = null;
+  let autoUpdateCleanup = null;
+  let positionRequest = 0;
+  let skipDelayUntil = 0;
+  let lastPointerWasTouch = false;
+  let pinnedByTouch = false;
+
+  const getTrigger = (target) =&gt;
+    target?.nodeType === Node.ELEMENT_NODE
+      ? target.closest(&quot;[data-tooltip]&quot;)
+      : null;
+  const containsTarget = (trigger, target) =&gt;
+    target?.nodeType != null &amp;&amp; trigger.contains(target);
+  const getContent = (trigger) =&gt;
+    trigger.getAttribute(&quot;data-tooltip&quot;)?.trim() ?? &quot;&quot;;
+  const getPlacement = (trigger) =&gt; {
+    const placement = trigger.getAttribute(&quot;data-tooltip-placement&quot;);
+    return tooltipPlacements.has(placement) ? placement : &quot;top&quot;;
+  };
+  const getTooltip = () =&gt; {
+    if (tooltip == null) {
+      tooltip = document.createElement(&quot;div&quot;);
+      tooltip.id = tooltipId;
+      tooltip.className = &quot;tooltip&quot;;
+      tooltip.setAttribute(&quot;role&quot;, &quot;tooltip&quot;);
+    }
+    return tooltip;
+  };
+  const setDescribedBy = (trigger, described) =&gt; {
+    const ids = new Set(
+      (trigger.getAttribute(&quot;aria-describedby&quot;) ?? &quot;&quot;)
+        .split(/\s+/)
+        .filter(Boolean),
+    );
+    if (described) {
+      ids.add(tooltipId);
+    } else {
+      ids.delete(tooltipId);
+    }
+    if (ids.size === 0) {
+      trigger.removeAttribute(&quot;aria-describedby&quot;);
+    } else {
+      trigger.setAttribute(&quot;aria-describedby&quot;, [...ids].join(&quot; &quot;));
+    }
+  };
+  const clearOpenTimeout = () =&gt; {
+    if (openTimeout != null) {
+      window.clearTimeout(openTimeout);
+      openTimeout = null;
+    }
+    pendingTrigger = null;
+  };
+  const closeTooltip = (activateSkipDelay = true) =&gt; {
+    clearOpenTimeout();
+    pinnedByTouch = false;
+    positionRequest += 1;
+    autoUpdateCleanup?.();
+    autoUpdateCleanup = null;
+    if (activeTrigger == null) {
+      return;
+    }
+    setDescribedBy(activeTrigger, false);
+    activeTrigger = null;
+    tooltip?.remove();
+    if (activateSkipDelay) {
+      skipDelayUntil = Date.now() + skipDelay;
+    }
+  };
+  const updatePosition = (trigger, floating) =&gt; {
+    const request = ++positionRequest;
+    void computePosition(trigger, floating, {
+      middleware: [
+        offset(tooltipGap),
+        flip({ padding: tooltipGap }),
+        shift({ padding: tooltipGap }),
+        size({
+          padding: tooltipGap,
+          apply({ availableHeight, availableWidth, elements }) {
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-width&quot;,
+              `${Math.max(0, availableWidth)}px`,
+            );
+            elements.floating.style.setProperty(
+              &quot;--tooltip-available-height&quot;,
+              `${Math.max(0, availableHeight)}px`,
+            );
+          },
+        }),
+      ],
+      placement: getPlacement(trigger),
+      strategy: &quot;fixed&quot;,
+    })
+      .then(({ x, y }) =&gt; {
+        if (activeTrigger !== trigger || request !== positionRequest) {
+          return;
+        }
+        const scale = window.devicePixelRatio || 1;
+        floating.style.transform = `translate(${Math.round(x * scale) / scale}px, ${Math.round(y * scale) / scale}px)`;
+        floating.style.visibility = &quot;visible&quot;;
+      })
+      .catch(() =&gt; {
+        if (activeTrigger === trigger &amp;&amp; request === positionRequest) {
+          closeTooltip(false);
+        }
+      });
+  };
+  const openTooltip = (trigger) =&gt; {
+    const content = getContent(trigger);
+    if (!trigger.isConnected || content.length === 0) {
+      return;
+    }
+    clearOpenTimeout();
+    if (activeTrigger === trigger) {
+      return;
+    }
+    closeTooltip();
+    const floating = getTooltip();
+    floating.textContent = content;
+    floating.style.visibility = &quot;hidden&quot;;
+    floating.style.transform = &quot;translate(0, 0)&quot;;
+    document.body.appendChild(floating);
+    activeTrigger = trigger;
+    setDescribedBy(trigger, true);
+    autoUpdateCleanup = autoUpdate(trigger, floating, () =&gt; {
+      updatePosition(trigger, floating);
+    });
+  };
+  const requestOpen = (trigger, immediate = false) =&gt; {
+    if (
+      getContent(trigger).length === 0 ||
+      activeTrigger === trigger ||
+      pendingTrigger === trigger
+    ) {
+      return;
+    }
+    clearOpenTimeout();
+    pendingTrigger = trigger;
+    const delay =
+      immediate || activeTrigger != null || Date.now() &lt; skipDelayUntil
+        ? 0
+        : hoverDelay;
+    if (delay === 0) {
+      openTooltip(trigger);
+      return;
+    }
+    openTimeout = window.setTimeout(() =&gt; {
+      openTimeout = null;
+      pendingTrigger = null;
+      openTooltip(trigger);
+    }, delay);
+  };
+  const handlePointerOpen = (event) =&gt; {
+    if (event.pointerType === &quot;touch&quot;) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    requestOpen(trigger);
+  };
+  const handlePointer = (event) =&gt; {
+    lastPointerWasTouch =
+      event.type === &quot;pointerdown&quot; &amp;&amp; event.pointerType === &quot;touch&quot;;
+  };
+  const handleTouchClick = (event) =&gt; {
+    const isTouch = event.pointerType === &quot;touch&quot; || lastPointerWasTouch;
+    lastPointerWasTouch = false;
+    if (!isTouch || event.detail === 0) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (
+      trigger == null ||
+      !trigger.isConnected ||
+      getContent(trigger).length === 0 ||
+      (pinnedByTouch &amp;&amp; activeTrigger === trigger)
+    ) {
+      if (pinnedByTouch) {
+        closeTooltip();
+      }
+      return;
+    }
+    openTooltip(trigger);
+    pinnedByTouch = activeTrigger === trigger;
+    window.setTimeout(() =&gt; {
+      if (activeTrigger === trigger &amp;&amp; !trigger.isConnected) {
+        closeTooltip(false);
+      }
+    }, 0);
+  };
+  const handleLeave = (event) =&gt; {
+    if (pinnedByTouch) {
+      return;
+    }
+    const trigger = getTrigger(event.target);
+    if (trigger == null || containsTarget(trigger, event.relatedTarget)) {
+      return;
+    }
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const handleFocusIn = (event) =&gt; {
+    const trigger = getTrigger(event.target);
+    if (trigger?.matches(&quot;:focus-visible&quot;)) {
+      requestOpen(trigger, true);
+    }
+  };
+  const handleKeyDown = (event) =&gt; {
+    if (event.key === &quot;Escape&quot;) {
+      closeTooltip();
+    }
+  };
+  const handleContextMenu = (event) =&gt; {
+    lastPointerWasTouch = false;
+    const trigger = getTrigger(event.target);
+    if (activeTrigger === trigger || pendingTrigger === trigger) {
+      closeTooltip();
+    }
+  };
+  const destroy = () =&gt; {
+    closeTooltip(false);
+    lastPointerWasTouch = false;
+    document.removeEventListener(&quot;pointerover&quot;, handlePointerOpen);
+    document.removeEventListener(&quot;pointerdown&quot;, handlePointer);
+    document.removeEventListener(&quot;pointercancel&quot;, handlePointer);
+    document.removeEventListener(&quot;click&quot;, handleTouchClick);
+    document.removeEventListener(&quot;pointerout&quot;, handleLeave);
+    document.removeEventListener(&quot;focusin&quot;, handleFocusIn);
+    document.removeEventListener(&quot;focusout&quot;, handleLeave);
+    document.removeEventListener(&quot;keydown&quot;, handleKeyDown);
+    document.removeEventListener(&quot;contextmenu&quot;, handleContextMenu);
+    tooltip = null;
+  };
+
+  document.addEventListener(&quot;pointerover&quot;, handlePointerOpen);
+  document.addEventListener(&quot;pointerdown&quot;, handlePointer);
+  document.addEventListener(&quot;pointercancel&quot;, handlePointer);
+  document.addEventListener(&quot;click&quot;, handleTouchClick);
+  document.addEventListener(&quot;pointerout&quot;, handleLeave);
+  document.addEventListener(&quot;focusin&quot;, handleFocusIn);
+  document.addEventListener(&quot;focusout&quot;, handleLeave);
+  document.addEventListener(&quot;keydown&quot;, handleKeyDown);
+  document.addEventListener(&quot;contextmenu&quot;, handleContextMenu);
+  window.addEventListener(&quot;pagehide&quot;, destroy, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-tabs&quot;&gt;
+(() =&gt; {
+  const selector = &#x27;.nav[role=&quot;tablist&quot;] [role=&quot;tab&quot;]&#x27;;
+  const disabled = &#x27;:disabled,[aria-disabled=&quot;true&quot;]&#x27;;
+  const selectTab = (selected) =&gt; {
+    const panelId = selected.getAttribute(&quot;aria-controls&quot;);
+    for (const tab of selected.closest(&#x27;[role=&quot;tablist&quot;]&#x27;).querySelectorAll(&#x27;[role=&quot;tab&quot;]&#x27;)) {
+      const active = tab === selected;
+      tab.classList.toggle(&quot;active&quot;, active);
+      tab.setAttribute(&quot;aria-selected&quot;, String(active));
+      const id = tab.getAttribute(&quot;aria-controls&quot;);
+      const panel = id &amp;&amp; document.getElementById(id);
+      if (panel != null) {
+        panel.hidden = id !== panelId;
+        if (!panel.hidden &amp;&amp; selected.id) {
+          panel.setAttribute(&quot;aria-labelledby&quot;, selected.id);
+        }
+      }
+    }
+  };
+  const interact = (event) =&gt; {
+    const tab = event.target?.closest?.(selector);
+    if (event.defaultPrevented || tab == null || tab.matches(disabled)) {
+      return;
+    }
+    if (event.type === &quot;click&quot;) {
+      selectTab(tab);
+      return;
+    }
+    const tabs = Array.from(
+      tab.closest(&#x27;[role=&quot;tablist&quot;]&#x27;).querySelectorAll(&#x27;[role=&quot;tab&quot;]&#x27;),
+    ).filter((candidate) =&gt; !candidate.matches(disabled));
+    const current = tabs.indexOf(tab);
+    let next;
+    if (event.key === &quot;ArrowRight&quot; || event.key === &quot;ArrowDown&quot;) {
+      next = (current + 1) % tabs.length;
+    } else if (event.key === &quot;ArrowLeft&quot; || event.key === &quot;ArrowUp&quot;) {
+      next = (current + tabs.length - 1) % tabs.length;
+    } else if (event.key === &quot;Home&quot;) {
+      next = 0;
+    } else if (event.key === &quot;End&quot;) {
+      next = tabs.length - 1;
+    } else {
+      return;
+    }
+    event.preventDefault();
+    tabs[next].focus();
+    selectTab(tabs[next]);
+  };
+
+  for (const list of document.querySelectorAll(&#x27;.nav[role=&quot;tablist&quot;]&#x27;)) {
+    const selected =
+      list.querySelector(&#x27;[role=&quot;tab&quot;][aria-selected=&quot;true&quot;]&#x27;) ??
+      list.querySelector(&#x27;[role=&quot;tab&quot;].active&#x27;) ??
+      list.querySelector(&#x27;[role=&quot;tab&quot;]&#x27;);
+    if (selected != null) {
+      selectTab(selected);
+    }
+  }
+  document.addEventListener(&quot;click&quot;, interact);
+  document.addEventListener(&quot;keydown&quot;, interact);
+  window.addEventListener(&quot;pagehide&quot;, () =&gt; {
+    document.removeEventListener(&quot;click&quot;, interact);
+    document.removeEventListener(&quot;keydown&quot;, interact);
+  }, { once: true });
+})();
+&lt;/script&gt;
+&lt;script id=&quot;codex-visualization-lucide&quot; async src=&quot;https://unpkg.com/lucide@1.17.0/dist/umd/lucide.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+(() =&gt; {
+  const initialize = () =&gt; {
+    globalThis.lucide?.createIcons({ attrs: { width: 16, height: 16 } });
+  };
+  if (globalThis.lucide != null) {
+    initialize();
+    return;
+  }
+  document
+    .getElementById(&quot;codex-visualization-lucide&quot;)
+    ?.addEventListener(&quot;load&quot;, initialize, { once: true });
+})();
+&lt;/script&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+</body>
+</html>
