@@ -62,9 +62,9 @@ The hosting site is `precast-studio`, associated with this project's Firebase we
 
 ```sh
 pnpm build
-firebase deploy --config firebase/shared.firebase.json --project precast-studio --only hosting
+firebase deploy --config firebase.hosting.json --project precast-studio --only hosting
 ```
 
-The site serves `apps/web/dist` at `https://precast-studio.web.app`, with SPA rewrites for direct project and stage URLs. Hashed assets use immutable caching; the HTML entry point is revalidated. This command deploys Hosting only and preserves existing Firestore rules, Storage rules, and Functions. Firebase CLI authentication with access to the project is required. Never commit `.env` or Firebase CLI credentials.
+The repository-root `firebase.hosting.json` keeps `apps/web/dist` within Firebase CLI's deployment directory. The site serves that build at `https://precast-studio.web.app`, with SPA rewrites for direct project and stage URLs. Hashed assets use immutable caching; the HTML entry point is revalidated. This command deploys Hosting only and preserves existing Firestore rules, Storage rules, and Functions. Firebase CLI authentication with access to the project is required. Never commit `.env` or Firebase CLI credentials.
 
 Firebase references: [Firestore data model](https://firebase.google.com/docs/firestore/data-model), [anonymous authentication](https://firebase.google.com/docs/auth/web/anonymous-auth).
