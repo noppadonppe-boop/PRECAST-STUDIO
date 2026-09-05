@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const artifactTypeSchema = z.enum([
-  'sourceRevision', 'designBasis', 'analysis', 'estimate', 'calculation', 'drawingSet', 'releasePackage',
+  'sourceRevision', 'designBasis', 'productModel', 'analysis', 'estimate', 'calculation', 'drawingSet', 'releasePackage',
 ]);
 
 const commandIdentitySchema = z.object({
@@ -56,6 +56,43 @@ export const designBasisPayloadSchema = z.object({
   overrideReasons: z.record(z.string(), z.string().trim().min(3).max(500)),
 });
 
+const entityIdSchema = z.string().trim().regex(/^[A-Za-z0-9][A-Za-z0-9._-]{1,63}$/);
+const positionSchema = z.object({ x: z.number().finite(), y: z.number().finite(), z: z.number().finite() });
+const scenarioSchema = z.enum(['service', 'demould', 'lifting', 'transport', 'storage', 'installation', 'final']);
+
+export const productModelPayloadSchema = z.object({
+  schemaVersion: z.literal('1.0.0'),
+  units: z.literal('kN-m-MPa'),
+  coordinateSystem: z.string().trim().min(2).max(120),
+  panels: z.array(z.object({
+    id: entityIdSchema, mark: z.string().trim().min(1).max(40), type: z.enum(['wall', 'floor', 'roof', 'beam', 'column']),
+    sourceObjectIds: z.array(entityIdSchema).min(1).max(50), materialId: entityIdSchema,
+    geometry: z.object({ widthM: z.number().positive().max(50), heightM: z.number().positive().max(50), thicknessM: z.number().min(0.05).max(2), offsetM: z.number().min(-10).max(10) }),
+    openings: z.array(z.object({ id: entityIdSchema, xM: z.number().nonnegative(), yM: z.number().nonnegative(), widthM: z.number().positive(), heightM: z.number().positive() })).max(50),
+    volumeM3: z.number().positive(), weightKn: z.number().positive(), cogM: positionSchema,
+  })).min(1).max(200),
+  joints: z.array(z.object({ id: entityIdSchema, panelIds: z.tuple([entityIdSchema, entityIdSchema]), stiffnessKnM: z.number().nonnegative().max(1e9), loadPathConfirmed: z.boolean() })).max(400),
+  anchors: z.array(z.object({ id: entityIdSchema, panelId: entityIdSchema, kind: z.enum(['lifting', 'embedded']), positionM: positionSchema, capacityKn: z.number().positive().max(1e6) })).max(800),
+  supports: z.array(z.object({ id: entityIdSchema, panelId: entityIdSchema, scenario: scenarioSchema, positionM: positionSchema, restrainedDofs: z.array(z.enum(['UX', 'UY', 'UZ', 'RX', 'RY', 'RZ'])).min(1).max(6) })).min(1).max(800),
+  loadCases: z.array(z.object({ id: entityIdSchema, scenario: scenarioSchema, type: z.enum(['dead', 'live', 'wind', 'handling', 'transport']), magnitude: z.number().finite(), unit: z.enum(['kN', 'kN/m', 'kN/m2']) })).min(1).max(100),
+  loadCombinations: z.array(z.object({ id: entityIdSchema, factors: z.record(entityIdSchema, z.number().finite()).refine((value) => Object.keys(value).length > 0, 'At least one load-case factor is required.') })).min(1).max(100),
+  stages: z.array(scenarioSchema).min(1).max(7),
+  validation: z.object({ unsupportedNodes: z.number().int().nonnegative(), disconnectedElements: z.number().int().nonnegative(), missingLoadPaths: z.number().int().nonnegative(), geometryConflicts: z.number().int().nonnegative() }),
+}).superRefine((model, context) => {
+  const panelIds = new Set(model.panels.map((panel) => panel.id));
+  const entityIds = [...model.panels.map((item) => item.id), ...model.joints.map((item) => item.id), ...model.anchors.map((item) => item.id), ...model.supports.map((item) => item.id), ...model.loadCases.map((item) => item.id), ...model.loadCombinations.map((item) => item.id)];
+  if (new Set(entityIds).size !== entityIds.length) context.addIssue({ code: 'custom', message: 'Entity IDs must be globally unique.' });
+  for (const panel of model.panels) for (const opening of panel.openings) {
+    if (opening.xM + opening.widthM > panel.geometry.widthM || opening.yM + opening.heightM > panel.geometry.heightM) context.addIssue({ code: 'custom', message: `Opening ${opening.id} lies outside panel ${panel.id}.` });
+  }
+  for (const joint of model.joints) if (joint.panelIds[0] === joint.panelIds[1] || joint.panelIds.some((id) => !panelIds.has(id))) context.addIssue({ code: 'custom', message: `Joint ${joint.id} must connect two known distinct panels.` });
+  for (const item of [...model.anchors, ...model.supports]) if (!panelIds.has(item.panelId)) context.addIssue({ code: 'custom', message: `${item.id} references an unknown panel.` });
+  const stages = new Set(model.stages);
+  for (const item of [...model.supports, ...model.loadCases]) if (!stages.has(item.scenario)) context.addIssue({ code: 'custom', message: `${item.id} references a scenario absent from stages.` });
+  const loadCaseIds = new Set(model.loadCases.map((item) => item.id));
+  for (const combination of model.loadCombinations) for (const loadCaseId of Object.keys(combination.factors)) if (!loadCaseIds.has(loadCaseId)) context.addIssue({ code: 'custom', message: `${combination.id} references unknown load case ${loadCaseId}.` });
+});
+
 export const submitArtifactCommandSchema = commandIdentitySchema.extend({
   requestId: z.string().min(1),
   artifactType: artifactTypeSchema,
@@ -91,6 +128,13 @@ export const createDesignBasisRevisionCommandSchema = commandIdentitySchema.exte
   revision: z.string().trim().min(2).max(24),
   supersedesId: z.string().min(1).optional(),
   payload: designBasisPayloadSchema,
+});
+
+export const createProductModelRevisionCommandSchema = commandIdentitySchema.extend({
+  modelVersionId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/),
+  revision: z.string().trim().min(2).max(24),
+  supersedesId: z.string().min(1).optional(),
+  payload: productModelPayloadSchema,
 });
 
 export const freezeSourceRevisionCommandSchema = commandIdentitySchema.extend({
@@ -138,6 +182,7 @@ export type ApproveArtifactCommand = z.infer<typeof approveArtifactCommandSchema
 export type ReturnArtifactCommand = z.infer<typeof returnArtifactCommandSchema>;
 export type CreateProjectCommand = z.infer<typeof createProjectCommandSchema>;
 export type CreateDesignBasisRevisionCommand = z.infer<typeof createDesignBasisRevisionCommandSchema>;
+export type CreateProductModelRevisionCommand = z.infer<typeof createProductModelRevisionCommandSchema>;
 export type FreezeSourceRevisionCommand = z.infer<typeof freezeSourceRevisionCommandSchema>;
 export type UpdateProjectCommand = z.infer<typeof updateProjectCommandSchema>;
 export type ArchiveProjectCommand = z.infer<typeof archiveProjectCommandSchema>;

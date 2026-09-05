@@ -5,12 +5,13 @@ type Grant = `${PermissionAction}:${Resource | '*'}`;
 
 const grants: Record<ProjectRole, readonly Grant[]> = {
   projectManager: ['view:*', 'create:project', 'editDraft:project', 'view:team', 'comment:*'],
-  bimCoordinator: ['view:*', 'create:sourceRevision', 'editDraft:sourceRevision', 'submit:sourceRevision', 'comment:*'],
+  bimCoordinator: ['view:*', 'create:sourceRevision', 'editDraft:sourceRevision', 'submit:sourceRevision', 'review:productModel', 'comment:*'],
   structuralEngineer: [
     'view:*', 'comment:*', 'create:designBasis', 'editDraft:designBasis', 'submit:designBasis',
+    'create:productModel', 'editDraft:productModel', 'submit:productModel',
     'review:sourceRevision', 'approve:sourceRevision', 'create:analysis', 'editDraft:analysis', 'submit:analysis', 'review:estimate', 'review:drawingSet',
   ],
-  engineeringChecker: ['view:*', 'comment:*', 'review:designBasis', 'approve:designBasis', 'review:analysis', 'approve:analysis', 'review:calculation', 'approve:calculation', 'review:drawingSet', 'approve:drawingSet', 'review:releasePackage', 'approve:releasePackage'],
+  engineeringChecker: ['view:*', 'comment:*', 'review:designBasis', 'approve:designBasis', 'review:productModel', 'approve:productModel', 'review:analysis', 'approve:analysis', 'review:calculation', 'approve:calculation', 'review:drawingSet', 'approve:drawingSet', 'review:releasePackage', 'approve:releasePackage'],
   costEstimator: ['view:*', 'comment:*', 'create:estimate', 'editDraft:estimate', 'submit:estimate'],
   detailer: ['view:*', 'comment:*', 'create:drawingSet', 'editDraft:drawingSet', 'submit:drawingSet'],
   productionManager: ['view:releasePackage', 'release:releasePackage'],

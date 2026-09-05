@@ -8,7 +8,7 @@ import { useAuth } from '../auth/AuthContext';
 import { approveRequest, returnRequest, watchApprovalInbox } from '../data/workflowRepository';
 
 const artifactLabels = {
-  sourceRevision: 'Source revision', designBasis: 'Design Basis', analysis: 'Analysis snapshot', estimate: 'Estimate',
+  sourceRevision: 'Source revision', designBasis: 'Design Basis', productModel: 'Product Model', analysis: 'Analysis snapshot', estimate: 'Estimate',
   calculation: 'Calculation report', drawingSet: 'Drawing set', releasePackage: 'Release package',
 };
 
@@ -105,7 +105,7 @@ export function ApprovalInbox() {
         {open.length === 0 && <div className="queue-clear"><span>✓</span><strong>Queue clear</strong><p>No immutable snapshot is waiting for your action.</p></div>}
       </Surface>
 
-      <Surface className="workflow-note"><Icon name="shield" /><div><strong>Server remains authoritative · {mode} mode</strong><p>Direct client approval is denied. M2 commands revalidate membership, role, artifact state, blockers, snapshot hash, upstream currency and Separation of Duties in a transaction.</p></div></Surface>
+      <Surface className="workflow-note"><Icon name="shield" /><div><strong>Server remains authoritative · {mode} mode</strong><p>Workflow commands revalidate membership, role, artifact state, blockers, snapshot hash, upstream currency and Separation of Duties in a transaction.</p></div></Surface>
 
       {selected !== null && permissionContext !== null && (
         <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>

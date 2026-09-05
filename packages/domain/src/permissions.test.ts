@@ -12,6 +12,11 @@ describe('Role Matrix v1 permission evaluator', () => {
     expect(can('approve', 'designBasis', checker).allowed).toBe(true);
   });
 
+  it('allows engineer authoring and an independent checker to approve Product Models', () => {
+    expect(can('create', 'productModel', { ...checker, roles: ['structuralEngineer'] }).allowed).toBe(true);
+    expect(can('approve', 'productModel', checker).allowed).toBe(true);
+  });
+
   it('denies creator self-approval regardless of checker role', () => {
     expect(can('approve', 'designBasis', { ...checker, userId: 'engineer-1' })).toEqual({
       allowed: false,

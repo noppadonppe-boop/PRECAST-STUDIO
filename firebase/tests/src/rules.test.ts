@@ -35,6 +35,10 @@ async function seed() {
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/designBasisVersions/db-r02'), {
       status: 'submitted', createdBy: 'engineer-1', revision: 'DB-R02', snapshotHash: `sha256:${'a'.repeat(64)}`,
     });
+    await setDoc(doc(db, 'organizations/org-a/projects/project-a/productModelVersions/pm-r01'), {
+      status: 'draft', locked: false, createdBy: 'engineer-1', revision: 'PM-R01', isCurrentRevision: true,
+      upstreamRefs: { sourceRevisionId: 'src-r02', designBasisVersionId: 'db-r02' }, payload: { mark: 'initial' },
+    });
   });
 }
 
@@ -81,6 +85,29 @@ describe('M2 BIM intake and issue controls', () => {
     await assertFails(updateDoc(issue, { status: 'acceptedException', dispositionReason: 'Accepted for issue', responsibleUid: 'pm-1' }));
     const pm = environment.authenticatedContext('pm-1').firestore();
     await assertSucceeds(updateDoc(doc(pm, issue.path), { status: 'acceptedException', dispositionReason: 'Accepted with documented survey control.', responsibleUid: 'pm-1' }));
+  });
+});
+
+describe('M3 Product Model controls', () => {
+  it('denies direct version creation but permits the author to edit only mutable draft payload', async () => {
+    const db = environment.authenticatedContext('engineer-1').firestore();
+    await assertFails(setDoc(doc(db, 'organizations/org-a/projects/project-a/productModelVersions/pm-forged'), { status: 'draft', locked: false, createdBy: 'engineer-1' }));
+    const model = doc(db, 'organizations/org-a/projects/project-a/productModelVersions/pm-r01');
+    await assertSucceeds(updateDoc(model, { payload: { mark: 'revised' } }));
+    await assertFails(updateDoc(model, { status: 'approved', locked: true }));
+    await assertFails(updateDoc(model, { upstreamRefs: { sourceRevisionId: 'src-other', designBasisVersionId: 'db-r02' } }));
+    await assertFails(updateDoc(model, { approvedBy: 'engineer-1' }));
+  });
+
+  it('denies another engineer from editing an authored Product Model draft', async () => {
+    await environment.withSecurityRulesDisabled(async (context) => {
+      const db = context.firestore();
+      const now = Timestamp.fromDate(new Date('2026-01-01T00:00:00.000Z'));
+      await setDoc(doc(db, 'organizations/org-a/members/engineer-2'), { status: 'active', orgRoles: [] });
+      await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/engineer-2'), { status: 'active', roles: ['structuralEngineer'], capabilities: [], effectiveFrom: now });
+    });
+    const db = environment.authenticatedContext('engineer-2').firestore();
+    await assertFails(updateDoc(doc(db, 'organizations/org-a/projects/project-a/productModelVersions/pm-r01'), { payload: { mark: 'hijacked' } }));
   });
 });
 

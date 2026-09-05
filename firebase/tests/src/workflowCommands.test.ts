@@ -3,7 +3,8 @@ import { deleteApp, initializeApp } from 'firebase-admin/app';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuthorizationError } from '../../../apps/functions/src/authorization';
-import { approveArtifact, archiveProject, computeArtifactSnapshotHash, createDesignBasisRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from '../../../apps/functions/src/workflowCommands';
+import type { ProductModelPayload } from '../../../packages/domain/src/types';
+import { approveArtifact, archiveProject, canonicalizeProductModel, computeArtifactSnapshotHash, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from '../../../apps/functions/src/workflowCommands';
 
 let db: Firestore;
 let app: ReturnType<typeof initializeApp>;
@@ -20,6 +21,18 @@ const payload = {
 const snapshotHash = computeArtifactSnapshotHash({ artifactType: 'designBasis', artifactId, artifactRevision: 'DB-R02', createdBy: 'engineer-1', upstreamRefs, payload });
 const sourcePayload = { fileName: 'source.ifc', unit: 'metre' };
 const sourceHash = computeArtifactSnapshotHash({ artifactType: 'sourceRevision', artifactId: 'src-r02', artifactRevision: 'SRC-R02', createdBy: 'bim-1', upstreamRefs: {}, payload: sourcePayload });
+const productPayload: ProductModelPayload = {
+  schemaVersion: '1.0.0', units: 'kN-m-MPa', coordinateSystem: 'Project Local',
+  panels: [
+    { id: 'panel-a', mark: 'W1', type: 'wall', sourceObjectIds: ['ifc-a'], materialId: 'c40', geometry: { widthM: 3, heightM: 3, thicknessM: 0.15, offsetM: 0 }, openings: [{ id: 'op-a', xM: 1, yM: 0, widthM: 1, heightM: 2 }], volumeM3: 1.35, weightKn: 31.8, cogM: { x: 1.5, y: 1.5, z: 0.075 } },
+    { id: 'panel-b', mark: 'W2', type: 'wall', sourceObjectIds: ['ifc-b'], materialId: 'c40', geometry: { widthM: 2, heightM: 3, thicknessM: 0.15, offsetM: 0 }, openings: [], volumeM3: 0.9, weightKn: 21.2, cogM: { x: 4, y: 1.5, z: 0.075 } },
+  ],
+  joints: [{ id: 'joint-ab', panelIds: ['panel-a', 'panel-b'], stiffnessKnM: 20000, loadPathConfirmed: true }],
+  anchors: [{ id: 'lift-a', panelId: 'panel-a', kind: 'lifting', positionM: { x: 1, y: 2.7, z: 0.075 }, capacityKn: 25 }],
+  supports: [{ id: 'support-a', panelId: 'panel-a', scenario: 'final', positionM: { x: 0, y: 0, z: 0 }, restrainedDofs: ['UX', 'UY', 'UZ'] }],
+  loadCases: [{ id: 'dead', scenario: 'final', type: 'dead', magnitude: 53, unit: 'kN' }], loadCombinations: [{ id: 'uls', factors: { dead: 1.4 } }], stages: ['final'],
+  validation: { unsupportedNodes: 0, disconnectedElements: 0, missingLoadPaths: 0, geometryConflicts: 0 },
+};
 
 async function seedWorkflow() {
   const now = Timestamp.now();
@@ -60,6 +73,47 @@ beforeEach(async () => {
 afterAll(async () => deleteApp(app));
 
 describe('transactional workflow commands', () => {
+  it('canonicalizes entity ordering for deterministic model snapshots', () => {
+    const reversed = { ...productPayload, panels: [...productPayload.panels].reverse(), loadCombinations: [...productPayload.loadCombinations].reverse() };
+    expect(canonicalizeProductModel(reversed)).toEqual(canonicalizeProductModel(productPayload));
+  });
+
+  it('creates, validates, submits and independently locks the G2 Product Model', async () => {
+    await db.doc(`organizations/${orgId}/projects/${projectId}`).update({ 'gateStates.G0': 'approved', 'gateStates.G1': 'approved' });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/sourceRevisions/src-r02`).update({ status: 'accepted', locked: true });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`).update({ status: 'approved', locked: true });
+    const created = await createProductModelRevision(db, 'engineer-1', { orgId, projectId, modelVersionId: 'pm-r01', revision: 'PM-R01', payload: productPayload, idempotencyKey: randomUUID() });
+    expect(created.state).toBe('draft');
+    const modelRef = db.doc(`organizations/${orgId}/projects/${projectId}/productModelVersions/pm-r01`);
+    const draftHash = String((await modelRef.get()).data()?.draftHash);
+    const requestId = `request-${randomUUID()}`;
+    await submitArtifact(db, 'engineer-1', { orgId, projectId, requestId, artifactType: 'productModel', artifactId: 'pm-r01', expectedDraftHash: draftHash, assignedTo: 'checker-1', idempotencyKey: randomUUID() });
+    await approveArtifact(db, 'checker-1', { orgId, projectId, requestId, artifactType: 'productModel', artifactId: 'pm-r01', snapshotHash: draftHash, idempotencyKey: randomUUID() });
+    expect((await modelRef.get()).data()).toMatchObject({ status: 'approved', locked: true, approvedBy: 'checker-1' });
+    expect((await db.doc(`organizations/${orgId}/projects/${projectId}`).get()).data()).toMatchObject({ currentStage: 'analysis', currentModelVersionId: 'pm-r01', gateStates: { G2: 'approved', G3: 'inProgress' } });
+  });
+
+  it('blocks G2 submission when connectivity or load-path quality checks fail', async () => {
+    await db.doc(`organizations/${orgId}/projects/${projectId}`).update({ 'gateStates.G0': 'approved', 'gateStates.G1': 'approved' });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/sourceRevisions/src-r02`).update({ status: 'accepted', locked: true });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`).update({ status: 'approved', locked: true });
+    const invalidPayload = { ...productPayload, validation: { ...productPayload.validation, missingLoadPaths: 1 } };
+    await createProductModelRevision(db, 'engineer-1', { orgId, projectId, modelVersionId: 'pm-invalid', revision: 'PM-X', payload: invalidPayload, idempotencyKey: randomUUID() });
+    const model = await db.doc(`organizations/${orgId}/projects/${projectId}/productModelVersions/pm-invalid`).get();
+    await expect(submitArtifact(db, 'engineer-1', { orgId, projectId, requestId: `request-${randomUUID()}`, artifactType: 'productModel', artifactId: 'pm-invalid', expectedDraftHash: String(model.data()?.draftHash), assignedTo: 'checker-1', idempotencyKey: randomUUID() })).rejects.toThrow('quality checks');
+  });
+
+  it('supersedes rather than overwrites an approved Product Model', async () => {
+    await db.doc(`organizations/${orgId}/projects/${projectId}`).update({ 'gateStates.G0': 'approved', 'gateStates.G1': 'approved' });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/sourceRevisions/src-r02`).update({ status: 'accepted', locked: true });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`).update({ status: 'approved', locked: true });
+    await createProductModelRevision(db, 'engineer-1', { orgId, projectId, modelVersionId: 'pm-r01', revision: 'PM-R01', payload: productPayload, idempotencyKey: randomUUID() });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/productModelVersions/pm-r01`).update({ status: 'approved', locked: true });
+    await createProductModelRevision(db, 'engineer-1', { orgId, projectId, modelVersionId: 'pm-r02', revision: 'PM-R02', payload: productPayload, supersedesId: 'pm-r01', idempotencyKey: randomUUID() });
+    expect((await db.doc(`organizations/${orgId}/projects/${projectId}/productModelVersions/pm-r01`).get()).data()).toMatchObject({ status: 'superseded', isCurrentRevision: false, supersededBy: 'pm-r02' });
+    expect((await db.doc(`organizations/${orgId}/projects/${projectId}`).get()).data()).toMatchObject({ currentModelVersionId: 'pm-r02', downstreamState: 'outOfDate' });
+  });
+
   it('runs BIM submission, independent structural approval, and PM-only G0 freeze', async () => {
     const requestId = `request-${randomUUID()}`;
     await submitArtifact(db, 'bim-1', { orgId, projectId, requestId, artifactType: 'sourceRevision', artifactId: 'src-r02', expectedDraftHash: sourceHash, assignedTo: 'engineer-1', idempotencyKey: randomUUID() });

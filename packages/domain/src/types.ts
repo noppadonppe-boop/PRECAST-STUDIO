@@ -33,6 +33,7 @@ export type PermissionAction = (typeof permissionActions)[number];
 export type ArtifactType =
   | 'sourceRevision'
   | 'designBasis'
+  | 'productModel'
   | 'analysis'
   | 'estimate'
   | 'calculation'
@@ -53,6 +54,7 @@ export interface ProjectRecord {
   currentStage: string;
   currentSourceRevisionId?: string;
   currentDesignBasisVersionId?: string;
+  currentModelVersionId?: string;
   gateStates: Partial<Record<Gate, GateState>>;
   assignedUserIds: string[];
   dueAt?: string;
@@ -83,6 +85,34 @@ export interface DesignBasisPayload {
   fireResistanceMinutes: number;
   inheritedFrom: string;
   overrideReasons: Record<string, string>;
+}
+
+export type ConstructionScenario = 'service' | 'demould' | 'lifting' | 'transport' | 'storage' | 'installation' | 'final';
+export type RestrainedDof = 'UX' | 'UY' | 'UZ' | 'RX' | 'RY' | 'RZ';
+
+export interface ProductModelPayload {
+  schemaVersion: '1.0.0';
+  units: 'kN-m-MPa';
+  coordinateSystem: string;
+  panels: Array<{
+    id: string;
+    mark: string;
+    type: 'wall' | 'floor' | 'roof' | 'beam' | 'column';
+    sourceObjectIds: string[];
+    materialId: string;
+    geometry: { widthM: number; heightM: number; thicknessM: number; offsetM: number };
+    openings: Array<{ id: string; xM: number; yM: number; widthM: number; heightM: number }>;
+    volumeM3: number;
+    weightKn: number;
+    cogM: { x: number; y: number; z: number };
+  }>;
+  joints: Array<{ id: string; panelIds: [string, string]; stiffnessKnM: number; loadPathConfirmed: boolean }>;
+  anchors: Array<{ id: string; panelId: string; kind: 'lifting' | 'embedded'; positionM: { x: number; y: number; z: number }; capacityKn: number }>;
+  supports: Array<{ id: string; panelId: string; scenario: ConstructionScenario; positionM: { x: number; y: number; z: number }; restrainedDofs: RestrainedDof[] }>;
+  loadCases: Array<{ id: string; scenario: ConstructionScenario; type: 'dead' | 'live' | 'wind' | 'handling' | 'transport'; magnitude: number; unit: 'kN' | 'kN/m' | 'kN/m2' }>;
+  loadCombinations: Array<{ id: string; factors: Record<string, number> }>;
+  stages: ConstructionScenario[];
+  validation: { unsupportedNodes: number; disconnectedElements: number; missingLoadPaths: number; geometryConflicts: number };
 }
 
 export interface EngineeringIssue {
@@ -177,7 +207,7 @@ export interface ApprovalSnapshot {
 
 export interface CommandReceipt {
   idempotencyKey: string;
-  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
+  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
   actorUid: string;
   resourceId: string;
   resultState: string;

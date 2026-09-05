@@ -1,6 +1,6 @@
 # Precast Engineering Web App
 
-M2 BIM Intake and Design Basis for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, or authoritative engineering result.
+M3 Product Model and Panelization for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, or authoritative engineering result.
 
 ## Source of truth
 
@@ -26,7 +26,7 @@ pnpm check
 pnpm dev
 ```
 
-Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted M2 behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. Use `?as=bim`, `?as=engineer`, `?as=pm`, or `?as=checker` to exercise Separation of Duties. No production credential is required.
+Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted M3 behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. Use `?as=engineer` and `?as=checker` for the G2 author/reviewer journey; the M2 BIM/PM identities remain available. No production credential is required.
 
 ## Workspace map
 
@@ -38,11 +38,11 @@ packages/schemas/         Versioned Zod command/calculation contracts
 packages/ui/              Product tokens and shared UI primitives
 firebase/                 Firestore/Storage rules, indexes and emulator configuration
 firebase/tests/           Rules tests for tenant isolation and authoritative transitions
-services/                 Reserved worker boundaries; no real scanner/FEM/export worker in M2
+services/                 Reserved worker boundaries; no real scanner/FEM/export worker in M3
 knowledge/                Approved product and engineering source of truth
 ```
 
-## Security model in M2
+## Security model through M3
 
 - Deny by default in Firestore and Storage Rules.
 - Organization and project membership are separate and project membership can expire.
@@ -52,6 +52,8 @@ knowledge/                Approved product and engineering source of truth
 - BIM uploads are limited to IFC/PDF, 100 MB, uploader-bound staging paths, and mandatory quarantine metadata; quarantined objects cannot be read.
 - G0 requires clean scan metadata, unit/coordinate/level/object-identity checks, zero duplicate GlobalIds, independent structural approval, no open critical issues, and Project Manager freeze.
 - G1 requires a complete bounded Design Basis, current accepted source, an independent checker, and an immutable locked approval snapshot.
+- Product Model versions bind accepted Source and locked Design Basis IDs, canonicalize entity ordering, and preserve immutable superseded history.
+- G2 validates panel/opening geometry, globally unique references, joints, supports, construction scenarios, load cases/combinations and zero model-quality failures before independent checker lock.
 - Functions revalidate active membership, expiry, role/capability, artifact state, snapshot hash, blockers and current upstream revisions.
 - Every successful transition creates exactly one append-only audit event and a command receipt.
 - Artifact creators cannot approve their own Design Basis, analysis, calculation, or drawing revision.
@@ -68,4 +70,4 @@ pnpm test:e2e
 pnpm build
 ```
 
-See the [M2 completion and M3 handoff](docs/M2_HANDOFF.md) before extending the application. The [M1 handoff](docs/M1_HANDOFF.md) and [M0 handoff](docs/M0_LIMITATIONS.md) remain as historical context.
+See the [M3 completion and M4 handoff](docs/M3_HANDOFF.md) before extending the application. Earlier handoffs remain as historical context.

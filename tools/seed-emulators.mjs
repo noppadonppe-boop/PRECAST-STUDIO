@@ -45,6 +45,22 @@ const snapshotInput = { artifactType: 'designBasis', artifactId: 'db-r02', artif
 const draftHash = hash(snapshotInput);
 const selfSnapshotInput = { ...snapshotInput, artifactId: 'db-self', artifactRevision: 'DB-SELF' };
 const selfSnapshotHash = hash(selfSnapshotInput);
+const productModelPayload = {
+  schemaVersion: '1.0.0', units: 'kN-m-MPa', coordinateSystem: 'Project Local / Level 1 datum',
+  panels: [
+    { id: 'panel-a', mark: 'W1-01', type: 'wall', sourceObjectIds: ['ifc-wall-a'], materialId: 'concrete-c40', geometry: { widthM: 3.6, heightM: 3, thicknessM: 0.15, offsetM: 0 }, openings: [{ id: 'opening-a', xM: 1.2, yM: 0, widthM: 1, heightM: 2.1 }], volumeM3: 1.62, weightKn: 38.1, cogM: { x: 1.8, y: 1.5, z: 0.075 } },
+    { id: 'panel-b', mark: 'W1-02', type: 'wall', sourceObjectIds: ['ifc-wall-b'], materialId: 'concrete-c40', geometry: { widthM: 2.8, heightM: 3, thicknessM: 0.15, offsetM: 0 }, openings: [], volumeM3: 1.26, weightKn: 29.7, cogM: { x: 5, y: 1.5, z: 0.075 } },
+  ],
+  joints: [{ id: 'joint-a-b', panelIds: ['panel-a', 'panel-b'], stiffnessKnM: 25000, loadPathConfirmed: true }],
+  anchors: [{ id: 'lift-a1', panelId: 'panel-a', kind: 'lifting', positionM: { x: 0.8, y: 2.7, z: 0.075 }, capacityKn: 25 }, { id: 'lift-b1', panelId: 'panel-b', kind: 'lifting', positionM: { x: 4.2, y: 2.7, z: 0.075 }, capacityKn: 25 }],
+  supports: [{ id: 'support-final-a', panelId: 'panel-a', scenario: 'final', positionM: { x: 0, y: 0, z: 0 }, restrainedDofs: ['UX', 'UY', 'UZ'] }, { id: 'support-lift-a', panelId: 'panel-a', scenario: 'lifting', positionM: { x: 0.8, y: 2.7, z: 0.075 }, restrainedDofs: ['UY'] }],
+  loadCases: [{ id: 'lc-dead', scenario: 'final', type: 'dead', magnitude: 67.8, unit: 'kN' }, { id: 'lc-lift', scenario: 'lifting', type: 'handling', magnitude: 57.2, unit: 'kN' }],
+  loadCombinations: [{ id: 'comb-final-uls', factors: { 'lc-dead': 1.4 } }, { id: 'comb-lift-uls', factors: { 'lc-lift': 1.5 } }],
+  stages: ['lifting', 'final'], validation: { unsupportedNodes: 0, disconnectedElements: 0, missingLoadPaths: 0, geometryConflicts: 0 },
+};
+const productUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: 'db-r02' };
+const productSnapshotInput = { artifactType: 'productModel', artifactId: 'pm-r01', artifactRevision: 'PM-R01', createdBy: 'engineer-supachai', upstreamRefs: productUpstreams, payload: productModelPayload };
+const productHash = hash(productSnapshotInput);
 
 const batch = db.batch();
 batch.set(db.doc('organizations/org-siam'), { id: 'org-siam', name: 'Siam Precast Engineering', updatedAt: now });
@@ -52,22 +68,23 @@ for (const [uid, orgRoles] of [['checker-narin', ['orgAdmin']], ['engineer-supac
   batch.set(db.doc(`organizations/org-siam/members/${uid}`), { uid, orgId: 'org-siam', status: 'active', orgRoles, projectIds: ['p-rama9'], updatedAt: now, updatedBy: 'seed' });
 }
 batch.set(db.doc('organizations/org-siam/projects/p-rama9'), {
-  id: 'p-rama9', orgId: 'org-siam', code: 'PC-26014', name: 'Rama IX Modular Residence', productFamilyId: 'type-2-residential', status: 'active', currentStage: 'intake',
-  currentSourceRevisionId: 'src-r02', currentDesignBasisVersionId: 'db-r02', gateStates: { G0: 'inProgress', G1: 'notStarted', G2: 'notStarted', G3: 'notStarted', G4: 'notStarted', G5: 'notStarted', G6: 'notStarted', G7: 'notStarted' },
+  id: 'p-rama9', orgId: 'org-siam', code: 'PC-26014', name: 'Rama IX Modular Residence', productFamilyId: 'type-2-residential', status: 'active', currentStage: 'panelization',
+  currentSourceRevisionId: 'src-r02', currentDesignBasisVersionId: 'db-r02', currentModelVersionId: 'pm-r01', gateStates: { G0: 'approved', G1: 'approved', G2: 'inProgress', G3: 'notStarted', G4: 'notStarted', G5: 'notStarted', G6: 'notStarted', G7: 'notStarted' },
   assignedUserIds: ['checker-narin', 'engineer-supachai', 'bim-arin', 'pm-malee'], updatedAt: now, updatedBy: 'seed',
 });
 for (const [uid, roles] of [['checker-narin', ['engineeringChecker']], ['engineer-supachai', ['structuralEngineer']], ['bim-arin', ['bimCoordinator']], ['pm-malee', ['projectManager']]]) {
   batch.set(db.doc(`organizations/org-siam/projects/p-rama9/members/${uid}`), { uid, orgId: 'org-siam', projectId: 'p-rama9', status: 'active', roles, capabilities: [], effectiveFrom: now, updatedAt: now, updatedBy: 'seed' });
 }
 batch.set(db.doc('organizations/org-siam/projects/p-rama9/sourceRevisions/src-r02'), {
-  id: 'src-r02', revision: 'SRC-R02', status: 'draft', scanState: 'clean', locked: false, createdBy: 'bim-arin', isCurrentRevision: true,
+  id: 'src-r02', revision: 'SRC-R02', status: 'accepted', scanState: 'clean', locked: true, createdBy: 'bim-arin', isCurrentRevision: true,
   upstreamRefs: {}, payload: sourcePayload, validation: { unitValid: true, coordinateValid: true, levelsValid: true, objectIdentityValid: true, objectCount: 1842, duplicateGlobalIds: 0 },
   blockingConditions: [], draftHash: sourceHash, snapshotHash: sourceHash, storagePath: 'seed/clean/rama9-coordination-r02.ifc', createdAt: now, updatedAt: now,
 });
-batch.set(db.doc('organizations/org-siam/projects/p-rama9/designBasisVersions/db-r02'), { id: 'db-r02', revision: 'DB-R02', status: 'draft', locked: false, createdBy: 'engineer-supachai', isCurrentRevision: true, upstreamRefs, payload: designBasisPayload, blockingConditions: [], draftHash, createdAt: now, updatedAt: now });
+batch.set(db.doc('organizations/org-siam/projects/p-rama9/designBasisVersions/db-r02'), { id: 'db-r02', revision: 'DB-R02', status: 'approved', locked: true, createdBy: 'engineer-supachai', approvedBy: 'checker-narin', isCurrentRevision: true, upstreamRefs, payload: designBasisPayload, blockingConditions: [], draftHash, snapshotHash: draftHash, createdAt: now, updatedAt: now });
+batch.set(db.doc('organizations/org-siam/projects/p-rama9/productModelVersions/pm-r01'), { id: 'pm-r01', revision: 'PM-R01', status: 'draft', locked: false, createdBy: 'engineer-supachai', isCurrentRevision: true, upstreamRefs: productUpstreams, payload: productModelPayload, blockingConditions: [], draftHash: productHash, createdAt: now, updatedAt: now });
 batch.set(db.doc('organizations/org-siam/projects/p-rama9/designBasisVersions/db-self'), { id: 'db-self', revision: 'DB-SELF', status: 'submitted', locked: false, createdBy: 'engineer-supachai', isCurrentRevision: true, upstreamRefs, payload: designBasisPayload, blockingConditions: [], snapshotHash: selfSnapshotHash, createdAt: now, updatedAt: now });
 batch.set(db.doc('organizations/org-siam/projects/p-rama9/approvalSnapshots/apr-self'), { ...selfSnapshotInput, id: 'apr-self', orgId: 'org-siam', projectId: 'p-rama9', snapshotHash: selfSnapshotHash, capturedAt: now, capturedBy: 'engineer-supachai' });
 batch.set(db.doc('organizations/org-siam/projects/p-rama9/approvalRequests/apr-self'), { id: 'apr-self', orgId: 'org-siam', projectId: 'p-rama9', artifactType: 'designBasis', artifactId: 'db-self', artifactRevision: 'DB-SELF', snapshotHash: selfSnapshotHash, requestedAction: 'approve', requiredRole: 'engineeringChecker', assignedTo: 'engineer-supachai', status: 'open', requestedBy: 'engineer-supachai', requestedAt: now, blockingConditions: [] });
 await batch.commit();
 await deleteApp(app);
-console.log(`Seeded ${projectId}. Source ${sourceHash}; Design Basis ${draftHash}`);
+console.log(`Seeded ${projectId}. Source ${sourceHash}; Design Basis ${draftHash}; Product Model ${productHash}`);

@@ -72,7 +72,8 @@ service cloud.firestore {
             && request.resource.data.createdBy == resource.data.createdBy
             && request.resource.data.revision == resource.data.revision
             && request.resource.data.upstreamRefs == resource.data.upstreamRefs
-            && request.resource.data.isCurrentRevision == resource.data.isCurrentRevision;
+            && request.resource.data.isCurrentRevision == resource.data.isCurrentRevision
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payload', 'draftHash', 'updatedAt', 'updatedBy']);
           allow delete: if false;
         }
 
@@ -93,6 +94,24 @@ service cloud.firestore {
             && request.resource.data.storagePath == resource.data.storagePath
             && request.resource.data.revision == resource.data.revision
             && request.resource.data.isCurrentRevision == resource.data.isCurrentRevision;
+          allow delete: if false;
+        }
+
+        match /productModelVersions/{artifactId} {
+          allow read: if isInternalProjectMember(orgId, projectId);
+          // Creation and superseding update the project pointer through one authoritative transaction.
+          allow create: if false;
+          allow update: if hasProjectRole(orgId, projectId, 'structuralEngineer')
+            && resource.data.status == 'draft'
+            && request.resource.data.status == resource.data.status
+            && resource.data.locked == false
+            && request.resource.data.locked == false
+            && resource.data.createdBy == request.auth.uid
+            && request.resource.data.createdBy == resource.data.createdBy
+            && request.resource.data.revision == resource.data.revision
+            && request.resource.data.upstreamRefs == resource.data.upstreamRefs
+            && request.resource.data.isCurrentRevision == resource.data.isCurrentRevision
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['payload', 'draftHash', 'updatedAt', 'updatedBy']);
           allow delete: if false;
         }
 

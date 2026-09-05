@@ -1,8 +1,8 @@
-import { collection, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, where, type DocumentData, type Unsubscribe } from 'firebase/firestore';
+import { collection, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where, type DocumentData, type Unsubscribe } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytesResumable } from 'firebase/storage';
-import type { ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
-import { sourceFileSchema } from '@precast/schemas';
+import type { ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, ProductModelPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
+import { productModelPayloadSchema, sourceFileSchema } from '@precast/schemas';
 import { firebaseAuth, firestore, functions, storage } from '../firebase/client';
 
 function iso(value: unknown): string {
@@ -63,6 +63,7 @@ export function watchProjects(orgId: string, projectIds: string[], onValue: (pro
       ...(typeof data.productFamilyId === 'string' ? { productFamilyId: data.productFamilyId } : {}),
       ...(typeof data.currentSourceRevisionId === 'string' ? { currentSourceRevisionId: data.currentSourceRevisionId } : {}),
       ...(typeof data.currentDesignBasisVersionId === 'string' ? { currentDesignBasisVersionId: data.currentDesignBasisVersionId } : {}),
+      ...(typeof data.currentModelVersionId === 'string' ? { currentModelVersionId: data.currentModelVersionId } : {}),
       ...(data.dueAt === undefined ? {} : { dueAt: iso(data.dueAt) }), ...(data.updatedAt === undefined ? {} : { updatedAt: iso(data.updatedAt) }),
     });
     onValue([...records.values()].sort((a, b) => a.code.localeCompare(b.code)));
@@ -94,6 +95,17 @@ export interface SourceRevisionState {
   validation?: SourceValidationSummary;
 }
 
+export interface ProductModelState {
+  id: string;
+  revision: string;
+  status: string;
+  createdBy: string;
+  draftHash: string;
+  locked: boolean;
+  payload: ProductModelPayload;
+  upstreamRefs: { sourceRevisionId: string; designBasisVersionId: string };
+}
+
 export function watchDesignBasis(orgId: string, projectId: string, artifactId: string, onValue: (artifact: DesignBasisState) => void, onError: (error: Error) => void): Unsubscribe {
   return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`), (snapshot) => {
     if (!snapshot.exists()) {
@@ -116,6 +128,29 @@ export function watchSourceRevision(orgId: string, projectId: string, artifactId
       ...(data.validation === undefined ? {} : { validation: data.validation as SourceValidationSummary }),
     });
   }, onError);
+}
+
+export function watchProductModel(orgId: string, projectId: string, artifactId: string, onValue: (artifact: ProductModelState) => void, onError: (error: Error) => void): Unsubscribe {
+  return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/productModelVersions/${artifactId}`), (snapshot) => {
+    if (!snapshot.exists()) return onError(new Error('Product Model was not found.'));
+    const data = snapshot.data();
+    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), createdBy: String(data.createdBy), draftHash: String(data.draftHash), locked: data.locked === true, payload: data.payload as ProductModelPayload, upstreamRefs: data.upstreamRefs as ProductModelState['upstreamRefs'] });
+  }, onError);
+}
+
+function stable(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
+  if (value !== null && typeof value === 'object') return `{${Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => `${JSON.stringify(key)}:${stable(item)}`).join(',')}}`;
+  return JSON.stringify(value) ?? 'null';
+}
+
+export async function saveProductModelDraft(input: { orgId: string; projectId: string; artifact: ProductModelState; payload: ProductModelPayload }): Promise<void> {
+  const parsed = productModelPayloadSchema.safeParse(input.payload);
+  if (!parsed.success) throw new Error(parsed.error.issues.map((issue) => issue.message).join('; '));
+  const snapshot = { artifactType: 'productModel', artifactId: input.artifact.id, artifactRevision: input.artifact.revision, createdBy: input.artifact.createdBy, upstreamRefs: input.artifact.upstreamRefs, payload: parsed.data };
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(stable(snapshot)));
+  const draftHash = `sha256:${[...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('')}`;
+  await updateDoc(doc(firestore, `organizations/${input.orgId}/projects/${input.projectId}/productModelVersions/${input.artifact.id}`), { payload: parsed.data, draftHash, updatedAt: Timestamp.now(), updatedBy: input.artifact.createdBy });
 }
 
 export function validateSourceFile(file: Pick<File, 'name' | 'type' | 'size'>): string[] {
@@ -152,6 +187,11 @@ export async function submitSourceRevision(input: { orgId: string; projectId: st
   return result.data;
 }
 
+export async function submitProductModel(input: { orgId: string; projectId: string; artifact: ProductModelState; assignedTo: string }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'submitArtifactCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, requestId: `apr-${crypto.randomUUID()}`, artifactType: 'productModel', artifactId: input.artifact.id, expectedDraftHash: input.artifact.draftHash, assignedTo: input.assignedTo, idempotencyKey: crypto.randomUUID() })).data;
+}
+
 export async function freezeSourceRevision(input: { orgId: string; projectId: string; artifact: SourceRevisionState }): Promise<CommandResult> {
   const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'freezeSourceRevisionCommand');
   const result = await command({ orgId: input.orgId, projectId: input.projectId, sourceRevisionId: input.artifact.id, expectedSnapshotHash: input.artifact.snapshotHash, idempotencyKey: crypto.randomUUID() });
@@ -162,6 +202,11 @@ export async function createDesignBasisRevision(input: { orgId: string; projectI
   const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'createDesignBasisRevisionCommand');
   const result = await command({ orgId: input.orgId, projectId: input.projectId, designBasisId: input.id, revision: input.revision, payload: input.payload, ...(input.supersedesId === undefined ? {} : { supersedesId: input.supersedesId }), idempotencyKey: crypto.randomUUID() });
   return result.data;
+}
+
+export async function createProductModelRevision(input: { orgId: string; projectId: string; id: string; revision: string; payload: ProductModelPayload; supersedesId?: string }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'createProductModelRevisionCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, modelVersionId: input.id, revision: input.revision, payload: input.payload, ...(input.supersedesId === undefined ? {} : { supersedesId: input.supersedesId }), idempotencyKey: crypto.randomUUID() })).data;
 }
 
 export async function submitDesignBasis(input: { orgId: string; projectId: string; artifact: DesignBasisState; assignedTo: string }): Promise<CommandResult> {

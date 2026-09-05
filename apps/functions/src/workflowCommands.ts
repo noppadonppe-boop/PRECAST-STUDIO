@@ -1,12 +1,13 @@
 import { createHash } from 'node:crypto';
 import { FieldValue, Timestamp, type Firestore, type Transaction } from 'firebase-admin/firestore';
-import { can, type ArtifactType, type ArtifactUpstreamRefs, type PermissionContext, type ProjectRole } from '@precast/domain';
-import { designBasisPayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
+import { can, type ArtifactType, type ArtifactUpstreamRefs, type PermissionContext, type ProductModelPayload, type ProjectRole } from '@precast/domain';
+import { designBasisPayloadSchema, productModelPayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProductModelRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
 import { AuthorizationError, authorizeApproval } from './authorization';
 
 const artifactCollections: Record<ArtifactType, string> = {
   sourceRevision: 'sourceRevisions',
   designBasis: 'designBasisVersions',
+  productModel: 'productModelVersions',
   analysis: 'analysisRuns',
   estimate: 'estimateVersions',
   calculation: 'calculationReports',
@@ -17,6 +18,7 @@ const artifactCollections: Record<ArtifactType, string> = {
 const approvalRoles: Record<ArtifactType, ProjectRole> = {
   sourceRevision: 'structuralEngineer',
   designBasis: 'engineeringChecker',
+  productModel: 'engineeringChecker',
   analysis: 'engineeringChecker',
   estimate: 'commercialApprover',
   calculation: 'engineeringChecker',
@@ -98,6 +100,27 @@ function assertDesignBasisReady(data: UnknownRecord): void {
     throw new AuthorizationError('Design Basis is incomplete or contains invalid engineering values.', 'failed-precondition');
   }
   if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Design Basis has unresolved blocking conditions.', 'failed-precondition');
+}
+
+function assertProductModelReady(data: UnknownRecord): void {
+  const result = productModelPayloadSchema.safeParse(data.payload);
+  if (!result.success) throw new AuthorizationError('Product Model is incomplete or contains invalid geometry/topology references.', 'failed-precondition');
+  if (Object.values(result.data.validation).some((value) => value !== 0)) throw new AuthorizationError('Product Model quality checks contain unresolved failures.', 'failed-precondition');
+  if (result.data.joints.some((joint) => !joint.loadPathConfirmed)) throw new AuthorizationError('Every joint load path must be confirmed before G2 review.', 'failed-precondition');
+  if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Product Model has unresolved blocking conditions.', 'failed-precondition');
+}
+
+const scenarioOrder = ['service', 'demould', 'lifting', 'transport', 'storage', 'installation', 'final'] as const;
+
+export function canonicalizeProductModel(payload: ProductModelPayload): ProductModelPayload {
+  const byId = <T extends { id: string }>(items: T[]) => [...items].sort((a, b) => a.id.localeCompare(b.id));
+  return {
+    ...payload,
+    panels: byId(payload.panels).map((panel) => ({ ...panel, sourceObjectIds: [...panel.sourceObjectIds].sort(), openings: byId(panel.openings) })),
+    joints: byId(payload.joints).map((joint) => ({ ...joint, panelIds: [...joint.panelIds].sort() as [string, string] })),
+    anchors: byId(payload.anchors), supports: byId(payload.supports), loadCases: byId(payload.loadCases), loadCombinations: byId(payload.loadCombinations),
+    stages: [...new Set(payload.stages)].sort((a, b) => scenarioOrder.indexOf(a) - scenarioOrder.indexOf(b)),
+  };
 }
 
 function toMillis(value: unknown): number | undefined {
@@ -195,6 +218,7 @@ export async function submitArtifact(db: Firestore, actorUid: string, command: S
     if (!['draft', 'returned'].includes(requiredString(data, 'status'))) throw new AuthorizationError('Only a draft or returned artifact can be submitted.', 'failed-precondition');
     if (command.artifactType === 'sourceRevision') assertSourceReady(data);
     if (command.artifactType === 'designBasis') assertDesignBasisReady(data);
+    if (command.artifactType === 'productModel') assertProductModelReady(data);
     const input = snapshotInput(command.artifactType, command.artifactId, data);
     const snapshotHash = computeArtifactSnapshotHash(input);
     if (snapshotHash !== command.expectedDraftHash) throw new AuthorizationError('Draft changed after the client review; refresh before submitting.', 'failed-precondition');
@@ -294,6 +318,16 @@ async function decideArtifact(
         currentDesignBasisVersionId: command.artifactId,
         currentStage: 'panelization',
         'gateStates.G1': 'approved',
+        updatedAt: now,
+        updatedBy: actorUid,
+      });
+    }
+    if (decisionName === 'approve' && command.artifactType === 'productModel') {
+      tx.update(projectRef, {
+        currentModelVersionId: command.artifactId,
+        currentStage: 'analysis',
+        'gateStates.G2': 'approved',
+        'gateStates.G3': 'inProgress',
         updatedAt: now,
         updatedBy: actorUid,
       });
@@ -439,6 +473,53 @@ export async function createDesignBasisRevision(db: Firestore, actorUid: string,
     });
     tx.create(receiptRef, { idempotencyKey: command.idempotencyKey, commandName: 'createDesignBasisRevision', actorUid, resourceId: command.designBasisId, resultState: 'draft', auditEventId: command.idempotencyKey, createdAt: now });
     return { resourceId: command.designBasisId, state: 'draft', auditEventId: command.idempotencyKey, replayed: false };
+  });
+}
+
+export async function createProductModelRevision(db: Firestore, actorUid: string, command: CreateProductModelRevisionCommand): Promise<CommandResult> {
+  return db.runTransaction(async (tx) => {
+    const now = Timestamp.now();
+    const root = projectRoot(command.orgId, command.projectId);
+    const receiptRef = db.doc(`${root}/commandReceipts/${command.idempotencyKey}`);
+    const projectRef = db.doc(root);
+    const modelRef = db.doc(`${root}/productModelVersions/${command.modelVersionId}`);
+    const previousRef = command.supersedesId === undefined ? undefined : db.doc(`${root}/productModelVersions/${command.supersedesId}`);
+    const [receipt, project, model, previous, context] = await Promise.all([
+      tx.get(receiptRef), tx.get(projectRef), tx.get(modelRef), previousRef === undefined ? Promise.resolve(undefined) : tx.get(previousRef),
+      loadPermissionContext(tx, db, actorUid, command.orgId, command.projectId, now),
+    ]);
+    if (receipt.exists) return replayedReceipt(asRecord(receipt.data()), actorUid, 'createProductModelRevision');
+    if (!project.exists) throw new AuthorizationError('Project does not exist.', 'failed-precondition');
+    if (model.exists) throw new AuthorizationError('Product Model version ID already exists.', 'failed-precondition');
+    const createDecision = can('create', 'productModel', context);
+    if (!createDecision.allowed) throw new AuthorizationError(createDecision.reason ?? 'Product Model creation denied.', 'permission-denied');
+    const projectData = asRecord(project.data());
+    const gateStates = asRecord(projectData.gateStates);
+    if (gateStates.G0 !== 'approved' || gateStates.G1 !== 'approved') throw new AuthorizationError('G0 and G1 must be approved before creating a Product Model.', 'failed-precondition');
+    const sourceRevisionId = requiredString(projectData, 'currentSourceRevisionId');
+    const designBasisVersionId = requiredString(projectData, 'currentDesignBasisVersionId');
+    const sourceRef = db.doc(`${root}/sourceRevisions/${sourceRevisionId}`);
+    const designBasisRef = db.doc(`${root}/designBasisVersions/${designBasisVersionId}`);
+    const [source, designBasis] = await Promise.all([tx.get(sourceRef), tx.get(designBasisRef)]);
+    const sourceData = asRecord(source.data());
+    const designBasisData = asRecord(designBasis.data());
+    if (!source.exists || sourceData.status !== 'accepted' || sourceData.locked !== true) throw new AuthorizationError('The current Source Revision must be accepted and locked.', 'failed-precondition');
+    if (!designBasis.exists || designBasisData.status !== 'approved' || designBasisData.locked !== true) throw new AuthorizationError('The current Design Basis must be approved and locked.', 'failed-precondition');
+    if (command.supersedesId !== undefined) {
+      if (previous === undefined || !previous.exists || projectData.currentModelVersionId !== command.supersedesId) throw new AuthorizationError('Only the current Product Model can be superseded.', 'failed-precondition');
+      const previousData = asRecord(previous.data());
+      if (previousData.status !== 'approved' || previousData.locked !== true) throw new AuthorizationError('Only an approved, locked Product Model can be superseded.', 'failed-precondition');
+    }
+    const payload = canonicalizeProductModel(command.payload);
+    const input: SnapshotInput = { artifactType: 'productModel', artifactId: command.modelVersionId, artifactRevision: command.revision, createdBy: actorUid, upstreamRefs: { sourceRevisionId, designBasisVersionId }, payload: payload as unknown as Record<string, unknown> };
+    const draftHash = computeArtifactSnapshotHash(input);
+    const auditRef = db.doc(`${root}/auditEvents/${command.idempotencyKey}`);
+    tx.create(modelRef, { id: command.modelVersionId, revision: command.revision, status: 'draft', locked: false, createdBy: actorUid, isCurrentRevision: true, upstreamRefs: input.upstreamRefs, payload, blockingConditions: [], draftHash, ...(command.supersedesId === undefined ? {} : { supersedesId: command.supersedesId }), createdAt: now, updatedAt: now, updatedBy: actorUid });
+    if (previousRef !== undefined) tx.update(previousRef, { status: 'superseded', isCurrentRevision: false, supersededBy: command.modelVersionId, supersededAt: now });
+    tx.update(projectRef, { currentModelVersionId: command.modelVersionId, currentStage: 'panelization', 'gateStates.G2': 'inProgress', updatedAt: now, updatedBy: actorUid, ...(command.supersedesId === undefined ? {} : { downstreamState: 'outOfDate' }) });
+    tx.create(auditRef, { id: command.idempotencyKey, orgId: command.orgId, projectId: command.projectId, artifactType: 'productModel', artifactId: command.modelVersionId, artifactRevision: command.revision, action: command.supersedesId === undefined ? 'create' : 'supersede', stateBefore: command.supersedesId === undefined ? 'none' : 'approved', stateAfter: 'draft', actorUid, effectiveRoles: context.roles, delegatedCapabilities: context.capabilities, occurredAt: now, requestId: command.idempotencyKey, idempotencyKey: command.idempotencyKey, snapshotHash: draftHash });
+    tx.create(receiptRef, { idempotencyKey: command.idempotencyKey, commandName: 'createProductModelRevision', actorUid, resourceId: command.modelVersionId, resultState: 'draft', auditEventId: command.idempotencyKey, createdAt: now });
+    return { resourceId: command.modelVersionId, state: 'draft', auditEventId: command.idempotencyKey, replayed: false };
   });
 }
 

@@ -38,7 +38,7 @@ export function Portfolio() {
     return {
       id: item.id, code: item.code, name: item.name, family: item.productFamilyId ?? 'Type 2 Residential', stage: item.currentStage,
       gate, gateState: item.gateStates[gate] ?? 'notStarted', sourceRevision: item.currentSourceRevisionId ?? '—',
-      designBasisRevision: item.currentDesignBasisVersionId ?? '—', modelRevision: '—', analysisRevision: '—', engineer: 'Project team', checker: 'Independent reviewer',
+      designBasisRevision: item.currentDesignBasisVersionId ?? '—', modelRevision: item.currentModelVersionId ?? '—', analysisRevision: '—', engineer: 'Project team', checker: 'Independent reviewer',
       due: item.dueAt?.slice(0, 10) ?? 'Not set', issues: 0, updated: item.updatedAt?.slice(0, 10) ?? 'Just now', progress: gates.indexOf(gate),
     };
   });
