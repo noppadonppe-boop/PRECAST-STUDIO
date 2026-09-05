@@ -1,8 +1,8 @@
 import { collection, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where, type DocumentData, type Unsubscribe } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytesResumable } from 'firebase/storage';
-import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, DesignCheckPayload, EstimatePayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
-import { designCheckPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, sourceFileSchema } from '@precast/schemas';
+import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, DesignCheckPayload, DocumentationSetPayload, EstimatePayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, SourceValidationSummary } from '@precast/domain';
+import { designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, sourceFileSchema } from '@precast/schemas';
 import { firebaseAuth, firestore, functions, storage } from '../firebase/client';
 
 function iso(value: unknown): string {
@@ -68,6 +68,7 @@ export function watchProjects(orgId: string, projectIds: string[], onValue: (pro
       ...(typeof data.currentApprovedAnalysisRunId === 'string' ? { currentApprovedAnalysisRunId: data.currentApprovedAnalysisRunId } : {}),
       ...(typeof data.currentCalculationReportId === 'string' ? { currentCalculationReportId: data.currentCalculationReportId } : {}),
       ...(typeof data.currentEstimateVersionId === 'string' ? { currentEstimateVersionId: data.currentEstimateVersionId } : {}),
+      ...(typeof data.currentDrawingSetId === 'string' ? { currentDrawingSetId: data.currentDrawingSetId } : {}),
       ...(data.dueAt === undefined ? {} : { dueAt: iso(data.dueAt) }), ...(data.updatedAt === undefined ? {} : { updatedAt: iso(data.updatedAt) }),
     });
     onValue([...records.values()].sort((a, b) => a.code.localeCompare(b.code)));
@@ -146,6 +147,18 @@ export interface EstimateState {
   blockingConditions: string[];
 }
 
+export interface DocumentationSetState {
+  id: string;
+  revision: string;
+  status: string;
+  documentationState: 'incomplete' | 'readyForReview';
+  createdBy: string;
+  draftHash: string;
+  locked: boolean;
+  payload: DocumentationSetPayload;
+  blockingConditions: string[];
+}
+
 export function watchDesignBasis(orgId: string, projectId: string, artifactId: string, onValue: (artifact: DesignBasisState) => void, onError: (error: Error) => void): Unsubscribe {
   return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`), (snapshot) => {
     if (!snapshot.exists()) {
@@ -198,7 +211,7 @@ export function watchCalculation(orgId: string, projectId: string, calculationId
     if (!snapshot.exists()) { onValue(null); return; }
     const data = snapshot.data(); const parsed = designCheckPayloadSchema.safeParse(data.payload);
     if (!parsed.success) return onError(new Error('Design Check register is invalid.'));
-    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), createdBy: String(data.createdBy), draftHash: String(data.draftHash), locked: data.locked === true, payload: parsed.data as DesignCheckPayload, blockingConditions: Array.isArray(data.blockingConditions) ? data.blockingConditions.filter((item): item is string => typeof item === 'string') : [] });
+    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), createdBy: String(data.createdBy), draftHash: String(data.draftHash), locked: data.locked === true, payload: parsed.data, blockingConditions: Array.isArray(data.blockingConditions) ? data.blockingConditions.filter((item): item is string => typeof item === 'string') : [] });
   }, onError);
 }
 
@@ -208,6 +221,15 @@ export function watchEstimate(orgId: string, projectId: string, estimateId: stri
     const data = snapshot.data(); const parsed = estimatePayloadSchema.safeParse(data.payload);
     if (!parsed.success) return onError(new Error('Engineering estimate is invalid.'));
     onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), estimateState: data.estimateState === 'readyForReview' ? 'readyForReview' : 'incomplete', createdBy: String(data.createdBy), draftHash: String(data.draftHash), locked: data.locked === true, payload: parsed.data, blockingConditions: Array.isArray(data.blockingConditions) ? data.blockingConditions.filter((item): item is string => typeof item === 'string') : [] });
+  }, onError);
+}
+
+export function watchDocumentationSet(orgId: string, projectId: string, drawingSetId: string, onValue: (value: DocumentationSetState | null) => void, onError: (error: Error) => void): Unsubscribe {
+  return onSnapshot(doc(firestore, `organizations/${orgId}/projects/${projectId}/drawingSets/${drawingSetId}`), (snapshot) => {
+    if (!snapshot.exists()) { onValue(null); return; }
+    const data = snapshot.data(); const parsed = documentationSetPayloadSchema.safeParse(data.payload);
+    if (!parsed.success) return onError(new Error('Documentation Set is invalid.'));
+    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), documentationState: data.documentationState === 'readyForReview' ? 'readyForReview' : 'incomplete', createdBy: String(data.createdBy), draftHash: String(data.draftHash), locked: data.locked === true, payload: parsed.data, blockingConditions: Array.isArray(data.blockingConditions) ? data.blockingConditions.filter((item): item is string => typeof item === 'string') : [] });
   }, onError);
 }
 
@@ -279,6 +301,16 @@ export async function createEstimateRevision(input: { orgId: string; projectId: 
 export async function submitEstimate(input: { orgId: string; projectId: string; estimate: EstimateState; assignedTo: string }): Promise<CommandResult> {
   const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'submitArtifactCommand');
   return (await command({ orgId: input.orgId, projectId: input.projectId, requestId: `apr-${crypto.randomUUID()}`, artifactType: 'estimate', artifactId: input.estimate.id, expectedDraftHash: input.estimate.draftHash, assignedTo: input.assignedTo, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function createDocumentationSetRevision(input: { orgId: string; projectId: string; drawingSetId: string; revision: string; modelHash: string; calculation: CalculationState }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'createDocumentationSetRevisionCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, drawingSetId: input.drawingSetId, revision: input.revision, reportId: 'report-r01', reportRevision: 'CR-R01', expectedModelHash: input.modelHash, calculationReportId: input.calculation.id, expectedCalculationHash: input.calculation.draftHash, idempotencyKey: crypto.randomUUID() })).data;
+}
+
+export async function submitDocumentationSet(input: { orgId: string; projectId: string; drawingSet: DocumentationSetState; assignedTo: string }): Promise<CommandResult> {
+  const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'submitArtifactCommand');
+  return (await command({ orgId: input.orgId, projectId: input.projectId, requestId: `apr-${crypto.randomUUID()}`, artifactType: 'drawingSet', artifactId: input.drawingSet.id, expectedDraftHash: input.drawingSet.draftHash, assignedTo: input.assignedTo, idempotencyKey: crypto.randomUUID() })).data;
 }
 
 export function validateSourceFile(file: Pick<File, 'name' | 'type' | 'size'>): string[] {

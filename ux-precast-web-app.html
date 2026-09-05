@@ -1125,13 +1125,15 @@
                     <div class="pc-folder-file">PanelSchedule.xlsx · BBS.xlsx · Rebar.bvbs</div>
                     <div class="pc-folder"><i data-lucide="folder" aria-hidden="true"></i><strong>04_BIM</strong><span class="pc-pass">2 files</span></div>
                     <div class="pc-folder-file">PM-T2-FAB-B03.ifc · PM-T2-viewer.glb</div>
+                    <div class="pc-folder"><i data-lucide="folder" aria-hidden="true"></i><strong>05_Revit_Drafting</strong><span class="pc-pass">36 files</span></div>
+                    <div class="pc-folder-file">18 × REVIT-DRAFTING-01 DXF · 18 × JSON manifest</div>
                     <div class="pc-folder"><i data-lucide="file-key-2" aria-hidden="true"></i><strong>manifest.json</strong><span class="pc-pass">Verified</span></div>
                   </div>
                 </div>
                 <aside class="pc-package-side">
                   <strong>Preflight summary</strong>
                   <p class="pc-pass">✓ 48/48 checks passed</p>
-                  <div class="pc-check-list"><div class="pc-check-row"><span>Units</span><span>mm</span></div><div class="pc-check-row"><span>DXF profile</span><span>PC-FAB-01</span></div><div class="pc-check-row"><span>Missing fonts</span><span>0</span></div><div class="pc-check-row"><span>Open polylines</span><span>0</span></div><div class="pc-check-row"><span>Revision match</span><span>B.03</span></div></div>
+                  <div class="pc-check-list"><div class="pc-check-row"><span>Units</span><span>mm</span></div><div class="pc-check-row"><span>DXF profile</span><span>REVIT-DRAFTING-01</span></div><div class="pc-check-row"><span>Model Space / Z</span><span>2D / 0</span></div><div class="pc-check-row"><span>Missing fonts</span><span>0</span></div><div class="pc-check-row"><span>PDF/DXF revision</span><span>B.03 match</span></div></div>
                   <p>SHA-256</p><div class="pc-hash">8ad7c3…91b0e2</div>
                 </aside>
               </section>
@@ -1248,8 +1250,8 @@
       subtitle: 'สร้างไฟล์มาตรฐานหลายรูปแบบ ตรวจ DXF Preflight ล็อก Revision และส่งชุดเอกสารที่ตรวจสอบย้อนกลับได้',
       status: 'Preflight · 48/48 checks passed', note: 'PM-T2-SD-W03 · Rev B.03 · DXF R2018 / mm',
       inspectorTitle: 'Export configuration', inspectorSubtitle: 'Factory Standard · PC-EXPORT-02',
-      body: `<div class="pc-two-fields"><div class="pc-field"><label for="pc-export-preset">Export preset</label><select id="pc-export-preset"><option>Factory Standard v2.4</option><option>Consultant Submission</option><option>Archive Package</option></select></div><div class="pc-field"><label for="pc-dxf-version">DXF version</label><select id="pc-dxf-version"><option>AutoCAD 2018</option><option>AutoCAD 2013</option><option>AutoCAD 2010</option></select></div></div><div class="pc-two-fields"><div class="pc-field"><label for="pc-dxf-units">DXF units</label><select id="pc-dxf-units"><option>Millimetres</option><option>Metres</option></select></div><div class="pc-field"><label for="pc-layer-profile">Layer profile</label><select id="pc-layer-profile"><option>PC-FAB-01</option><option>Client-CAD-02</option></select></div></div><div class="pc-section-label">ไฟล์ในชุดส่งมอบ</div><div class="pc-format-grid"><label class="pc-format-option"><input type="checkbox" checked> DXF</label><label class="pc-format-option"><input type="checkbox" checked> PDF/A</label><label class="pc-format-option"><input type="checkbox" checked> DOCX</label><label class="pc-format-option"><input type="checkbox" checked> XLSX</label><label class="pc-format-option"><input type="checkbox" checked> IFC</label><label class="pc-format-option"><input type="checkbox" checked> BVBS</label><label class="pc-format-option"><input type="checkbox" checked> JSON</label><label class="pc-format-option"><input type="checkbox"> GLB</label></div><div class="pc-check-list"><div class="pc-check-row"><span>Drawing / calculation revision</span><span class="pc-pass">B.03 match</span></div><div class="pc-check-row"><span>DXF geometry & fonts</span><span class="pc-pass">ผ่าน</span></div><div class="pc-check-row"><span>Required approvals</span><span class="pc-pass">2/2</span></div><div class="pc-check-row"><span>File naming / manifest</span><span class="pc-pass">ผ่าน</span></div></div><button class="pc-action pc-block" type="button" data-generate-package>Generate verified package</button><button class="pc-secondary pc-block" type="button" data-release-production>Release to Production</button>`,
-      metrics: [['Batch export','48 files','DXF 18 · PDF 19 · Data 11'],['Preflight','48/48 ผ่าน','Units · Layers · Fonts · Revision'],['Production package','พร้อมสร้าง','PR-2026-0094 · Rev B.03']], progress: 98
+      body: `<div class="pc-two-fields"><div class="pc-field"><label for="pc-export-preset">Export preset</label><select id="pc-export-preset"><option>Revit Drafting View · REVIT-DRAFTING-01</option><option>Factory Standard · PC-FAB-DXF-01</option><option>Consultant Submission</option><option>Archive Package</option></select></div><div class="pc-field"><label for="pc-dxf-version">DXF version</label><select id="pc-dxf-version"><option>AutoCAD 2018</option><option>AutoCAD 2013</option><option>AutoCAD 2010</option></select></div></div><div class="pc-two-fields"><div class="pc-field"><label for="pc-dxf-units">DXF units</label><select id="pc-dxf-units"><option>Millimetres</option></select></div><div class="pc-field"><label for="pc-layer-profile">Layer profile</label><select id="pc-layer-profile"><option>REVIT-DRAFTING-01</option><option>PC-FAB-DXF-01</option><option>Client-CAD-02</option></select></div></div><div class="pc-two-fields"><div class="pc-field"><label for="pc-revit-scale">Drafting View scale</label><select id="pc-revit-scale"><option>1:20</option><option>1:25</option><option>1:50</option></select></div><div class="pc-field"><label for="pc-revit-border">Drawing border</label><select id="pc-revit-border"><option>Content only · Revit title block</option><option>Include CAD border</option></select></div></div><div class="pc-section-label">ไฟล์ในชุดส่งมอบ</div><div class="pc-format-grid"><label class="pc-format-option"><input type="checkbox" checked> Revit-ready DXF</label><label class="pc-format-option"><input type="checkbox" checked> PDF/A</label><label class="pc-format-option"><input type="checkbox" checked> JSON manifest</label><label class="pc-format-option"><input type="checkbox" checked> Factory DXF</label><label class="pc-format-option"><input type="checkbox" checked> XLSX</label><label class="pc-format-option"><input type="checkbox" checked> IFC</label><label class="pc-format-option"><input type="checkbox" checked> BVBS</label><label class="pc-format-option"><input type="checkbox"> GLB</label></div><div class="pc-check-list"><div class="pc-check-row"><span>Drawing / calculation revision</span><span class="pc-pass">B.03 match</span></div><div class="pc-check-row"><span>Model Space / entity Z</span><span class="pc-pass">2D / Z = 0</span></div><div class="pc-check-row"><span>Layers / fonts / origin</span><span class="pc-pass">ผ่าน</span></div><div class="pc-check-row"><span>Sibling PDF + manifest hash</span><span class="pc-pass">ผ่าน</span></div><div class="pc-check-row"><span>Required approvals</span><span class="pc-pass">2/2</span></div></div><button class="pc-action pc-block" type="button" data-generate-package>Generate Revit-ready package</button><button class="pc-secondary pc-block" type="button" data-release-production>Release to Production</button>`,
+      metrics: [['Batch export','83 files','DXF 36 · PDF 19 · Data 28'],['Revit preflight','ผ่าน','Model Space · Z=0 · mm · Fonts'],['Production package','พร้อมสร้าง','PR-2026-0094 · Rev B.03']], progress: 98
     }
   };
 
@@ -1296,7 +1298,7 @@
     const notes = {
       drawing: 'PM-T2-SD-W03 · Rev B.03 · DXF R2018 / mm',
       calculation: 'PM-T2-CALC-001 · 86 pages · PDF/A-2b + DOCX',
-      package: 'PR-2026-0094 · 48 files · manifest verified'
+      package: 'PR-2026-0094 · 83 files · Revit manifest verified'
     };
     if (root.dataset.stage === 'shop') modelStatus.textContent = view === 'package' ? 'Package ready · checksum verified' : 'Preflight · 48/48 checks passed';
     canvasNote.textContent = notes[view] || notes.drawing;
@@ -1356,12 +1358,12 @@
   function generatePackage(event) {
     const button = event.currentTarget;
     button.disabled = true;
-    button.textContent = 'กำลังตรวจและสร้างไฟล์ 0/48…';
-    modelStatus.textContent = 'Generating DXF, PDF/A and data schedules';
+    button.textContent = 'กำลังตรวจและสร้างไฟล์ 0/83…';
+    modelStatus.textContent = 'Generating Factory DXF, Revit-ready DXF, PDF/A and manifests';
     progress.style.width = '42%';
-    window.setTimeout(() => { button.textContent = 'กำลังสร้าง Manifest 41/48…'; progress.style.width = '84%'; }, 650);
+    window.setTimeout(() => { button.textContent = 'กำลังสร้าง Manifest 72/83…'; progress.style.width = '84%'; }, 650);
     window.setTimeout(() => {
-      button.textContent = 'Package ready · 48 files';
+      button.textContent = 'Package ready · 83 files';
       progress.style.width = '100%';
       metricEls[2].value.textContent = 'พร้อมส่งผลิต';
       metricEls[2].context.textContent = 'Manifest + SHA-256 verified';

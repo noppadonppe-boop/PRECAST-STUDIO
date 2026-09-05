@@ -19,6 +19,7 @@ async function seed() {
     await setDoc(doc(db, 'organizations/org-a/members/bim-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/members/pm-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/members/qs-1'), { status: 'active', orgRoles: [] });
+    await setDoc(doc(db, 'organizations/org-a/members/detailer-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-b/members/intruder-1'), { status: 'active', orgRoles: [] });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a'), { code: 'PC-26014', status: 'active' });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/engineer-1'), {
@@ -35,6 +36,9 @@ async function seed() {
     });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/qs-1'), {
       status: 'active', roles: ['costEstimator'], capabilities: [], effectiveFrom: now,
+    });
+    await setDoc(doc(db, 'organizations/org-a/projects/project-a/members/detailer-1'), {
+      status: 'active', roles: ['detailer'], capabilities: [], effectiveFrom: now,
     });
     await setDoc(doc(db, 'organizations/org-a/projects/project-a/designBasisVersions/db-r02'), {
       status: 'submitted', createdBy: 'engineer-1', revision: 'DB-R02', snapshotHash: `sha256:${'a'.repeat(64)}`,
@@ -160,6 +164,18 @@ describe('M6 Price Book and estimate controls', () => {
     await assertFails(updateDoc(estimate, { 'payload.summary.grandTotal': 0 }));
     await assertFails(updateDoc(estimate, { status: 'approved' }));
     await assertFails(deleteDoc(estimate));
+  });
+});
+
+describe('M7 Documentation Set controls', () => {
+  it('allows project review reads but denies forged drawings, preflight and approval writes', async () => {
+    await environment.withSecurityRulesDisabled(async (context) => setDoc(doc(context.firestore(), 'organizations/org-a/projects/project-a/drawingSets/ds-r01'), { status: 'draft', createdBy: 'detailer-1', payload: { preflight: { overallStatus: 'NOT_CHECKED' } } }));
+    const detailer = environment.authenticatedContext('detailer-1').firestore(); const drawingSet = doc(detailer, 'organizations/org-a/projects/project-a/drawingSets/ds-r01');
+    await assertSucceeds(getDoc(drawingSet));
+    await assertFails(setDoc(doc(detailer, 'organizations/org-a/projects/project-a/drawingSets/forged'), { status: 'approved', payload: { preflight: { overallStatus: 'PASS' } } }));
+    await assertFails(updateDoc(drawingSet, { 'payload.preflight.overallStatus': 'PASS' }));
+    await assertFails(updateDoc(drawingSet, { status: 'approved', locked: true }));
+    await assertFails(deleteDoc(drawingSet));
   });
 });
 

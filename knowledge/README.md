@@ -10,6 +10,7 @@
 4. [BOQ_ESTIMATE_KNOWLEDGE.md](./BOQ_ESTIMATE_KNOWLEDGE.md) — Quantity takeoff, price book, preliminary estimate, cost revision, report/export และ UX ของโมดูลประมาณราคา
 5. [ROLE_PERMISSION_KNOWLEDGE.md](./ROLE_PERMISSION_KNOWLEDGE.md) — Role Matrix v1 ที่อนุมัติแล้ว, Separation of Duties, Firebase membership model, approval commands, permission guards และ audit requirements
 6. [BUILD_STARTER_GUIDE.md](./BUILD_STARTER_GUIDE.md) — วิธีแบ่งแชด Product/Architecture กับ coding task, ลำดับสร้างแอป, M0 scope, Definition of Done และ prompt พร้อมใช้เริ่มพัฒนา
+7. [REVIT_DXF_INTEROP_KNOWLEDGE.md](./REVIT_DXF_INTEROP_KNOWLEDGE.md) — ข้อกำหนด DXF สำหรับ Revit Drafting View, Export Profile, Layer/Entity policy, preflight, manifest และแนวทาง Native Revit adapter
 
 ## กติกาการใช้ Knowledge Base
 
@@ -20,6 +21,7 @@
 - ค่า default ทุกค่าต้องแสดงแหล่งที่มา หน่วย Revision และผู้อนุมัติ
 - AI ใช้ช่วยจัดหมวด แนะนำ ตรวจความครบถ้วน และร่างเอกสารได้ แต่ไม่มีสิทธิ์ Approved หรือ Release to Production
 - Role Matrix v1 เป็น baseline ของ MVP; การเพิ่มสิทธิ์ใหม่ต้องอัปเดต capability matrix, Security Rules, backend authorization และ test matrix พร้อมกัน
+- Shop Drawing ต้องมี `REVIT-DRAFTING-01` เป็น mandatory interoperability profile พร้อม DXF, PDF/A, manifest และ preflight ตาม Knowledge ที่อนุมัติ
 
 ## Product statement
 

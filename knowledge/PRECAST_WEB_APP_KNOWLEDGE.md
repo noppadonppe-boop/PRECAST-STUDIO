@@ -412,6 +412,9 @@ Cloud Storage Security Rules สามารถตรวจสิทธิ์ pa
 - Vector PDF/A for issued drawings
 - SVG or PNG preview for browser only
 - DWG only through a licensed/approved conversion adapter
+- Mandatory `REVIT-DRAFTING-01` profile for 2D Model Space DXF import/link into Revit Drafting View
+- Revit-ready output includes sibling PDF/A and JSON manifest; do not label imported CAD as Native Revit
+- Detailed Revit requirements are defined in [REVIT_DXF_INTEROP_KNOWLEDGE.md](./REVIT_DXF_INTEROP_KNOWLEDGE.md)
 
 ### Calculation package
 
@@ -442,6 +445,9 @@ Cloud Storage Security Rules สามารถตรวจสิทธิ์ pa
 - Title block and revision
 - Element mark and drawing number uniqueness
 - Geometry compared with approved product-model hash
+- Target profile validation: `PC-FAB-DXF-01` or `REVIT-DRAFTING-01`
+- For Revit: all entities at `Z = 0`, Model Space only, explicit `$INSUNITS`, local origin/extents, allowed entities, embedded blocks and no unresolved XREF/proxy objects
+- DXF, sibling PDF/A and manifest revision/hash agreement
 
 ### Release package
 
@@ -452,6 +458,7 @@ PR-2026-0094_Rev-B03/
   03_Shop_Drawings_DXF/
   04_Schedules/
   05_BIM/
+  06_Revit_Drafting/
   manifest.json
   checksums.sha256
 ```

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { FieldValue, Timestamp, type Firestore, type Transaction } from 'firebase-admin/firestore';
 import { can, type ArtifactType, type ArtifactUpstreamRefs, type PermissionContext, type ProductModelPayload, type ProjectRole } from '@precast/domain';
-import { designBasisPayloadSchema, designCheckPayloadSchema, estimatePayloadSchema, priceBookSchema, productModelPayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProductModelRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
+import { designBasisPayloadSchema, designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, priceBookSchema, productModelPayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProductModelRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
 import { AuthorizationError, authorizeApproval } from './authorization';
 
 const artifactCollections: Record<ArtifactType, string> = {
@@ -140,6 +140,15 @@ function assertEstimateReady(data: UnknownRecord): void {
   if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Estimate has unresolved blocking conditions.', 'failed-precondition');
 }
 
+function assertDocumentationReady(data: UnknownRecord): void {
+  const parsed = documentationSetPayloadSchema.safeParse(data.payload);
+  if (!parsed.success) throw new AuthorizationError('Documentation Set is incomplete or invalid.', 'failed-precondition');
+  if (parsed.data.calculationStatus !== 'approved' || parsed.data.overallDesignStatus !== 'PASS') throw new AuthorizationError('G4 calculation must be approved with PASS design status before G6 review.', 'failed-precondition');
+  if (parsed.data.preflight.overallStatus !== 'PASS' || parsed.data.preflight.checks.some((check) => check.status !== 'PASS')) throw new AuthorizationError('Every drawing and report preflight check must PASS before G6 review.', 'failed-precondition');
+  if (parsed.data.drawings.some((drawing) => drawing.reinforcementStatus !== 'PASS')) throw new AuthorizationError('Every drawing requires verified reinforcement before G6 review.', 'failed-precondition');
+  if (asStringArray(data.blockingConditions).length > 0) throw new AuthorizationError('Documentation Set has unresolved blocking conditions.', 'failed-precondition');
+}
+
 async function assertCurrentPriceBook(tx: Transaction, db: Firestore, orgId: string, data: UnknownRecord): Promise<void> {
   const estimate = estimatePayloadSchema.parse(data.payload);
   const snapshot = await tx.get(db.doc(`organizations/${orgId}/priceBooks/${estimate.priceBookId}`));
@@ -262,6 +271,7 @@ export async function submitArtifact(db: Firestore, actorUid: string, command: S
     if (command.artifactType === 'analysis') assertAnalysisReady(data);
     if (command.artifactType === 'calculation') assertCalculationReady(data);
     if (command.artifactType === 'estimate') assertEstimateReady(data);
+    if (command.artifactType === 'drawingSet') assertDocumentationReady(data);
     const input = snapshotInput(command.artifactType, command.artifactId, data);
     const snapshotHash = computeArtifactSnapshotHash(input);
     if (snapshotHash !== command.expectedDraftHash) throw new AuthorizationError('Draft changed after the client review; refresh before submitting.', 'failed-precondition');
@@ -385,6 +395,9 @@ async function decideArtifact(
     }
     if (decisionName === 'approve' && command.artifactType === 'estimate') {
       tx.update(projectRef, { currentEstimateVersionId: command.artifactId, 'gateStates.G5': 'approved', updatedAt: now, updatedBy: actorUid });
+    }
+    if (decisionName === 'approve' && command.artifactType === 'drawingSet') {
+      tx.update(projectRef, { currentDrawingSetId: command.artifactId, currentStage: 'release', 'gateStates.G6': 'approved', 'gateStates.G7': 'inProgress', updatedAt: now, updatedBy: actorUid });
     }
     return { resourceId: command.artifactId, state: nextState, auditEventId: command.idempotencyKey, replayed: false };
   });

@@ -238,6 +238,49 @@ export const createEstimateRevisionCommandSchema = commandIdentitySchema.extend(
   effectiveDate: z.string().date(), expectedModelHash: snapshotHashSchema, indirectPercent: z.number().min(0).max(100), contingencyPercent: z.number().min(0).max(100), markupPercent: z.number().min(0).max(100), vatPercent: z.number().min(0).max(100), uncertaintyPercent: z.number().min(0).max(100),
 });
 
+const documentationStatusSchema = z.enum(['PASS', 'FAIL', 'NOT_CHECKED']);
+const reportSectionIdSchema = z.enum(['cover', 'scope', 'codes', 'materials', 'loads', 'analysis-model', 'verification', 'results', 'panel-checks', 'connection-checks', 'handling-checks', 'conclusions', 'appendices']);
+const revitDraftingExportProfileSchema = z.object({
+  id: z.literal('REVIT-DRAFTING-01'), version: z.literal('1.0.0'), label: z.literal('Revit-ready CAD import'), target: z.literal('revitDraftingView'), nativeRevit: z.literal(false),
+  dxfVersion: z.literal('R2018'), units: z.literal('mm'), modelSpaceOnly: z.literal(true), entities2dOnly: z.literal(true), origin: z.object({ x: z.literal(0), y: z.literal(0), z: z.literal(0) }), maximumExtentMm: z.number().positive(),
+  intendedScale: z.literal('1:20'), includeBorder: z.literal(false), allowedEntities: z.tuple([z.literal('LINE'), z.literal('LWPOLYLINE'), z.literal('ARC'), z.literal('CIRCLE'), z.literal('INSERT'), z.literal('TEXT'), z.literal('MTEXT')]),
+  semanticLayers: z.object({ outline: z.literal('PC-OUTLINE'), hidden: z.literal('PC-HIDDEN'), rebar: z.literal('PC-REBAR'), rebarText: z.literal('PC-REBAR-TEXT'), dimension: z.literal('PC-DIM'), text: z.literal('PC-TEXT'), embed: z.literal('PC-EMBED'), opening: z.literal('PC-OPENING'), center: z.literal('PC-CENTER'), revision: z.literal('PC-REVISION') }),
+  font: z.object({ requested: z.literal('Arial'), fallback: z.literal('Arial'), fallbackUsed: z.literal(false) }), requiresSiblingPdfa: z.literal(true), requiresJsonManifest: z.literal(true), preflightState: z.literal('notRun'),
+});
+export const documentationSetPayloadSchema = z.object({
+  schemaVersion: z.literal('1.0.0'), units: z.literal('kN-m-MPa'), engine: z.literal('precast-documentation-register@1.0.0'), issuePurpose: z.literal('internalReview'),
+  modelVersionId: entityIdSchema, modelSnapshotHash: snapshotHashSchema, calculationReportId: entityIdSchema, calculationSnapshotHash: snapshotHashSchema,
+  calculationStatus: z.string().trim().min(3).max(40), overallDesignStatus: designCheckStatusSchema, exportProfile: revitDraftingExportProfileSchema,
+  calculationReport: z.object({
+    id: entityIdSchema, revision: z.string().trim().min(2).max(24), documentState: z.literal('previewOnly'),
+    sections: z.array(z.object({ id: reportSectionIdSchema, number: z.number().int().min(1).max(13), title: z.string().trim().min(3).max(120), status: documentationStatusSchema, sourceRefs: z.array(z.string().trim().min(2).max(160)).min(1).max(20), message: z.string().trim().min(3).max(500) })).length(13),
+  }),
+  drawings: z.array(z.object({
+    id: entityIdSchema, drawingNumber: z.string().trim().min(3).max(80), panelId: entityIdSchema, elementMark: z.string().trim().min(1).max(40), panelType: z.enum(['wall', 'floor', 'roof', 'beam', 'column']),
+    sheet: z.string().trim().min(2).max(24), revision: z.string().trim().min(2).max(24), status: z.literal('draft'), geometry: z.object({ widthM: z.number().positive(), heightM: z.number().positive(), thicknessM: z.number().positive(), offsetM: z.number().finite() }),
+    openings: z.array(z.object({ id: entityIdSchema, xM: z.number().nonnegative(), yM: z.number().nonnegative(), widthM: z.number().positive(), heightM: z.number().positive() })).max(50), anchorIds: z.array(entityIdSchema).max(100),
+    anchors: z.array(z.object({ id: entityIdSchema, panelId: entityIdSchema, kind: z.enum(['lifting', 'embedded']), positionM: positionSchema, capacityKn: z.number().positive() })).max(100),
+    materialId: entityIdSchema, volumeM3: z.number().positive(), weightKn: z.number().positive(), cogM: positionSchema, reinforcementStatus: documentationStatusSchema,
+    sourceRefs: z.object({ modelVersionId: entityIdSchema, calculationReportId: entityIdSchema }),
+  })).min(1).max(500),
+  preflight: z.object({ overallStatus: documentationStatusSchema, checks: z.array(z.object({ id: entityIdSchema, category: z.enum(['modelHash', 'drawingIdentity', 'geometry', 'dimensions', 'titleBlock', 'lifting', 'reinforcement', 'engineeringApproval']), status: documentationStatusSchema, entityIds: z.array(entityIdSchema).min(1).max(1000), message: z.string().trim().min(3).max(500) })).length(8) }),
+}).superRefine((payload, context) => {
+  const sectionIds = payload.calculationReport.sections.map((section) => section.id);
+  if (new Set(sectionIds).size !== 13 || payload.calculationReport.sections.some((section, index) => section.number !== index + 1)) context.addIssue({ code: 'custom', message: 'Calculation Report must contain the canonical 13 ordered sections.' });
+  const drawingIds = payload.drawings.flatMap((drawing) => [drawing.id, drawing.drawingNumber]);
+  if (new Set(drawingIds).size !== drawingIds.length) context.addIssue({ code: 'custom', message: 'Drawing IDs and numbers must be globally unique.' });
+  if (payload.drawings.some((drawing) => drawing.sourceRefs.modelVersionId !== payload.modelVersionId || drawing.sourceRefs.calculationReportId !== payload.calculationReportId)) context.addIssue({ code: 'custom', message: 'Every drawing must reference the Documentation Set upstream revisions.' });
+  if (payload.drawings.some((drawing) => drawing.anchors.some((anchor) => anchor.panelId !== drawing.panelId) || drawing.anchorIds.join('|') !== drawing.anchors.map((anchor) => anchor.id).join('|'))) context.addIssue({ code: 'custom', message: 'Drawing anchor geometry and anchor IDs must match the drawing panel.' });
+  if (new Set(payload.preflight.checks.map((check) => check.category)).size !== 8) context.addIssue({ code: 'custom', message: 'Preflight must contain all eight check categories.' });
+  const derived = payload.preflight.checks.some((check) => check.status === 'FAIL') ? 'FAIL' : payload.preflight.checks.some((check) => check.status === 'NOT_CHECKED') ? 'NOT_CHECKED' : 'PASS';
+  if (payload.preflight.overallStatus !== derived) context.addIssue({ code: 'custom', message: 'Preflight overall status must match its check register.' });
+});
+
+export const createDocumentationSetRevisionCommandSchema = commandIdentitySchema.extend({
+  drawingSetId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/), revision: z.string().trim().min(2).max(24), reportId: z.string().regex(/^[a-z0-9][a-z0-9-]{2,48}$/), reportRevision: z.string().trim().min(2).max(24),
+  expectedModelHash: snapshotHashSchema, calculationReportId: entityIdSchema, expectedCalculationHash: snapshotHashSchema,
+});
+
 export const freezeSourceRevisionCommandSchema = commandIdentitySchema.extend({
   sourceRevisionId: z.string().min(1),
   expectedSnapshotHash: snapshotHashSchema,
@@ -289,6 +332,7 @@ export type QueueAnalysisRunCommand = z.infer<typeof queueAnalysisRunCommandSche
 export type CancelAnalysisRunCommand = z.infer<typeof cancelAnalysisRunCommandSchema>;
 export type CreateDesignCheckRevisionCommand = z.infer<typeof createDesignCheckRevisionCommandSchema>;
 export type CreateEstimateRevisionCommand = z.infer<typeof createEstimateRevisionCommandSchema>;
+export type CreateDocumentationSetRevisionCommand = z.infer<typeof createDocumentationSetRevisionCommandSchema>;
 export type FreezeSourceRevisionCommand = z.infer<typeof freezeSourceRevisionCommandSchema>;
 export type UpdateProjectCommand = z.infer<typeof updateProjectCommandSchema>;
 export type ArchiveProjectCommand = z.infer<typeof archiveProjectCommandSchema>;

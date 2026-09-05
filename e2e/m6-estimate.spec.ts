@@ -5,7 +5,7 @@ test('M6 creates traceable preliminary BOQ and blocks incomplete commercial outp
   await expect(page.getByText('Approved G3 model is ready for quantity takeoff')).toBeVisible();
   await page.getByRole('button', { name: 'Generate engineering estimate' }).click();
   await expect(page.getByRole('status')).toContainText('Preliminary engineering estimate generated');
-  await expect(page.getByText('NOT_CHECKED', { exact: true })).toBeVisible();
+  await expect(page.locator('.estimate-meta').getByText('NOT_CHECKED', { exact: true })).toBeVisible();
   await expect(page.getByText('expiredRate', { exact: true })).toBeVisible();
   await expect(page.getByText('panel-a, panel-b', { exact: true }).first()).toBeVisible();
   await expect(page.getByText('Review and export blocked')).toBeVisible();

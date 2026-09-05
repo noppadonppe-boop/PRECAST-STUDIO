@@ -5,8 +5,9 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { AuthorizationError } from '../../../apps/functions/src/authorization';
 import type { EstimatePayload, ProductModelPayload } from '../../../packages/domain/src/types';
 import { createLoadModelRevision, queueAnalysisRun } from '../../../apps/functions/src/analysisCommands';
-import { createDesignCheckRevision } from '../../../apps/functions/src/designCheckCommands';
+import { buildDesignCheckRegister, createDesignCheckRevision } from '../../../apps/functions/src/designCheckCommands';
 import { createEstimateRevision } from '../../../apps/functions/src/estimateCommands';
+import { createDocumentationSetRevision } from '../../../apps/functions/src/documentationCommands';
 import { approveArtifact, archiveProject, canonicalizeProductModel, computeArtifactSnapshotHash, createDesignBasisRevision, createProductModelRevision, createType2Project, freezeSourceRevision, returnArtifact, submitArtifact, updateProject } from '../../../apps/functions/src/workflowCommands';
 
 let db: Firestore;
@@ -51,12 +52,14 @@ async function seedWorkflow() {
   batch.set(db.doc(`organizations/${orgId}/members/bim-1`), { status: 'active', orgRoles: [], projectIds: [projectId] });
   batch.set(db.doc(`organizations/${orgId}/members/pm-1`), { status: 'active', orgRoles: [], projectIds: [projectId] });
   batch.set(db.doc(`organizations/${orgId}/members/qs-1`), { status: 'active', orgRoles: [], projectIds: [projectId] });
+  batch.set(db.doc(`organizations/${orgId}/members/detailer-1`), { status: 'active', orgRoles: [], projectIds: [projectId] });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}`), { id: projectId, code: 'PC-TEST', name: 'Workflow project', status: 'active', currentStage: 'intake', currentSourceRevisionId: 'src-r02', currentDesignBasisVersionId: artifactId, gateStates: { G0: 'inProgress', G1: 'notStarted' } });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/engineer-1`), { status: 'active', roles: ['structuralEngineer', 'engineeringChecker'], capabilities: [], effectiveFrom: now });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/checker-1`), { status: 'active', roles: ['engineeringChecker'], capabilities: [], effectiveFrom: now });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/bim-1`), { status: 'active', roles: ['bimCoordinator'], capabilities: [], effectiveFrom: now });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/pm-1`), { status: 'active', roles: ['projectManager'], capabilities: [], effectiveFrom: now });
   batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/qs-1`), { status: 'active', roles: ['costEstimator'], capabilities: [], effectiveFrom: now });
+  batch.set(db.doc(`organizations/${orgId}/projects/${projectId}/members/detailer-1`), { status: 'active', roles: ['detailer'], capabilities: [], effectiveFrom: now });
   batch.set(db.doc(`organizations/${orgId}/priceBooks/pb-2026`), { id: 'pb-2026', revision: 'PB-R01', status: 'approved', currency: 'THB', items: [
     ['pb-concrete', 'CONC-C40', 'm3', 2500, '2026-12-31'], ['pb-formwork', 'FORM-PANEL', 'm2', 500, '2026-12-31'], ['pb-anchor', 'ANCH-LIFT', 'each', 650, '2026-12-31'], ['pb-joint', 'JOINT-SEAL', 'm', 180, '2026-12-31'], ['pb-transport', 'LOG-TRANSPORT', 't', 900, '2026-06-30'],
   ].map(([id, costCode, unit, baseRate, effectiveTo]) => ({ id, costCode, description: costCode, category: costCode === 'LOG-TRANSPORT' ? 'logistics' : 'material', unit, currency: 'THB', baseRate, sourceType: 'internalBenchmark', sourceRef: `PB/${id}`, effectiveFrom: '2026-01-01', effectiveTo, taxIncluded: false, status: 'approved' })) });
@@ -86,6 +89,20 @@ beforeEach(async () => {
 afterAll(async () => deleteApp(app));
 
 describe('transactional workflow commands', () => {
+  it('creates a traceable Documentation Set and blocks G6 review while design content is NOT CHECKED', async () => {
+    const productUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: artifactId }; const canonicalProduct = canonicalizeProductModel(productPayload);
+    const productHash = computeArtifactSnapshotHash({ artifactType: 'productModel', artifactId: 'pm-r01', artifactRevision: 'PM-R01', createdBy: 'engineer-1', upstreamRefs: productUpstreams, payload: canonicalProduct as unknown as Record<string, unknown> });
+    const calculationPayload = buildDesignCheckRegister(canonicalProduct, 'an-r01', `sha256:${'b'.repeat(64)}`); const calculationHash = computeArtifactSnapshotHash({ artifactType: 'calculation', artifactId: 'calc-r01', artifactRevision: 'CALC-R01', createdBy: 'engineer-1', upstreamRefs: { ...productUpstreams, modelVersionId: 'pm-r01', analysisRunId: 'an-r01' }, payload: calculationPayload as unknown as Record<string, unknown> });
+    await db.doc(`organizations/${orgId}/projects/${projectId}`).update({ 'gateStates.G3': 'approved', 'gateStates.G4': 'inProgress', currentModelVersionId: 'pm-r01', currentApprovedAnalysisRunId: 'an-r01', currentCalculationReportId: 'calc-r01' });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/productModelVersions/pm-r01`).set({ id: 'pm-r01', revision: 'PM-R01', status: 'approved', locked: true, createdBy: 'engineer-1', isCurrentRevision: true, upstreamRefs: productUpstreams, payload: canonicalProduct, draftHash: productHash, snapshotHash: productHash });
+    await db.doc(`organizations/${orgId}/projects/${projectId}/calculationReports/calc-r01`).set({ id: 'calc-r01', revision: 'CALC-R01', status: 'draft', locked: false, createdBy: 'engineer-1', payload: calculationPayload, draftHash: calculationHash });
+    const command = { orgId, projectId, drawingSetId: 'ds-r01', revision: 'DS-R01', reportId: 'report-r01', reportRevision: 'CR-R01', expectedModelHash: productHash, calculationReportId: 'calc-r01', expectedCalculationHash: calculationHash, idempotencyKey: randomUUID() };
+    expect(await createDocumentationSetRevision(db, 'detailer-1', command)).toMatchObject({ state: 'incomplete', replayed: false });
+    expect(await createDocumentationSetRevision(db, 'detailer-1', command)).toMatchObject({ state: 'incomplete', replayed: true });
+    const snapshot = await db.doc(`organizations/${orgId}/projects/${projectId}/drawingSets/ds-r01`).get(); const data = snapshot.data() as { draftHash: string; payload: { calculationReport: { sections: unknown[] }; drawings: unknown[]; preflight: { overallStatus: string } }; blockingConditions: string[] };
+    expect(data.payload.calculationReport.sections).toHaveLength(13); expect(data.payload.drawings).toHaveLength(2); expect(data.payload.preflight.overallStatus).toBe('FAIL'); expect(data.blockingConditions).toEqual(expect.arrayContaining(['lifting: FAIL.', 'reinforcement: NOT_CHECKED.']));
+    await expect(submitArtifact(db, 'detailer-1', { orgId, projectId, requestId: `request-${randomUUID()}`, artifactType: 'drawingSet', artifactId: 'ds-r01', expectedDraftHash: data.draftHash, assignedTo: 'checker-1', idempotencyKey: randomUUID() })).rejects.toThrow('G4 calculation must be approved');
+  });
   it('creates a model-traced preliminary estimate idempotently and blocks submit on design/rate dependencies', async () => {
     const productUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: artifactId };
     const canonicalProduct = canonicalizeProductModel(productPayload);

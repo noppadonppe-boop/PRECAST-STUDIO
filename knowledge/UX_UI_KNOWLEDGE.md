@@ -371,6 +371,7 @@ Use one center with five subviews:
 Organization-managed presets:
 
 - `Factory Standard`
+- `Revit Drafting View · REVIT-DRAFTING-01`
 - `Consultant Submission`
 - `Archive Package`
 - Optional client/factory-specific profiles
@@ -385,12 +386,15 @@ Fields:
 - File naming pattern and folder structure
 - IFC export view/version
 - Include/exclude preview and source data
+- Target application/workflow and validation profile version
+- For Revit Drafting View: intended scale, `Z = 0`, Model Space, border option, semantic layer mapping and font fallback
 
 ### Supported format choices
 
 | Deliverable | Recommended formats |
 |---|---|
 | Shop drawing | DXF R2018, vector PDF/A, SVG preview |
+| Revit Drafting View | 2D DXF using `REVIT-DRAFTING-01` + sibling PDF/A + JSON manifest |
 | Calculation | PDF/A-2b, DOCX draft, XLSX/CSV result tables, JSON manifest |
 | BIM/model | IFC 4.3, GLB preview |
 | Production | BVBS, XLSX/CSV schedules, factory-specific adapter |
@@ -407,6 +411,7 @@ Fields:
 - Blocks/attributes
 - Title block, panel mark and revision
 - Geometry hash against approved product model
+- Revit checks: Model Space, `Z = 0`, explicit units, local origin/extents, entity whitelist, no XREF/proxy object and sibling PDF/hash match
 
 Display exact issue location and remediation. Do not provide a green `Ready` state if any release-blocking check failed.
 
@@ -518,6 +523,8 @@ Generation runs asynchronously. UI shows file count and phases, not a blocking s
 - User can find every `FAIL`, `WARNING` and `NOT CHECKED` without inspecting the model manually
 - DXF preflight identifies units, layer and unsupported-entity problems before release
 - Generated package shows formats, filenames, versions and checksums before release
+- Revit-targeted package is labelled `Revit-ready CAD import`, shows intended scale/profile, and never implies Native Revit elements
+- Failed `REVIT-DRAFTING-01` preflight blocks release
 - Issued Calculation PDF and Shop Drawing reference the same approved calculation/design revisions
 - Release operation cannot overwrite an earlier issued package
 - Permission-denied users never see engineering files outside their organization/project membership

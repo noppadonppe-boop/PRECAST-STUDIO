@@ -1,4 +1,5 @@
 import type { Gate, GateState } from './workflow';
+import type { RevitDraftingExportProfile } from './exportProfiles';
 
 export const projectRoles = [
   'projectManager',
@@ -60,6 +61,7 @@ export interface ProjectRecord {
   currentApprovedAnalysisRunId?: string;
   currentCalculationReportId?: string;
   currentEstimateVersionId?: string;
+  currentDrawingSetId?: string;
   gateStates: Partial<Record<Gate, GateState>>;
   assignedUserIds: string[];
   dueAt?: string;
@@ -168,12 +170,12 @@ export interface DesignCheckPayload {
     category: 'panelStrength' | 'serviceability' | 'opening' | 'joint' | 'anchor' | 'lifting' | 'transport';
     scenario: ConstructionScenario;
     entityIds: string[];
-    governingCombinationId?: string;
+    governingCombinationId?: string | undefined;
     codeClauseRef: string;
     status: DesignCheckStatus;
-    utilization?: number;
+    utilization?: number | undefined;
     message: string;
-    disposition?: { kind: 'notApplicable' | 'acceptedException' | 'deferred'; rationale: string; evidenceRef: string };
+    disposition?: { kind: 'notApplicable' | 'acceptedException' | 'deferred'; rationale: string; evidenceRef: string } | undefined;
   }>;
 }
 
@@ -251,6 +253,65 @@ export interface EstimatePayload {
     highRange: number | null;
   };
   assumptions: Array<{ id: string; classification: 'included' | 'excluded' | 'allowance'; statement: string; blocking: boolean }>;
+}
+
+export type DocumentationCheckStatus = 'PASS' | 'FAIL' | 'NOT_CHECKED';
+
+export interface DocumentationSetPayload {
+  schemaVersion: '1.0.0';
+  units: 'kN-m-MPa';
+  engine: 'precast-documentation-register@1.0.0';
+  issuePurpose: 'internalReview';
+  modelVersionId: string;
+  modelSnapshotHash: string;
+  calculationReportId: string;
+  calculationSnapshotHash: string;
+  calculationStatus: string;
+  overallDesignStatus: DesignCheckStatus;
+  exportProfile: RevitDraftingExportProfile;
+  calculationReport: {
+    id: string;
+    revision: string;
+    documentState: 'previewOnly';
+    sections: Array<{
+      id: string;
+      number: number;
+      title: string;
+      status: DocumentationCheckStatus;
+      sourceRefs: string[];
+      message: string;
+    }>;
+  };
+  drawings: Array<{
+    id: string;
+    drawingNumber: string;
+    panelId: string;
+    elementMark: string;
+    panelType: ProductModelPayload['panels'][number]['type'];
+    sheet: string;
+    revision: string;
+    status: 'draft';
+    geometry: ProductModelPayload['panels'][number]['geometry'];
+    openings: ProductModelPayload['panels'][number]['openings'];
+    anchorIds: string[];
+    anchors: ProductModelPayload['anchors'];
+    materialId: string;
+    volumeM3: number;
+    weightKn: number;
+    cogM: ProductModelPayload['panels'][number]['cogM'];
+    reinforcementStatus: DocumentationCheckStatus;
+    sourceRefs: { modelVersionId: string; calculationReportId: string };
+  }>;
+  preflight: {
+    overallStatus: DocumentationCheckStatus;
+    checks: Array<{
+      id: string;
+      category: 'modelHash' | 'drawingIdentity' | 'geometry' | 'dimensions' | 'titleBlock' | 'lifting' | 'reinforcement' | 'engineeringApproval';
+      status: DocumentationCheckStatus;
+      entityIds: string[];
+      message: string;
+    }>;
+  };
 }
 
 export interface EngineeringIssue {
@@ -347,7 +408,7 @@ export interface ApprovalSnapshot {
 
 export interface CommandReceipt {
   idempotencyKey: string;
-  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'createDesignCheckRevision' | 'createEstimateRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
+  commandName: 'createProject' | 'updateProject' | 'archiveProject' | 'createDesignBasisRevision' | 'createProductModelRevision' | 'createLoadModelRevision' | 'queueAnalysisRun' | 'cancelAnalysisRun' | 'createDesignCheckRevision' | 'createEstimateRevision' | 'createDocumentationSetRevision' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact' | 'freezeSourceRevision';
   actorUid: string;
   resourceId: string;
   resultState: string;

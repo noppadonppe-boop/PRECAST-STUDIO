@@ -50,6 +50,7 @@ Stack: Vite + React + TypeScript + Firebase
 5. `knowledge/BOQ_ESTIMATE_KNOWLEDGE.md`
 6. `knowledge/IMPLEMENTATION_PLAN.md`
 7. เอกสารนี้ `knowledge/BUILD_STARTER_GUIDE.md`
+8. `knowledge/REVIT_DXF_INTEROP_KNOWLEDGE.md`
 
 เมื่อ Code และ Knowledge ขัดกัน ให้หยุดและเสนอ decision ก่อนเปลี่ยน behavior ที่เกี่ยวกับ engineering safety, approval, revision หรือ production release
 
@@ -197,6 +198,8 @@ Exit criteria: same immutable inputs reproduce the same quantities/totals and ev
 - Drawing Register and panel drawing generator
 - dimensions, reinforcement, embeds, anchors, weight and COG
 - DXF R2018 profile plus PDF/A
+- Mandatory `REVIT-DRAFTING-01` 2D DXF, sibling PDF/A and JSON manifest for Revit Drafting View
+- Validate Model Space, `Z = 0`, units, local origin/extents, semantic layers, fonts and allowed entities
 - Calculation PDF/A, DOCX draft and XLSX/CSV tables
 - IFC/BVBS adapters where supported
 - export preflight, manifest and SHA-256 checksums
@@ -227,6 +230,7 @@ Include:
 - Firebase Emulator configuration and rule tests
 - one submit/approve flow using local fixtures
 - audit event contract
+- `REVIT-DRAFTING-01` domain/profile type and deterministic fixture only; no production exporter in M0
 
 Do not include yet:
 
@@ -268,4 +272,3 @@ Use this prompt in a new Codex task inside the same `Precast-Module` project:
 - เปลี่ยนสูตรราคา, markup, tax หรือ commercial approval policy
 
 การ scaffold, fixture, local emulator, automated test และ refactor ภายในข้อกำหนดที่อนุมัติแล้วสามารถดำเนินการได้โดยไม่ต้องขออนุมัติทีละไฟล์
-

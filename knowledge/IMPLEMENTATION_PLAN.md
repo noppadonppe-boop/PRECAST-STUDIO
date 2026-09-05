@@ -200,16 +200,18 @@ Exit: the same immutable snapshots reproduce the same quantities/totals and ever
 - Drawing register and panel drawing generator
 - Preview/markup/revision compare
 - PDF/A, DOCX and spreadsheet outputs
+- Neutral drawing/export profile contracts, including `REVIT-DRAFTING-01`
 
 Exit: report/drawing references match the approved upstream revisions.
 
 ### Phase 8 — Export and Production Release
 
-- DXF profiles and preflight
+- `PC-FAB-DXF-01` and mandatory `REVIT-DRAFTING-01` DXF profiles and preflight
 - Batch export jobs
 - IFC/BVBS/schedules adapters
 - Package manifest and SHA-256 checksums
 - Release/supersede workflow and history
+- Revit import verification fixtures and optional Native Revit add-in adapter backlog
 
 Exit: G5/G6 gates enforced; released package cannot be overwritten.
 
@@ -224,6 +226,7 @@ Exit: G5/G6 gates enforced; released package cannot be overwritten.
 - Job model and background status
 - Immutable analysis/drawing/release references
 - DXF and report export specification
+- Revit Drafting View manifest/profile schema and deterministic fixture
 - Security-rule tests and audit events
 
 ### Should have
