@@ -3,6 +3,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import { approveArtifactCommandSchema, archiveProjectCommandSchema, cancelAnalysisRunCommandSchema, createDesignBasisRevisionCommandSchema, createDesignCheckRevisionCommandSchema, createDocumentationSetRevisionCommandSchema, createEstimateRevisionCommandSchema, createLoadModelRevisionCommandSchema, createProductModelRevisionCommandSchema, createProjectCommandSchema, createReleasePackageRevisionCommandSchema, freezeSourceRevisionCommandSchema, queueAnalysisRunCommandSchema, releaseProductionPackageCommandSchema, returnArtifactCommandSchema, submitArtifactCommandSchema, updateProjectCommandSchema } from '@precast/schemas';
 import { AuthorizationError } from './authorization';
+import { assertCommandEnvironment } from './runtimeBoundary';
 import { cancelAnalysisRun, createLoadModelRevision, queueAnalysisRun } from './analysisCommands';
 import { createDesignCheckRevision } from './designCheckCommands';
 import { createEstimateRevision } from './estimateCommands';
@@ -28,6 +29,7 @@ function callable<T>(schema: { safeParse(value: unknown): { success: true; data:
     const parsed = schema.safeParse(request.data);
     if (!parsed.success) throw new HttpsError('invalid-argument', 'Command payload is invalid.');
     try {
+      assertCommandEnvironment(process.env);
       return await handler(request.auth.uid, parsed.data);
     } catch (error) {
       if (error instanceof AuthorizationError) throw new HttpsError(error.code, error.message);
@@ -49,7 +51,10 @@ export const createDesignCheckRevisionCommand = callable(createDesignCheckRevisi
 export const createEstimateRevisionCommand = callable(createEstimateRevisionCommandSchema, (uid, command) => createEstimateRevision(getFirestore(), uid, command));
 export const createDocumentationSetRevisionCommand = callable(createDocumentationSetRevisionCommandSchema, (uid, command) => createDocumentationSetRevision(getFirestore(), uid, command));
 export const createReleasePackageRevisionCommand = callable(createReleasePackageRevisionCommandSchema, (uid, command) => createReleasePackageRevision(getFirestore(), uid, command));
-export const releaseProductionPackageCommand = callable(releaseProductionPackageCommandSchema, (uid, command) => releaseProductionPackage(getFirestore(), uid, command));
+export const releaseProductionPackageCommand = callable(releaseProductionPackageCommandSchema, (uid, command) => {
+  if (process.env.FUNCTIONS_EMULATOR !== 'true') throw new AuthorizationError('M9 technical rehearsal has no Production Release authority.', 'failed-precondition');
+  return releaseProductionPackage(getFirestore(), uid, command);
+});
 export const freezeSourceRevisionCommand = callable(freezeSourceRevisionCommandSchema, (uid, command) => freezeSourceRevision(getFirestore(), uid, command));
 export const updateProjectCommand = callable(updateProjectCommandSchema, (uid, command) => updateProject(getFirestore(), uid, command));
 export const archiveProjectCommand = callable(archiveProjectCommandSchema, (uid, command) => archiveProject(getFirestore(), uid, command));

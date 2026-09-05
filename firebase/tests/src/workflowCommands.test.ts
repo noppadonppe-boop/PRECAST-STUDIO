@@ -238,6 +238,7 @@ describe('transactional workflow commands', () => {
   });
 
   it('runs BIM submission, independent structural approval, and PM-only G0 freeze', async () => {
+    await db.doc(`organizations/${orgId}/projects/${projectId}`).update({ 'gateStates.G3': 'approved', 'gateStates.G4': 'approved', 'gateStates.G6': 'approved', 'gateStates.G7': 'approved' });
     const requestId = `request-${randomUUID()}`;
     await submitArtifact(db, 'bim-1', { orgId, projectId, requestId, artifactType: 'sourceRevision', artifactId: 'src-r02', expectedDraftHash: sourceHash, assignedTo: 'engineer-1', idempotencyKey: randomUUID() });
     await approveArtifact(db, 'engineer-1', { orgId, projectId, requestId, artifactType: 'sourceRevision', artifactId: 'src-r02', snapshotHash: sourceHash, idempotencyKey: randomUUID() });
@@ -246,6 +247,7 @@ describe('transactional workflow commands', () => {
     expect(await freezeSourceRevision(db, 'pm-1', command)).toMatchObject({ state: 'accepted', replayed: false });
     expect(await freezeSourceRevision(db, 'pm-1', command)).toMatchObject({ state: 'accepted', replayed: true });
     expect((await db.doc(`organizations/${orgId}/projects/${projectId}`).get()).data()).toMatchObject({ currentStage: 'designBasis', gateStates: { G0: 'approved', G1: 'inProgress' } });
+    expect((await db.doc(`organizations/${orgId}/projects/${projectId}`).get()).data()).toMatchObject({ gateStates: { G2: 'outOfDate', G3: 'outOfDate', G4: 'outOfDate', G5: 'outOfDate', G6: 'outOfDate', G7: 'outOfDate' } });
   });
 
   it('blocks G0 freeze while a critical source issue remains open', async () => {
@@ -263,6 +265,7 @@ describe('transactional workflow commands', () => {
     await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/db-r03`).update({ status: 'approved', locked: true });
     const next = { ...command, designBasisId: 'db-r04', revision: 'DB-R04', supersedesId: 'db-r03', idempotencyKey: randomUUID() };
     expect(await createDesignBasisRevision(db, 'engineer-1', next)).toMatchObject({ resourceId: 'db-r04' });
+    expect((await db.doc(`organizations/${orgId}/projects/${projectId}`).get()).data()).toMatchObject({ gateStates: { G2: 'outOfDate', G3: 'outOfDate', G4: 'outOfDate', G5: 'outOfDate', G6: 'outOfDate', G7: 'outOfDate' } });
     expect((await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/db-r03`).get()).data()).toMatchObject({ status: 'superseded', isCurrentRevision: false, supersededBy: 'db-r04' });
   });
 

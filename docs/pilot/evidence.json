@@ -1,0 +1,326 @@
+{
+  "schemaVersion": "1.0.0",
+  "label": "PILOT / NOT FOR PRODUCTION",
+  "environment": "localRehearsal",
+  "firebaseProjectId": null,
+  "organizationId": null,
+  "projectId": null,
+  "participants": [],
+  "gates": [
+    {
+      "gate": "G0",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Local fixture tests do not establish a real Pilot gate approval."
+      }
+    },
+    {
+      "gate": "G1",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Local fixture tests do not establish a real Pilot gate approval."
+      }
+    },
+    {
+      "gate": "G2",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Local fixture tests do not establish a real Pilot gate approval."
+      }
+    },
+    {
+      "gate": "G3",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Local fixture tests do not establish a real Pilot gate approval."
+      }
+    },
+    {
+      "gate": "G4",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Verified engineering and export evidence are not available."
+      }
+    },
+    {
+      "gate": "G5",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Verified engineering and export evidence are not available."
+      }
+    },
+    {
+      "gate": "G6",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Verified engineering and export evidence are not available."
+      }
+    },
+    {
+      "gate": "G7",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Verified engineering and export evidence are not available."
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": 1,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 2,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 3,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 4,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 5,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 6,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 7,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 8,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 9,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "id": 10,
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    }
+  ],
+  "readiness": [
+    {
+      "check": "stagingDeployment",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "appCheck",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "iam",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "budgetMonitoring",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "backupRestore",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "retention",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "engineeringVerification",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "revitImport",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "uat",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "rollback",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    },
+    {
+      "check": "dataPrivacy",
+      "result": {
+        "status": "NOT_CHECKED",
+        "evidenceRefs": [],
+        "verifiedBy": null,
+        "verifiedAt": null,
+        "note": "Awaiting operator or independent reviewer evidence."
+      }
+    }
+  ],
+  "defects": [
+    {
+      "id": "M9-ENG-01",
+      "severity": "high",
+      "status": "open",
+      "owner": null,
+      "evidenceRefs": [
+        "docs/M8_HANDOFF.md"
+      ]
+    },
+    {
+      "id": "M9-EXPORT-01",
+      "severity": "high",
+      "status": "open",
+      "owner": null,
+      "evidenceRefs": [
+        "services/export-worker/README.md"
+      ]
+    }
+  ],
+  "productionDeploymentAuthorized": false
+}

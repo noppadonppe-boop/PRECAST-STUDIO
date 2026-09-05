@@ -3,6 +3,7 @@ import { FieldValue, Timestamp, type Firestore, type Transaction } from 'firebas
 import { can, type ArtifactType, type ArtifactUpstreamRefs, type PermissionContext, type ProductModelPayload, type ProjectRole } from '@precast/domain';
 import { designBasisPayloadSchema, designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, priceBookSchema, productModelPayloadSchema, releasePackagePayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProductModelRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
 import { AuthorizationError, authorizeApproval } from './authorization';
+import { invalidateDownstream } from './invalidation';
 
 const artifactCollections: Record<ArtifactType, string> = {
   sourceRevision: 'sourceRevisions',
@@ -478,6 +479,7 @@ export async function freezeSourceRevision(db: Firestore, actorUid: string, comm
     tx.update(sourceRef, { status: 'accepted', locked: true, frozenBy: actorUid, frozenAt: now });
     tx.update(projectRef, {
       currentSourceRevisionId: command.sourceRevisionId,
+      ...invalidateDownstream(0, 'Accepted Source Revision changed; regenerate dependent evidence.'),
       currentStage: 'designBasis',
       'gateStates.G0': 'approved',
       'gateStates.G1': 'inProgress',
@@ -538,6 +540,7 @@ export async function createDesignBasisRevision(db: Firestore, actorUid: string,
     if (previousRef !== undefined) tx.update(previousRef, { status: 'superseded', isCurrentRevision: false, supersededBy: command.designBasisId, supersededAt: now });
     tx.update(projectRef, {
       currentDesignBasisVersionId: command.designBasisId,
+      ...invalidateDownstream(1, 'Design Basis revision changed; regenerate dependent evidence.'),
       currentStage: 'designBasis',
       'gateStates.G1': 'inProgress',
       updatedAt: now,
@@ -595,7 +598,7 @@ export async function createProductModelRevision(db: Firestore, actorUid: string
     const auditRef = db.doc(`${root}/auditEvents/${command.idempotencyKey}`);
     tx.create(modelRef, { id: command.modelVersionId, revision: command.revision, status: 'draft', locked: false, createdBy: actorUid, isCurrentRevision: true, upstreamRefs: input.upstreamRefs, payload, blockingConditions: [], draftHash, ...(command.supersedesId === undefined ? {} : { supersedesId: command.supersedesId }), createdAt: now, updatedAt: now, updatedBy: actorUid });
     if (previousRef !== undefined) tx.update(previousRef, { status: 'superseded', isCurrentRevision: false, supersededBy: command.modelVersionId, supersededAt: now });
-    tx.update(projectRef, { currentModelVersionId: command.modelVersionId, currentStage: 'panelization', 'gateStates.G2': 'inProgress', updatedAt: now, updatedBy: actorUid, ...(command.supersedesId === undefined ? {} : { downstreamState: 'outOfDate' }) });
+    tx.update(projectRef, { currentModelVersionId: command.modelVersionId, ...invalidateDownstream(2, 'Product Model revision changed; regenerate dependent evidence.'), currentStage: 'panelization', 'gateStates.G2': 'inProgress', updatedAt: now, updatedBy: actorUid });
     tx.create(auditRef, { id: command.idempotencyKey, orgId: command.orgId, projectId: command.projectId, artifactType: 'productModel', artifactId: command.modelVersionId, artifactRevision: command.revision, action: command.supersedesId === undefined ? 'create' : 'supersede', stateBefore: command.supersedesId === undefined ? 'none' : 'approved', stateAfter: 'draft', actorUid, effectiveRoles: context.roles, delegatedCapabilities: context.capabilities, occurredAt: now, requestId: command.idempotencyKey, idempotencyKey: command.idempotencyKey, snapshotHash: draftHash });
     tx.create(receiptRef, { idempotencyKey: command.idempotencyKey, commandName: 'createProductModelRevision', actorUid, resourceId: command.modelVersionId, resultState: 'draft', auditEventId: command.idempotencyKey, createdAt: now });
     return { resourceId: command.modelVersionId, state: 'draft', auditEventId: command.idempotencyKey, replayed: false };

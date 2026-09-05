@@ -1,4 +1,7 @@
 import { getApp, getApps, initializeApp } from 'firebase/app';
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from 'firebase/app-check';
+import { resolveClientEnvironment } from '@precast/domain';
+import stagingTarget from '../../../../firebase/staging-target.json';
 import { connectAuthEmulator, getAuth } from 'firebase/auth';
 import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
@@ -11,7 +14,8 @@ function environmentString(name: string, fallback: string): string {
   return typeof value === 'string' && value.length > 0 ? value : fallback;
 }
 
-export const dataMode = environmentString('VITE_DATA_MODE', 'fixture') === 'emulator' ? 'emulator' : 'fixture';
+export const clientEnvironment = resolveClientEnvironment(environment, stagingTarget.projectId);
+export const dataMode = clientEnvironment.mode;
 
 export const localIdentity = {
   email: environmentString('VITE_EMULATOR_USER_EMAIL', 'checker@precast.local'),
@@ -29,13 +33,8 @@ export const localEmulatorIdentities = {
   production: { email: 'production@precast.local', password: 'local-emulator-only', orgId: localIdentity.orgId },
 } as const;
 
-const app = getApps().length > 0 ? getApp() : initializeApp({
-  apiKey: environmentString('VITE_FIREBASE_API_KEY', 'demo-api-key'),
-  authDomain: environmentString('VITE_FIREBASE_AUTH_DOMAIN', 'demo-precast-m1.firebaseapp.com'),
-  projectId: environmentString('VITE_FIREBASE_PROJECT_ID', 'demo-precast-m1'),
-  storageBucket: environmentString('VITE_FIREBASE_STORAGE_BUCKET', 'demo-precast-m1.appspot.com'),
-  appId: environmentString('VITE_FIREBASE_APP_ID', 'demo-app-id'),
-});
+const app = getApps().length > 0 ? getApp() : initializeApp(clientEnvironment.config);
+if (dataMode === 'staging') initializeAppCheck(app, { provider: new ReCaptchaEnterpriseProvider(clientEnvironment.appCheckSiteKey), isTokenAutoRefreshEnabled: true });
 
 export const firebaseAuth = getAuth(app);
 export const firestore = getFirestore(app);

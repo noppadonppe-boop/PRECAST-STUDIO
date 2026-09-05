@@ -1,6 +1,6 @@
 # Precast Engineering Web App
 
-M8 controlled issue and Production Release controls for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, malware-scanner service, general FEM solver, authoritative design result, issued engineering document, live export worker, or Native Revit integration.
+M9 Staging preparation and technical rehearsal for a multi-organization precast engineering workflow. The local fixture/emulator remains the tested workflow baseline. Staging configuration and sign-in/membership smoke controls are implemented; real staging deployment, Pilot G0–G7 and Revit/UAT evidence are pending. There is no Production binding, authoritative design result, issued engineering document, live export worker or Native Revit integration.
 
 ## Source of truth
 
@@ -92,4 +92,6 @@ pnpm test:e2e
 pnpm build
 ```
 
-See the [M8 completion and M9 handoff](docs/M8_HANDOFF.md) before extending the application. Earlier handoffs remain as historical context.
+See the [M9 progress handoff](docs/M9_HANDOFF.md) and [Staging operator runbook](docs/M9_STAGING_RUNBOOK.md). Earlier handoffs remain as historical context.
+
+M9 tools: `pnpm staging:preflight` validates the explicitly reviewed target and local Web config; `pnpm pilot:readiness` reports missing pilot evidence. Neither deploys resources nor grants production authority. In `VITE_DATA_MODE=staging`, the app mounts the real sign-in/membership rehearsal screen; the full fixture workflow is not mounted against Staging.

@@ -5,6 +5,9 @@ const projectId = 'demo-precast-m1';
 process.env.FIREBASE_AUTH_EMULATOR_HOST ||= '127.0.0.1:9099';
 process.env.FIRESTORE_EMULATOR_HOST ||= '127.0.0.1:8080';
 if (!projectId.startsWith('demo-') || !process.env.FIREBASE_AUTH_EMULATOR_HOST || !process.env.FIRESTORE_EMULATOR_HOST) throw new Error('Refusing to seed outside local emulators.');
+for (const host of [process.env.FIREBASE_AUTH_EMULATOR_HOST, process.env.FIRESTORE_EMULATOR_HOST]) {
+  if (!/^(127\.0\.0\.1|localhost):\d{2,5}$/.test(host)) throw new Error('Fixture seeding requires loopback emulator hosts.');
+}
 
 const requireFromFunctions = createRequire(new URL('../apps/functions/package.json', import.meta.url));
 const { initializeApp, deleteApp } = requireFromFunctions('firebase-admin/app');
