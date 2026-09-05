@@ -2,13 +2,14 @@ import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, EmptyState, StatusBadge, Surface } from '@precast/ui';
 import { gateLabels, gates, type Gate, type PermissionContext } from '@precast/domain';
-import { activeOrganization, projects } from '../fixtures/workspace';
+import { useProjectDirectory } from '../data/useProjectDirectory';
 import { useAuth } from '../auth/AuthContext';
 import {
   cancelAnalysisRun, createDesignCheckRevision, createDocumentationSetRevision, createEstimateRevision, createReleasePackageRevision, freezeSourceRevision, queueAnalysisRun, releaseProductionPackage, saveLoadModelDraft, saveProductModelDraft, submitAnalysis, submitCalculation, submitDesignBasis, submitDocumentationSet, submitEstimate, submitProductModel, submitReleasePackage, submitSourceRevision, uploadSourceFile, validateSourceFile,
   watchAnalysisRun, watchCalculation, watchDesignBasis, watchDocumentationSet, watchEstimate, watchLoadModel, watchProductModel, watchReleasePackage, watchSourceRevision, type AnalysisRunState, type CalculationState, type DesignBasisState, type DocumentationSetState, type EstimateState, type LoadModelState, type ProductModelState, type ReleasePackageState, type SourceRevisionState,
 } from '../data/workflowRepository';
 import { Can } from '../permissions/guards';
+import { ProductModelWorkspace } from '../components/ProductModelWorkspace';
 import { confirmModelLoadPaths, mergePanels, splitPanel } from '../data/panelization';
 
 const stageDescriptions: Record<Gate, string> = {
@@ -28,6 +29,7 @@ function tone(status: string) {
 
 export function StageWorkspace() {
   const { projectId, gateId } = useParams();
+  const { projects, loading: projectLoading, error: projectError } = useProjectDirectory();
   const { mode, organizationMembership, projectMemberships, user } = useAuth();
   const [designBasis, setDesignBasis] = useState<DesignBasisState | null>(null);
   const [source, setSource] = useState<SourceRevisionState | null>(null);
@@ -106,7 +108,7 @@ export function StageWorkspace() {
     finally { setSaving(false); }
   }
 
-  if (project === undefined || gate === undefined) return null;
+  if (project === undefined || gate === undefined) return <EmptyState icon={projectLoading ? '…' : '!'} title={projectLoading ? 'กำลังโหลดโครงการ' : 'ไม่พบขั้นตอนหรือโครงการที่เข้าถึงได้'} detail={projectError || 'ตรวจรายการโครงการและสิทธิ์ปัจจุบันก่อนดำเนินการ'} />;
   const validation = source?.validation;
   const isPm = membership?.roles.includes('projectManager') === true;
   const canEditModel = productModel?.status === 'draft' && productModel.createdBy === user.uid && membership?.roles.includes('structuralEngineer') === true;
@@ -170,7 +172,7 @@ export function StageWorkspace() {
   }
 
   return <>
-    <div className="project-heading"><div><Link to={`/org/${activeOrganization.id}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gate === 'G0' ? 'BIM source intake' : gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>{gate === 'G7' ? 'M8 release controls' : gate === 'G6' ? 'M7 documentation controls' : gate === 'G5' ? 'M6 estimating controls' : gate === 'G3' ? 'M5 G3 verification' : gate === 'G4' ? 'M5 design checks' : gate === 'G2' ? 'M3 controlled workflow' : gate === 'G0' || gate === 'G1' ? 'M2 controlled workflow' : 'Read-only scaffold'}</StatusBadge></div>
+    <div className="project-heading"><div><Link to={`/org/${organizationMembership.orgId}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gate === 'G0' ? 'BIM source intake' : gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>ขั้นตอน {gate} · Local Emulator</StatusBadge></div>
     <Surface className="revision-context" ariaLabel="Current revision context"><div><small>SOURCE</small><strong>{source?.revision ?? project.sourceRevision}</strong><span>{source?.locked ? 'Accepted & locked' : 'Controlled reference'}</span></div><i>→</i><div><small>DESIGN BASIS</small><strong>{designBasis?.revision ?? project.designBasisRevision}</strong><span>{designBasis?.locked ? 'Approved & locked' : 'Project context'}</span></div><i>→</i><div><small>MODEL</small><strong>{productModel?.revision ?? project.modelRevision}</strong><span>{productModel?.locked ? 'Approved & locked' : 'Version reference'}</span></div><i>→</i><div><small>ANALYSIS / CALC</small><strong>{analysisRun?.revision ?? project.analysisRevision} / {calculation?.revision ?? '—'}</strong><span>{calculation?.payload.overallStatus ?? analysisRun?.status ?? 'NOT CHECKED'}</span></div>{(gate === 'G6' || gate === 'G7') && <><i>→</i><div><small>DRAWING SET</small><strong>{documentationSet?.revision ?? '—'}</strong><span>{documentationSet?.documentationState ?? 'Not generated'}</span></div></>}{gate === 'G7' && <><i>→</i><div><small>RELEASE</small><strong>{releasePackage?.revision ?? '—'}</strong><span>{releasePackage?.releaseState ?? 'Not composed'}</span></div></>}</Surface>
     {notice !== '' && <div className={`toast ${error ? 'toast--error' : ''}`} role="status">{notice}</div>}
 
@@ -197,13 +199,7 @@ export function StageWorkspace() {
 
     {gate === 'G2' && mode === 'emulator' && productModel !== null && permissionContext !== null && <Surface className="m2-workspace m3-workspace">
       <div className="section-heading"><div><p className="eyebrow">DETERMINISTIC PRODUCT / ANALYTICAL MODEL</p><h2>{productModel.revision}</h2><p>Engineer-controlled segmentation with traceable openings, joints, lifting anchors, scenario supports and load paths. This is model preparation only—no solver result is claimed.</p></div><StatusBadge tone={tone(productModel.status)}>{productModel.status}{productModel.locked ? ' · locked' : ''}</StatusBadge></div>
-      <div className="model-layout">
-        <div className="panel-canvas" aria-label="Panel model preview">
-          {productModel.payload.panels.map((panel, index) => <button type="button" aria-pressed={selectedPanelIds.includes(panel.id)} onClick={() => togglePanel(panel.id)} className={`panel-shape panel-shape--${index + 1} ${selectedPanelIds.includes(panel.id) ? 'panel-shape--selected' : ''}`} key={panel.id}><strong>{panel.mark}</strong><span>{panel.geometry.widthM} × {panel.geometry.heightM} × {panel.geometry.thicknessM} m</span>{panel.openings.map((opening) => <i key={opening.id} title={opening.id} />)}</button>)}
-          <div className="axis-indicator"><b>Z</b><span>Y</span><i>X</i></div>
-        </div>
-        <dl className="model-register"><div><dt>Coordinate / units</dt><dd>{productModel.payload.coordinateSystem} · {productModel.payload.units}</dd></div><div><dt>Panels / openings</dt><dd>{productModel.payload.panels.length} / {productModel.payload.panels.reduce((sum, panel) => sum + panel.openings.length, 0)}</dd></div><div><dt>Joints / anchors</dt><dd>{productModel.payload.joints.length} / {productModel.payload.anchors.length}</dd></div><div><dt>Supports</dt><dd>{productModel.payload.supports.length} across {productModel.payload.stages.length} stages</dd></div><div><dt>Load cases / combinations</dt><dd>{productModel.payload.loadCases.length} / {productModel.payload.loadCombinations.length}</dd></div><div><dt>Total weight</dt><dd>{productModel.payload.panels.reduce((sum, panel) => sum + panel.weightKn, 0).toFixed(1)} kN</dd></div></dl>
-      </div>
+      <ProductModelWorkspace model={productModel.payload} selectedIds={selectedPanelIds} onSelect={togglePanel} />
       <div className="validation-grid">{Object.entries(productModel.payload.validation).map(([key, value]) => <div key={key}><b>{value === 0 ? '✓' : '!'}</b><span>{key.replace(/([A-Z])/g, ' $1')}: {value}</span></div>)}<div><b>{productModel.payload.joints.every((joint) => joint.loadPathConfirmed) ? '✓' : '!'}</b><span>Joint load paths confirmed</span></div></div>
       <div className="scenario-chips">{productModel.payload.stages.map((stage) => <span key={stage}>✓ {stage}</span>)}</div>
       <div className="panel-toolbar" aria-label="Panelization tools"><strong>Engineer tools</strong><span>{selectedPanelIds.length} selected</span><Button variant="secondary" type="button" disabled={saving || !canEditModel || selectedPanelIds.length !== 1} onClick={splitSelectedModel}>Split panel</Button><Button variant="secondary" type="button" disabled={saving || !canEditModel || selectedPanelIds.length !== 2} onClick={mergeSelectedModel}>Merge panels</Button><Button variant="secondary" type="button" disabled={saving || !canEditModel || (productModel.payload.validation.missingLoadPaths === 0 && productModel.payload.joints.every((joint) => joint.loadPathConfirmed))} onClick={() => saveModel(confirmModelLoadPaths(productModel.payload), 'Connectivity and load paths confirmed by the model author.')}>Confirm load paths</Button></div>
@@ -281,6 +277,6 @@ export function StageWorkspace() {
       <div className="m2-actions"><Can action="create" resource="releasePackage" context={permissionContext}><Button type="button" disabled={saving || releasePackage !== null || documentationSet?.status !== 'approved' || !documentationSet.locked || documentationSet.snapshotHash === undefined || documentationSet.payload.preflight.overallStatus !== 'PASS' || documentationSet.blockingConditions.length > 0} onClick={generateReleasePackage}>Compose immutable Release Package</Button></Can>{releasePackage !== null && <Button type="button" disabled={saving || releasePackage.status !== 'draft'} onClick={() => void run(() => submitReleasePackage({ orgId: organizationMembership.orgId, projectId: project.id, releasePackage, assignedTo: 'checker-narin' }), `${releasePackage.revision} submitted for independent technical approval.`)}>Submit for technical approval</Button>}{releasePackage !== null && <Can action="release" resource="releasePackage" context={permissionContext}><Button type="button" disabled={saving || releasePackage.status !== 'approved' || releasePackage.snapshotHash === undefined} onClick={() => void run(() => releaseProductionPackage({ orgId: organizationMembership.orgId, projectId: project.id, releasePackage, recipient: 'Rama IX Precast Factory', productionQueue: 'QUEUE-RAMA9' }), `${releasePackage.revision} released immutably to production.`)}>Release to Production</Button></Can>}<span className="design-boundary">Technical approval and Production Release require distinct actors; released packages cannot be overwritten.</span></div>
     </Surface>}
 
-    <Surface className="stage-placeholder"><EmptyState icon={gate} title={`${gate} evidence and controls`} detail={stageDescriptions[gate]} /><div className="stage-link-row">{gates.map((item) => <Link className={item === gate ? 'active' : ''} key={item} to={`/org/${activeOrganization.id}/projects/${project.id}/stages/${item.toLowerCase()}`}>{item}</Link>)}</div></Surface>
+    <Surface className="stage-placeholder"><EmptyState icon={gate} title={`${gate} evidence and controls`} detail={stageDescriptions[gate]} /><div className="stage-link-row">{gates.map((item) => <Link className={item === gate ? 'active' : ''} key={item} to={`/org/${organizationMembership.orgId}/projects/${project.id}/stages/${item.toLowerCase()}`}>{item}</Link>)}</div></Surface>
   </>;
 }

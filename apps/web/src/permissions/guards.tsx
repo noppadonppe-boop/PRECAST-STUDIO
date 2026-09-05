@@ -12,7 +12,8 @@ export function RequireOrganizationMembership({ children }: PropsWithChildren) {
 
 export function RequireProjectMembership({ children }: PropsWithChildren) {
   const { orgId, projectId } = useParams();
-  const { projectMemberships } = useAuth();
+  const { projectMemberships, mode } = useAuth();
+  if (mode === 'shared' && orgId === 'precast-studio') return children;
   const membership = projectMemberships.find((item) => item.orgId === orgId && item.projectId === projectId);
   const active = membership?.status === 'active' && (membership.expiresAt === undefined || new Date(membership.expiresAt) > new Date());
   return active ? children : <Navigate to="/forbidden" replace />;

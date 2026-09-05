@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Button, StatusBadge, Surface } from '@precast/ui';
 import type { ApprovalRequest, PermissionContext } from '@precast/domain';
-import { approvalRequests as initialRequests, projects } from '../fixtures/workspace';
+import { approvalRequests as initialRequests } from '../fixtures/workspace';
+import { useProjectDirectory } from '../data/useProjectDirectory';
 import { Can } from '../permissions/guards';
 import { Icon } from '../components/Icon';
 import { useAuth } from '../auth/AuthContext';
@@ -14,14 +15,16 @@ const artifactLabels = {
 
 export function ApprovalInbox() {
   const { user, mode, organizationMembership, projectMemberships, accessRevision } = useAuth();
+  const { projects } = useProjectDirectory();
+  const [search, setSearch] = useState('');
+  const [blockerFilter, setBlockerFilter] = useState('all');
   const [requests, setRequests] = useState(mode === 'fixture' ? initialRequests : []);
   const [selected, setSelected] = useState<ApprovalRequest | null>(null);
   const [acknowledged, setAcknowledged] = useState(false);
   const [decisionComment, setDecisionComment] = useState('');
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
-  const open = requests.filter((request) => request.status === 'open');
-  const decided = requests.filter((request) => request.status === 'approved');
+  const open = requests.filter((request) => request.status === 'open' && `${request.artifactRevision} ${request.requestedBy} ${projects.find((item) => item.id === request.projectId)?.name ?? request.projectId}`.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()) && (blockerFilter === 'all' || (blockerFilter === 'blocked' ? request.blockingConditions.length > 0 : request.blockingConditions.length === 0)));
   const project = selected === null ? undefined : projects.find((item) => item.id === selected.projectId);
   const permissionContext = useMemo<PermissionContext | null>(() => {
     if (selected === null) return null;
@@ -86,12 +89,12 @@ export function ApprovalInbox() {
 
   return (
     <>
-      <div className="page-heading page-heading--action"><div><p className="eyebrow">MY WORK · IMMUTABLE REVIEW SNAPSHOTS</p><h1>Approval inbox</h1><p>Review requests assigned to your active project roles.</p></div><Button variant="secondary" type="button">Filter queue</Button></div>
+      <div className="page-heading page-heading--action"><div><p className="eyebrow">MY WORK · REVIEW SNAPSHOTS</p><h1>งานรอตรวจและอนุมัติ</h1><p>ตรวจรายการที่มอบหมายให้คุณ พร้อม Revision และเงื่อนไขที่ต้องแก้ไข</p></div></div>
       {notice !== '' && <div className="toast" role="status">✓ {notice}</div>}
 
-      <div className="inbox-tabs" role="tablist" aria-label="Approval groups"><button className="active" role="tab" aria-selected="true">Needs my action <span>{open.length}</span></button><button role="tab" aria-selected="false">Submitted by me</button><button role="tab" aria-selected="false">Returned</button><button role="tab" aria-selected="false">Recently decided <span>{decided.length}</span></button></div>
+      <div className="register-toolbar"><div><h2>รายการที่ยังรอดำเนินการ · {open.length}</h2><p>ประวัติการตัดสินใจดูได้ที่เมนูประวัติการดำเนินงาน</p></div><div className="toolbar-controls"><label className="search-field"><input aria-label="ค้นหางานรอตรวจ" placeholder="ค้นหาโครงการหรือ Revision" value={search} onChange={(event) => setSearch(event.target.value)} /></label><select aria-label="กรองเงื่อนไขการตรวจ" value={blockerFilter} onChange={(event) => setBlockerFilter(event.target.value)}><option value="all">ทุกเงื่อนไข</option><option value="blocked">มีข้อขัดข้อง</option><option value="ready">ไม่มีข้อขัดข้องที่ระบุ</option></select></div></div>
       <Surface className="approval-list">
-        <div className="approval-list__header"><span>Request</span><span>Gate / state</span><span>Due</span><span /></div>
+        <div className="approval-list__header"><span>รายการขอตรวจ</span><span>Gate / สถานะ</span><span>กำหนดส่ง</span><span /></div>
         {open.map((request) => {
           const requestProject = projects.find((item) => item.id === request.projectId);
           return <button type="button" className="approval-row" key={request.id} onClick={() => openSnapshot(request)}>

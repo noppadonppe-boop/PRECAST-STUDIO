@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 const vite = spawn(process.execPath, [resolve('node_modules/vite/bin/vite.js'), '--config', 'apps/web/vite.config.ts', '--host', '127.0.0.1'], {
   cwd: process.cwd(),
-  env: { ...process.env, VITE_DATA_MODE: 'emulator' },
+  env: { ...process.env, VITE_DATA_MODE: 'emulator', VITE_FIREBASE_PROJECT_ID: 'demo-precast-m1' },
   stdio: 'inherit',
 });
 

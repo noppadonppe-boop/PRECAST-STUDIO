@@ -1,22 +1,11 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
-import '@precast/ui/tokens.css';
-import './styles.css';
-import { App } from './app/App';
-import { AuthProvider } from './auth/AuthContext';
-import { dataMode } from './firebase/client';
-import { StagingRehearsal } from './pages/StagingRehearsal';
-
-const root = document.getElementById('root');
-if (root === null) throw new Error('Missing application root.');
-
-createRoot(root).render(
-  <StrictMode>
-    <BrowserRouter>
-      {dataMode === 'staging' ? <StagingRehearsal /> : <AuthProvider>
-        <App />
-      </AuthProvider>}
-    </BrowserRouter>
-  </StrictMode>,
-);
+// Catch module/configuration failures before React has mounted its error boundary.
+void import('./bootstrap').catch((reason: unknown) => {
+  const root = document.getElementById('root');
+  if (!root) return;
+  const main = document.createElement('main');
+  main.className = 'standalone-state'; main.setAttribute('role', 'alert');
+  const heading = document.createElement('h1'); heading.textContent = 'เริ่มต้น Precast Studio ไม่สำเร็จ';
+  const detail = document.createElement('p'); detail.textContent = reason instanceof Error ? reason.message : 'กรุณาตรวจการตั้งค่า Firebase และการเชื่อมต่อ';
+  const retry = document.createElement('button'); retry.textContent = 'ลองใหม่'; retry.onclick = () => window.location.reload();
+  main.append(heading, detail, retry); root.replaceChildren(main);
+});

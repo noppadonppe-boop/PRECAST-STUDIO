@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function categoryAllowed(category) {
+      return category in ['projects', 'intake', 'criteria', 'panel', 'loads', 'analysis', 'design', 'cost', 'report', 'shop', 'release', 'review', 'team', 'audit', 'libraries', 'settings'];
+    }
+    match /precast-studio/root {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.schemaVersion == 1;
+      match /{category}/{recordId} {
+        allow read: if signedIn() && categoryAllowed(category);
+        allow create: if signedIn() && categoryAllowed(category)
+          && request.resource.data.keys().hasAll(['data', 'revision', 'updatedAt', 'updatedBy'])
+          && request.resource.data.revision == 1
+          && request.resource.data.updatedBy == request.auth.uid;
+        allow update: if signedIn() && categoryAllowed(category) && category != 'audit'
+          && request.resource.data.keys().hasAll(['data', 'revision', 'updatedAt', 'updatedBy'])
+          && request.resource.data.revision == resource.data.revision + 1
+          && request.resource.data.updatedBy == request.auth.uid;
+      }
+    }
+  }
+}

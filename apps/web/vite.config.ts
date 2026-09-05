@@ -6,10 +6,12 @@ import stagingTarget from '../../firebase/staging-target.json';
 
 export default defineConfig(({ mode }) => {
   const envDir = resolve(import.meta.dirname, '../..');
-  resolveClientEnvironment({ ...loadEnv(mode, envDir, 'VITE_'), ...process.env }, stagingTarget.projectId);
+  const testEnv = mode === 'test' ? { VITE_DATA_MODE: 'fixture', VITE_FIREBASE_PROJECT_ID: 'demo-precast-m1' } : {};
+  resolveClientEnvironment({ ...loadEnv(mode, envDir, 'VITE_'), ...process.env, ...testEnv }, stagingTarget.projectId);
   return {
     root: import.meta.dirname,
     envDir,
+    define: mode === 'test' ? { 'import.meta.env.VITE_DATA_MODE': JSON.stringify('fixture'), 'import.meta.env.VITE_FIREBASE_PROJECT_ID': JSON.stringify('demo-precast-m1') } : {},
     plugins: [react()],
     server: { port: 5173 },
     test: {

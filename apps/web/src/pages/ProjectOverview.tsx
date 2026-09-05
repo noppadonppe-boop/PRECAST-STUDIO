@@ -1,40 +1,28 @@
 import { Link, useParams } from 'react-router-dom';
-import { Button, StatusBadge, Surface } from '@precast/ui';
-import { gateLabels, gates } from '@precast/domain';
-import { activeOrganization, deterministicMockAnalysis, projects } from '../fixtures/workspace';
-import { Icon } from '../components/Icon';
+import { EmptyState, StatusBadge, Surface } from '@precast/ui';
+import { useAuth } from '../auth/AuthContext';
+import { useProjectDirectory } from '../data/useProjectDirectory';
+import { gateText, gateTone, stageFor, stageHref, studioStages } from '../data/studioNavigation';
 
 export function ProjectOverview() {
   const { projectId } = useParams();
+  const { organizationMembership } = useAuth();
+  const { projects, loading, error, mode } = useProjectDirectory();
   const project = projects.find((item) => item.id === projectId);
-  if (project === undefined) return null;
-
-  return (
-    <>
-      <div className="project-heading"><div><Link to={`/org/${activeOrganization.id}/projects`}>← Portfolio</Link><p className="eyebrow">{project.code} · {project.family}</p><h1>{project.name}</h1></div><div><StatusBadge tone={project.gateState === 'needsAttention' ? 'warning' : project.gateState === 'approved' ? 'success' : 'info'}>{project.gate} · {project.stage}</StatusBadge><Button type="button">Open current stage</Button></div></div>
-      <Surface className="revision-context" ariaLabel="Current revision context">
-        <div><small>SOURCE</small><strong>{project.sourceRevision}</strong><span>Accepted reference</span></div><i>→</i>
-        <div><small>DESIGN BASIS</small><strong>{project.designBasisRevision}</strong><span>{project.gate === 'G1' ? 'Ready for review' : 'Approved & locked'}</span></div><i>→</i>
-        <div><small>PRODUCT MODEL</small><strong>{project.modelRevision}</strong><span>Current snapshot</span></div><i>→</i>
-        <div><small>ANALYSIS</small><strong>{project.analysisRevision}</strong><span>Controlled evidence</span></div>
-      </Surface>
-
-      <div className="project-layout">
-        <Surface className="stage-rail">
-          <div><h2>Gate workflow</h2><p>G0–G7 approved baseline</p></div>
-          <ol>{gates.map((gate, index) => {
-            const currentIndex = gates.indexOf(project.gate);
-            const state = index < currentIndex ? 'complete' : index === currentIndex ? 'current' : 'future';
-            return <li key={gate} className={`stage-${state}`}><Link to={`/org/${activeOrganization.id}/projects/${project.id}/stages/${gate.toLowerCase()}`}><span>{state === 'complete' ? '✓' : gate}</span><div><strong>{gateLabels[gate]}</strong><small>{state === 'complete' ? 'Gate passed' : state === 'current' ? project.gateState.replace(/([A-Z])/g, ' $1') : 'Not started'}</small></div></Link></li>;
-          })}</ol>
-        </Surface>
-
-        <div className="project-main-column">
-          <div className="project-kpis"><Surface><small>CURRENT GATE</small><strong>{project.gate}</strong><span>{gateLabels[project.gate]}</span></Surface><Surface><small>CRITICAL ISSUES</small><strong>{project.issues}</strong><span>{project.issues > 0 ? 'Review required' : 'No blockers recorded'}</span></Surface><Surface><small>DUE DATE</small><strong>{project.due}</strong><span>Project milestone</span></Surface></div>
-          <Surface className="current-work"><div className="section-heading"><div><p className="eyebrow">CURRENT WORK</p><h2>{project.stage}</h2></div><StatusBadge tone={project.gateState === 'needsAttention' ? 'warning' : 'info'}>{project.gateState.replace(/([A-Z])/g, ' $1')}</StatusBadge></div><p>The workspace keeps current source, Design Basis, model and analysis revisions visible before any review action.</p><div className="work-checks"><span><b>✓</b> Organization membership active</span><span><b>✓</b> Project role resolved from fixture</span><span><b>✓</b> Immutable upstream references visible</span><span className={project.issues > 0 ? 'warning-text' : ''}><b>{project.issues > 0 ? '!' : '✓'}</b> {project.issues} critical issues</span></div><Button type="button">Continue {project.stage}</Button></Surface>
-          <Surface className="mock-analysis"><div><span className="mock-analysis__icon"><Icon name="cube" /></span><div><p className="eyebrow">M5 ENGINEERING BOUNDARY</p><h2>Controlled analysis and Design Check evidence</h2></div></div><StatusBadge tone="warning">{deterministicMockAnalysis.status}</StatusBadge><p>G3 benchmark verification does not constitute a passing project design. G4 remains blocked while required methods are NOT CHECKED. {deterministicMockAnalysis.disclaimer}</p><dl><div><dt>Fixture engine</dt><dd>{deterministicMockAnalysis.engine}</dd></div><div><dt>Schema</dt><dd>{deterministicMockAnalysis.schemaVersion}</dd></div><div><dt>Input hash</dt><dd>{deterministicMockAnalysis.inputHash.slice(0, 24)}…</dd></div><div><dt>Output hash</dt><dd>{deterministicMockAnalysis.outputHash.slice(0, 24)}…</dd></div></dl></Surface>
-        </div>
-      </div>
-    </>
-  );
+  const base = `/org/${organizationMembership.orgId}`;
+  if (loading) return <EmptyState icon="…" title="กำลังโหลดโครงการ" detail="กำลังอ่านสถานะและ Revision ปัจจุบัน" />;
+  if (!project) return <><EmptyState icon="!" title="ไม่พบโครงการที่เข้าถึงได้" detail={error || 'โครงการอาจยังโหลดไม่เสร็จ หรือสิทธิ์มีการเปลี่ยนแปลง'} /><Link to={`${base}/projects`}>กลับไปทุกโครงการ</Link></>;
+  const stage = stageFor(project.gate, null);
+  const projectBase = `${base}/projects/${project.id}`;
+  return <>
+    <div className="project-heading"><div><p className="eyebrow">{project.code} · {project.family}</p><h1>{project.name}</h1><p>ภาพรวมโครงการและขั้นตอนการออกแบบ</p></div><Link className="button button--primary studio-next" to={stageHref(projectBase, stage)}>เปิดขั้นตอนปัจจุบัน →</Link></div>
+    <p className="studio-mode-note">{mode === 'fixture' ? 'ข้อมูลตัวอย่าง · สถานะในหน้านี้ไม่ใช่หลักฐานการอนุมัติจริง' : 'สถานะจากโครงการ · ขั้นตอนที่ไม่มีข้อมูลไม่ถือว่าผ่าน Gate'}</p>
+    <Surface className="studio-revisions" ariaLabel="Current revision context"><span>Source <b>{project.sourceRevision}</b></span><span>Design Basis <b>{project.designBasisRevision}</b></span><span>Model <b>{project.modelRevision}</b></span><span>Analysis <b>{project.analysisRevision}</b></span></Surface>
+    <div className="studio-overview-summary"><Surface><small>ขั้นตอนปัจจุบัน</small><h2>{stage.label}</h2><StatusBadge tone={gateTone[project.gateState]}>{project.gate} · {gateText[project.gateState]}</StatusBadge></Surface><Surface><small>ประเด็นที่ต้องแก้ไข</small><h2>{project.issues ?? 'ยังไม่มีข้อมูล'}</h2><p>ผลออกแบบที่ยังไม่ตรวจยังคงเป็น NOT CHECKED</p></Surface><Surface><small>กำหนดส่ง</small><h2>{project.due}</h2><p>อัปเดต {project.updated}</p></Surface></div>
+    <h2 className="studio-section-title">พื้นที่ออกแบบและเอกสาร</h2>
+    <div className="studio-stage-cards">{studioStages.map((item, index) => {
+      const state = project.gateStates[item.gate];
+      return <Link className="surface studio-stage-card" key={item.id} to={stageHref(projectBase, item)}><span>{String(index + 1).padStart(2, '0')}</span><div><h2>{item.label}</h2><p>{item.title}</p><StatusBadge tone={state ? gateTone[state] : 'neutral'}>{item.gate} · {state ? gateText[state] : 'ยังไม่มีข้อมูลสถานะ'}</StatusBadge></div><b>→</b></Link>;
+    })}</div>
+  </>;
 }

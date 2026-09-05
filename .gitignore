@@ -18,7 +18,7 @@ tmp/
 playwright-report/
 test-results/
 
-# Local configuration and credentials
+# Local configuration and credentials (Firebase client settings live in .env)
 .env
 .env.*
 !.env.example

@@ -21,7 +21,7 @@ export function AuditTimeline() {
   }, [mode, organizationMembership.orgId, projectId]);
 
   return <>
-    <div className="page-heading"><p className="eyebrow">APPEND-ONLY CONTROL RECORD</p><h1>Audit timeline</h1><p>Authoritative transitions with actor, immutable revision and idempotency trace.</p></div>
+    <div className="page-heading"><p className="eyebrow">AUDIT TIMELINE</p><h1>ประวัติการดำเนินงาน</h1><p>ติดตามผู้ดำเนินการ Revision และหลักฐานของแต่ละรายการ{mode === 'fixture' ? ' · ข้อมูลตัวอย่าง' : ''}</p></div>
     {error !== '' && <div className="toast toast--error">{error}</div>}
     <Surface className="audit-timeline">
       {events.map((event) => <article key={event.id}><span className="audit-icon"><Icon name="shield" /></span><div><small>{new Date(event.occurredAt).toLocaleString('th-TH')} · {event.projectId}</small><h2>{event.action.toUpperCase()} {event.artifactType} {event.artifactRevision}</h2><p><b>{event.actorUid}</b> changed <code>{event.stateBefore}</code> → <code>{event.stateAfter}</code></p><details><summary>Technical trace</summary><dl><div><dt>Request</dt><dd>{event.requestId}</dd></div><div><dt>Idempotency</dt><dd>{event.idempotencyKey}</dd></div><div><dt>Snapshot</dt><dd>{event.snapshotHash}</dd></div></dl></details></div><StatusBadge tone="neutral">Immutable</StatusBadge></article>)}
@@ -29,4 +29,3 @@ export function AuditTimeline() {
     </Surface>
   </>;
 }
-
