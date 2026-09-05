@@ -12,6 +12,7 @@
     "@firebase/rules-unit-testing": "^4.0.1",
     "@types/node": "^24.3.0",
     "firebase": "^11.10.0",
+    "firebase-admin": "^13.5.0",
     "vitest": "^3.2.4"
   }
 }

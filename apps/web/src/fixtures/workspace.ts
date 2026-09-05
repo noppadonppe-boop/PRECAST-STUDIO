@@ -80,6 +80,5 @@ export const deterministicMockAnalysis = {
   inputHash: `sha256:${'2d'.repeat(32)}`,
   outputHash: `sha256:${'91'.repeat(32)}`,
   status: 'NOT CHECKED',
-  disclaimer: 'M0 deterministic fixture — not authoritative and not suitable for design or production.',
+  disclaimer: 'M1 retains this deterministic fixture — not authoritative and not suitable for design or production.',
 };
-

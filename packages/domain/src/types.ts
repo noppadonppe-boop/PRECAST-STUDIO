@@ -37,6 +37,17 @@ export type ArtifactType =
   | 'drawingSet'
   | 'releasePackage';
 
+export type ArtifactStatus = 'draft' | 'submitted' | 'approved' | 'returned' | 'superseded';
+
+export interface ArtifactUpstreamRefs {
+  sourceRevisionId?: string;
+  designBasisVersionId?: string;
+  modelVersionId?: string;
+  analysisRunId?: string;
+  drawingSetId?: string;
+  estimateVersionId?: string;
+}
+
 export interface OrganizationMembership {
   uid: string;
   orgId: string;
@@ -86,6 +97,31 @@ export interface ApprovalRequest {
   blockingConditions: string[];
 }
 
+export interface ApprovalSnapshot {
+  id: string;
+  orgId: string;
+  projectId: string;
+  artifactType: ArtifactType;
+  artifactId: string;
+  artifactRevision: string;
+  createdBy: string;
+  snapshotHash: string;
+  upstreamRefs: ArtifactUpstreamRefs;
+  payload: Record<string, unknown>;
+  capturedAt: string;
+  capturedBy: string;
+}
+
+export interface CommandReceipt {
+  idempotencyKey: string;
+  commandName: 'createProject' | 'submitArtifact' | 'approveArtifact' | 'returnArtifact';
+  actorUid: string;
+  resourceId: string;
+  resultState: string;
+  auditEventId: string;
+  createdAt: string;
+}
+
 export interface AuditEvent {
   id: string;
   orgId: string;
@@ -105,4 +141,3 @@ export interface AuditEvent {
   snapshotHash: string;
   comment?: string;
 }
-

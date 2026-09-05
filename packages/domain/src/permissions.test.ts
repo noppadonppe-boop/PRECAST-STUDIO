@@ -22,5 +22,19 @@ describe('Role Matrix v1 permission evaluator', () => {
   it('denies expired membership', () => {
     expect(can('view', 'project', { ...checker, expiresAt: '2020-01-01T00:00:00.000Z' }).allowed).toBe(false);
   });
-});
 
+  it.each([
+    ['projectManager', 'create', 'project', true],
+    ['bimCoordinator', 'submit', 'sourceRevision', true],
+    ['structuralEngineer', 'submit', 'designBasis', true],
+    ['engineeringChecker', 'approve', 'analysis', true],
+    ['costEstimator', 'submit', 'estimate', true],
+    ['detailer', 'submit', 'drawingSet', true],
+    ['productionManager', 'release', 'releasePackage', true],
+    ['commercialApprover', 'approve', 'estimate', true],
+    ['siteQa', 'comment', 'releasePackage', true],
+    ['externalReviewer', 'view', 'calculation', true],
+  ] as const)('provides an explicit decision for %s', (role, action, resource, expected) => {
+    expect(can(action, resource, { ...checker, roles: [role], capabilities: role === 'productionManager' ? ['productionRelease'] : [] }).allowed).toBe(expected);
+  });
+});

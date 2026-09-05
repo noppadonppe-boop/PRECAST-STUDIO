@@ -8,16 +8,21 @@
   },
   "scripts": {
     "dev": "vite --config apps/web/vite.config.ts",
+    "emulators": "pnpm build:functions && node tools/start-local-emulators.mjs",
+    "emulators:seed": "node tools/seed-emulators.mjs",
+    "build:functions": "pnpm --filter @precast/functions build",
     "lint": "eslint apps packages firebase/tests/src --max-warnings 0",
     "typecheck": "tsc --noEmit -p packages/domain/tsconfig.json && tsc --noEmit -p packages/schemas/tsconfig.json && tsc --noEmit -p packages/ui/tsconfig.json && tsc --noEmit -p apps/functions/tsconfig.json && tsc --noEmit -p firebase/tests/tsconfig.json && tsc --noEmit -p apps/web/tsconfig.json",
     "test:unit": "vitest run packages/domain/src packages/schemas/src apps/functions/src && vitest run --config apps/web/vite.config.ts",
     "test:emulator": "node tools/run-firebase-emulator-tests.mjs",
+    "test:e2e": "pnpm build:functions && node tools/run-playwright-emulator-tests.mjs",
     "test": "pnpm test:unit && pnpm test:emulator",
-    "build": "tsc -p packages/domain/tsconfig.build.json && tsc -p packages/schemas/tsconfig.build.json && tsc -p packages/ui/tsconfig.build.json && tsc -p apps/functions/tsconfig.build.json && vite build --config apps/web/vite.config.ts",
+    "build": "tsc -p packages/domain/tsconfig.build.json && tsc -p packages/schemas/tsconfig.build.json && tsc -p packages/ui/tsconfig.build.json && pnpm build:functions && vite build --config apps/web/vite.config.ts",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
   },
   "devDependencies": {
     "@eslint/js": "^9.35.0",
+    "@playwright/test": "1.55.0",
     "eslint": "^9.35.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "firebase-tools": "^14.16.0",

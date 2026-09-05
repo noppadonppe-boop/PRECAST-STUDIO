@@ -12,7 +12,7 @@ const organizationLinks = [
 ];
 
 export function AppShell() {
-  const { user } = useAuth();
+  const { user, mode, projectMemberships } = useAuth();
   const { orgId, projectId } = useParams();
   const location = useLocation();
   const currentProject = projects.find((project) => project.id === projectId);
@@ -48,7 +48,7 @@ export function AppShell() {
         </nav>
         <div className="sidebar__footer">
           <NavLink to={`${base}/settings`} className="nav-item"><Icon name="settings" size={19} />Settings</NavLink>
-          <div className="fixture-mode"><span /> Local fixture mode</div>
+          <div className="fixture-mode"><span /> Local {mode} mode</div>
         </div>
       </aside>
 
@@ -61,7 +61,7 @@ export function AppShell() {
             <button className="icon-button has-notification" aria-label="Notifications"><Icon name="bell" /></button>
             <div className="user-menu">
               <span className="avatar">{user.initials}</span>
-              <span><strong>{user.name}</strong><small>Checker · Org Admin</small></span>
+              <span><strong>{user.name}</strong><small>{projectMemberships[0]?.roles.join(' · ') ?? 'Organization member'}</small></span>
               <span aria-hidden="true">⌄</span>
             </div>
           </div>
@@ -71,4 +71,3 @@ export function AppShell() {
     </div>
   );
 }
-

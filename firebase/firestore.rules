@@ -26,6 +26,21 @@ service cloud.firestore {
         && role in get(/databases/$(database)/documents/organizations/$(orgId)/projects/$(projectId)/members/$(request.auth.uid)).data.roles;
     }
 
+    function isExternalReviewer(orgId, projectId) {
+      return hasProjectRole(orgId, projectId, 'externalReviewer');
+    }
+
+    function isInternalProjectMember(orgId, projectId) {
+      return hasActiveProjectMembership(orgId, projectId)
+        && !isExternalReviewer(orgId, projectId);
+    }
+
+    function isSharedIssuedContent(orgId, projectId) {
+      return isExternalReviewer(orgId, projectId)
+        && resource.data.status in ['approved', 'issued']
+        && request.auth.uid in resource.data.sharedWithUids;
+    }
+
     match /organizations/{orgId} {
       allow read: if hasActiveOrgMembership(orgId);
       allow write: if false;
@@ -36,16 +51,16 @@ service cloud.firestore {
       }
 
       match /projects/{projectId} {
-        allow read: if hasActiveProjectMembership(orgId, projectId);
+        allow read: if isInternalProjectMember(orgId, projectId);
         allow write: if false;
 
         match /members/{memberId} {
-          allow read: if hasActiveProjectMembership(orgId, projectId);
+          allow read: if isInternalProjectMember(orgId, projectId);
           allow write: if false;
         }
 
         match /designBasisVersions/{artifactId} {
-          allow read: if hasActiveProjectMembership(orgId, projectId);
+          allow read: if isInternalProjectMember(orgId, projectId);
           allow create: if hasProjectRole(orgId, projectId, 'structuralEngineer')
             && request.resource.data.status == 'draft'
             && request.resource.data.createdBy == request.auth.uid;
@@ -58,22 +73,29 @@ service cloud.firestore {
         }
 
         match /approvalRequests/{requestId} {
-          allow read: if hasActiveProjectMembership(orgId, projectId);
-          allow create: if hasActiveProjectMembership(orgId, projectId)
-            && request.resource.data.requestedBy == request.auth.uid
-            && request.resource.data.status == 'open';
-          // Approval decisions are authoritative server commands only.
-          allow update, delete: if false;
+          allow read: if isInternalProjectMember(orgId, projectId);
+          // Requests and decisions are authoritative server commands only.
+          allow write: if false;
         }
 
         match /auditEvents/{eventId} {
-          allow read: if hasActiveProjectMembership(orgId, projectId);
+          allow read: if isInternalProjectMember(orgId, projectId);
           // Admin SDK command handlers append these after authorization.
           allow write: if false;
         }
 
+        match /calculationReports/{reportId} {
+          allow read: if isInternalProjectMember(orgId, projectId) || isSharedIssuedContent(orgId, projectId);
+          allow write: if false;
+        }
+
+        match /drawingSets/{drawingSetId} {
+          allow read: if isInternalProjectMember(orgId, projectId) || isSharedIssuedContent(orgId, projectId);
+          allow write: if false;
+        }
+
         match /{document=**} {
-          allow read: if hasActiveProjectMembership(orgId, projectId);
+          allow read: if isInternalProjectMember(orgId, projectId);
           allow write: if false;
         }
       }

@@ -1,6 +1,6 @@
 # Precast Engineering Web App
 
-M0 Foundation and Secure Workflow Shell for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, or authoritative engineering result.
+M1 Identity, Persistence and Workflow Primitives for a multi-organization precast engineering workflow. This repository intentionally uses local fixtures and Firebase Emulator Suite only; it contains no production project binding, customer upload, solver license, or authoritative engineering result.
 
 ## Source of truth
 
@@ -26,7 +26,7 @@ pnpm check
 pnpm dev
 ```
 
-Open `http://localhost:5173`. The web app runs in local fixture mode and does not require `.env` values. Copy `.env.example` only when wiring a non-production Firebase development project in a later milestone.
+Open `http://localhost:5173`. The default web app remains a deterministic fixture. To exercise persisted M1 behavior locally, start `pnpm emulators`, run `pnpm emulators:seed` in another terminal, then start `pnpm dev` with `VITE_DATA_MODE=emulator`. No production credential is required.
 
 ## Workspace map
 
@@ -38,17 +38,19 @@ packages/schemas/         Versioned Zod command/calculation contracts
 packages/ui/              Product tokens and shared UI primitives
 firebase/                 Firestore/Storage rules, indexes and emulator configuration
 firebase/tests/           Rules tests for tenant isolation and authoritative transitions
-services/                 Reserved worker boundaries; no real FEM/export worker in M0
+services/                 Reserved worker boundaries; no real FEM/export worker in M1
 knowledge/                Approved product and engineering source of truth
 ```
 
-## Security model in M0
+## Security model in M1
 
 - Deny by default in Firestore and Storage Rules.
 - Organization and project membership are separate and project membership can expire.
 - UI permission checks explain unavailable actions but are never authoritative.
 - Direct client approval/issue/release writes are denied.
-- Functions revalidate runtime schemas and provide a shared server authorization boundary.
+- Submit/approve/return and Type 2 project creation run as idempotent Functions transactions.
+- Functions revalidate active membership, expiry, role/capability, artifact state, snapshot hash, blockers and current upstream revisions.
+- Every successful transition creates exactly one append-only audit event and a command receipt.
 - Artifact creators cannot approve their own Design Basis, analysis, calculation, or drawing revision.
 - The deterministic mock analysis always reports `NOT CHECKED`; it never presents a design `PASS`.
 
@@ -59,8 +61,8 @@ pnpm lint
 pnpm typecheck
 pnpm test:unit
 pnpm test:emulator
+pnpm test:e2e
 pnpm build
 ```
 
-See [M0 limitations and M1 handoff](docs/M0_LIMITATIONS.md) before extending the application.
-
+See the [M1 completion and M2 handoff](docs/M1_HANDOFF.md) before extending the application. The original [M0 handoff](docs/M0_LIMITATIONS.md) remains as historical context.

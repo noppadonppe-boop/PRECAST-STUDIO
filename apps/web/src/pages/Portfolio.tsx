@@ -1,7 +1,10 @@
+import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, StatusBadge, Surface } from '@precast/ui';
 import { activeOrganization, approvalRequests, projects } from '../fixtures/workspace';
 import { Icon } from '../components/Icon';
+import { useAuth } from '../auth/AuthContext';
+import { createType2Project } from '../data/workflowRepository';
 
 const toneByState = {
   approved: 'success', readyForReview: 'info', needsAttention: 'warning', notStarted: 'neutral',
@@ -14,12 +17,39 @@ const labelByState = {
 } as const;
 
 export function Portfolio() {
+  const { mode, organizationMembership } = useAuth();
+  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [code, setCode] = useState('PC-26021');
+  const [name, setName] = useState('Type 2 Residential Pilot');
+
+  async function createProject(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      if (mode === 'emulator') {
+        const projectId = `p-${code.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+        await createType2Project({ orgId: organizationMembership.orgId, projectId, code, name });
+        setNotice(`${code} created from Type 2 template. Membership and audit event were committed atomically.`);
+      } else {
+        setNotice('Project creation preview validated in fixture mode; switch to emulator mode to persist it.');
+      }
+      setCreating(false);
+    } catch (reason) {
+      setNotice(reason instanceof Error ? reason.message : 'Project creation failed.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <>
       <div className="page-heading page-heading--action">
         <div><p className="eyebrow">ORGANIZATION PORTFOLIO</p><h1>Engineering projects</h1><p>Gate status, revision context and review workload across active projects.</p></div>
-        <Button type="button">＋ Create project</Button>
+        <Button type="button" onClick={() => setCreating(true)} disabled={!organizationMembership.orgRoles.includes('orgAdmin')}>＋ Create project</Button>
       </div>
+      {notice !== '' && <div className="toast" role="status">{notice}</div>}
 
       <div className="metric-grid">
         <Surface className="metric"><span className="metric__icon metric__icon--green"><Icon name="cube" /></span><div><strong>12</strong><small>Active projects</small></div><em>+2 this month</em></Surface>
@@ -55,7 +85,7 @@ export function Portfolio() {
           </table>
         </div>
       </Surface>
+      {creating && <div className="dialog-backdrop" role="presentation"><form className="approval-dialog project-dialog" role="dialog" aria-modal="true" aria-labelledby="create-project-title" onSubmit={createProject}><div className="dialog-header"><div><p className="eyebrow">APPROVED PROJECT TEMPLATE</p><h2 id="create-project-title">Create Type 2 project</h2></div><button type="button" className="icon-button" aria-label="Close create project dialog" onClick={() => setCreating(false)}><Icon name="close" /></button></div><div className="template-card"><Icon name="cube" /><div><strong>Type 2 Residential · v1.0.0</strong><p>Creates an active project at G0 with project-manager membership and append-only audit event.</p></div></div><label className="form-field"><span>Project code</span><input value={code} onChange={(event) => setCode(event.target.value)} required minLength={3} maxLength={24} /></label><label className="form-field"><span>Project name</span><input value={name} onChange={(event) => setName(event.target.value)} required minLength={3} maxLength={120} /></label><p className="mode-note">Mode: <b>{mode}</b> · No production Firebase project is configured.</p><div className="dialog-actions"><Button type="button" variant="secondary" onClick={() => setCreating(false)}>Cancel</Button><Button type="submit" disabled={saving}>{saving ? 'Creating…' : 'Create project'}</Button></div></form></div>}
     </>
   );
 }
-

@@ -10,7 +10,7 @@ const grants: Record<ProjectRole, readonly Grant[]> = {
     'view:*', 'comment:*', 'create:designBasis', 'editDraft:designBasis', 'submit:designBasis',
     'create:analysis', 'editDraft:analysis', 'submit:analysis', 'review:estimate', 'review:drawingSet',
   ],
-  engineeringChecker: ['view:*', 'comment:*', 'review:designBasis', 'approve:designBasis', 'review:analysis', 'approve:analysis', 'approve:calculation', 'approve:drawingSet', 'approve:releasePackage'],
+  engineeringChecker: ['view:*', 'comment:*', 'review:designBasis', 'approve:designBasis', 'review:analysis', 'approve:analysis', 'review:calculation', 'approve:calculation', 'review:drawingSet', 'approve:drawingSet', 'review:releasePackage', 'approve:releasePackage'],
   costEstimator: ['view:*', 'comment:*', 'create:estimate', 'editDraft:estimate', 'submit:estimate'],
   detailer: ['view:*', 'comment:*', 'create:drawingSet', 'editDraft:drawingSet', 'submit:drawingSet'],
   productionManager: ['view:releasePackage', 'release:releasePackage'],
@@ -53,4 +53,3 @@ export function can(
   const delegated = context.capabilities.includes(`${action}:${resource}`);
   return roleAllows || delegated ? { allowed: true } : { allowed: false, reason: 'Your project roles do not grant this action.' };
 }
-

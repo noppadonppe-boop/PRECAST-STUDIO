@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button, StatusBadge, Surface } from '@precast/ui';
 import type { ApprovalRequest, PermissionContext } from '@precast/domain';
-import { approvalRequests as initialRequests, currentUser, projectMemberships, projects } from '../fixtures/workspace';
+import { approvalRequests as initialRequests, projects } from '../fixtures/workspace';
 import { Can } from '../permissions/guards';
 import { Icon } from '../components/Icon';
+import { useAuth } from '../auth/AuthContext';
+import { approveRequest, returnRequest, watchApprovalInbox } from '../data/workflowRepository';
 
 const artifactLabels = {
   sourceRevision: 'Source revision', designBasis: 'Design Basis', analysis: 'Analysis snapshot', estimate: 'Estimate',
@@ -11,9 +13,12 @@ const artifactLabels = {
 };
 
 export function ApprovalInbox() {
-  const [requests, setRequests] = useState(initialRequests);
+  const { user, mode, organizationMembership, projectMemberships, accessRevision } = useAuth();
+  const [requests, setRequests] = useState(mode === 'fixture' ? initialRequests : []);
   const [selected, setSelected] = useState<ApprovalRequest | null>(null);
   const [acknowledged, setAcknowledged] = useState(false);
+  const [decisionComment, setDecisionComment] = useState('');
+  const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState('');
   const open = requests.filter((request) => request.status === 'open');
   const decided = requests.filter((request) => request.status === 'approved');
@@ -23,24 +28,60 @@ export function ApprovalInbox() {
     const membership = projectMemberships.find((item) => item.projectId === selected.projectId);
     if (membership === undefined) return null;
     return {
-      userId: currentUser.uid, orgId: membership.orgId, projectId: membership.projectId, roles: membership.roles,
+      userId: user.uid, orgId: membership.orgId, projectId: membership.projectId, roles: membership.roles,
       capabilities: membership.capabilities, membershipStatus: membership.status,
       ...(membership.expiresAt === undefined ? {} : { expiresAt: membership.expiresAt }),
       artifactStatus: 'submitted', artifactCreatedBy: selected.requestedBy, isCurrentRevision: true,
     };
-  }, [selected]);
+  }, [projectMemberships, selected, user.uid]);
+
+  useEffect(() => {
+    if (mode !== 'emulator') return;
+    const projectIds = projectMemberships.map((membership) => membership.projectId);
+    if (projectIds.length === 0) {
+      setRequests([]);
+      return;
+    }
+    return watchApprovalInbox(organizationMembership.orgId, projectIds, user.uid, setRequests, (reason) => setNotice(`Unable to load approval inbox: ${reason.message}`));
+  }, [accessRevision, mode, organizationMembership.orgId, projectMemberships, user.uid]);
 
   function openSnapshot(request: ApprovalRequest) {
     setAcknowledged(false);
+    setDecisionComment('');
     setNotice('');
     setSelected(request);
   }
 
-  function approve() {
+  async function approve() {
     if (selected === null || !acknowledged || selected.blockingConditions.length > 0) return;
-    setRequests((current) => current.map((request) => request.id === selected.id ? { ...request, status: 'approved' } : request));
-    setSelected(null);
-    setNotice(`${selected.artifactRevision} approved in local fixture state. No cloud write or issued artifact was created.`);
+    const request = selected;
+    setSaving(true);
+    try {
+      if (mode === 'emulator') await approveRequest(request, decisionComment.trim() || undefined);
+      else setRequests((current) => current.map((item) => item.id === request.id ? { ...item, status: 'approved' } : item));
+      setSelected(null);
+      setNotice(`${request.artifactRevision} approved${mode === 'fixture' ? ' in local fixture state' : ' by an idempotent emulator command'}.`);
+    } catch (reason) {
+      setNotice(reason instanceof Error ? reason.message : 'Approval command failed.');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function returnForCorrection() {
+    if (selected === null || decisionComment.trim().length === 0) return;
+    const request = selected;
+    setSaving(true);
+    try {
+      if (mode === 'emulator') await returnRequest(request, decisionComment.trim());
+      else setRequests((current) => current.map((item) => item.id === request.id ? { ...item, status: 'returned' } : item));
+      setSelected(null);
+      setNotice(`${request.artifactRevision} returned for correction with an auditable comment.`);
+    } catch (reason) {
+      setNotice(reason instanceof Error ? reason.message : 'Return command failed.');
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -64,7 +105,7 @@ export function ApprovalInbox() {
         {open.length === 0 && <div className="queue-clear"><span>✓</span><strong>Queue clear</strong><p>No immutable snapshot is waiting for your action.</p></div>}
       </Surface>
 
-      <Surface className="workflow-note"><Icon name="shield" /><div><strong>Server remains authoritative</strong><p>This M0 interaction changes fixture state only. Emulator rules deny direct client approval; the Functions command revalidates membership, role, artifact state, blockers, hash and Separation of Duties.</p></div></Surface>
+      <Surface className="workflow-note"><Icon name="shield" /><div><strong>Server remains authoritative · {mode} mode</strong><p>Direct client approval is denied. M1 commands revalidate membership, role, artifact state, blockers, snapshot hash, upstream currency and Separation of Duties in a transaction.</p></div></Surface>
 
       {selected !== null && permissionContext !== null && (
         <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
@@ -78,12 +119,13 @@ export function ApprovalInbox() {
               <div><dt>Model / Analysis</dt><dd>{project?.modelRevision} / {project?.analysisRevision}</dd></div>
               <div className="snapshot-grid__wide"><dt>SHA-256 snapshot hash</dt><dd className="hash">{selected.snapshotHash}</dd></div>
               <div><dt>Author</dt><dd>{selected.requestedBy}</dd></div>
-              <div><dt>Approver</dt><dd>{currentUser.name}</dd></div>
+              <div><dt>Approver</dt><dd>{user.name}</dd></div>
             </dl>
-            <div className={`sod-check ${selected.requestedBy === currentUser.uid ? 'sod-check--fail' : ''}`}><Icon name="shield" /><div><strong>Separation-of-Duties check</strong><p>{selected.requestedBy === currentUser.uid ? 'Blocked: the approver created this artifact.' : 'Passed: author and approver are distinct active members.'}</p></div></div>
+            <div className={`sod-check ${selected.requestedBy === user.uid ? 'sod-check--fail' : ''}`}><Icon name="shield" /><div><strong>Separation-of-Duties check</strong><p>{selected.requestedBy === user.uid ? 'Blocked: the approver created this artifact.' : 'Passed: author and approver are distinct active members.'}</p></div></div>
             {selected.blockingConditions.length > 0 && <div className="blocking-list"><strong><Icon name="warning" size={17} /> Approval blocked</strong>{selected.blockingConditions.map((condition) => <p key={condition}>• {condition}</p>)}</div>}
+            <label className="decision-comment"><span>Decision comment <small>Required when returning</small></span><textarea value={decisionComment} onChange={(event) => setDecisionComment(event.target.value)} placeholder="Record review evidence or required correction…" /></label>
             <label className="acknowledgement"><input type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} /> <span>I reviewed the exact snapshot, upstream revisions and unresolved-item summary.</span></label>
-            <div className="dialog-actions"><Button variant="secondary" type="button" onClick={() => setSelected(null)}>Cancel</Button><Button variant="secondary" type="button">Return for correction</Button><Can action="approve" resource={selected.artifactType} context={permissionContext}><Button type="button" disabled={!acknowledged || selected.blockingConditions.length > 0} onClick={approve}>Approve snapshot</Button></Can></div>
+            <div className="dialog-actions"><Button variant="secondary" type="button" onClick={() => setSelected(null)}>Cancel</Button><Button variant="secondary" type="button" disabled={saving || decisionComment.trim().length === 0} onClick={returnForCorrection}>Return for correction</Button><Can action="approve" resource={selected.artifactType} context={permissionContext}><Button type="button" disabled={saving || !acknowledged || selected.blockingConditions.length > 0} onClick={approve}>{saving ? 'Saving…' : 'Approve snapshot'}</Button></Can></div>
           </div>
         </div>
       )}
