@@ -1,0 +1,86 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasActiveOrgMembership(orgId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/organizations/$(orgId)/members/$(request.auth.uid))
+        && get(/databases/$(database)/documents/organizations/$(orgId)/members/$(request.auth.uid)).data.status == 'active';
+    }
+
+    function hasActiveProjectMembership(orgId, projectId) {
+      return hasActiveOrgMembership(orgId)
+        && exists(/databases/$(database)/documents/organizations/$(orgId)/projects/$(projectId)/members/$(request.auth.uid))
+        && get(/databases/$(database)/documents/organizations/$(orgId)/projects/$(projectId)/members/$(request.auth.uid)).data.status == 'active'
+        && get(/databases/$(database)/documents/organizations/$(orgId)/projects/$(projectId)/members/$(request.auth.uid)).data.effectiveFrom <= request.time
+        && (!('expiresAt' in get(/databases/$(database)/documents/organizations/$(orgId)/projects/$(projectId)/members/$(request.auth.uid)).data)
+          || get(/databases/$(database)/documents/organizations/$(orgId)/projects/$(projectId)/members/$(request.auth.uid)).data.expiresAt > request.time);
+    }
+
+    function hasProjectRole(orgId, projectId, role) {
+      return hasActiveProjectMembership(orgId, projectId)
+        && role in get(/databases/$(database)/documents/organizations/$(orgId)/projects/$(projectId)/members/$(request.auth.uid)).data.roles;
+    }
+
+    match /organizations/{orgId} {
+      allow read: if hasActiveOrgMembership(orgId);
+      allow write: if false;
+
+      match /members/{memberId} {
+        allow read: if hasActiveOrgMembership(orgId) && (memberId == request.auth.uid || 'orgAdmin' in get(/databases/$(database)/documents/organizations/$(orgId)/members/$(request.auth.uid)).data.orgRoles);
+        allow write: if false;
+      }
+
+      match /projects/{projectId} {
+        allow read: if hasActiveProjectMembership(orgId, projectId);
+        allow write: if false;
+
+        match /members/{memberId} {
+          allow read: if hasActiveProjectMembership(orgId, projectId);
+          allow write: if false;
+        }
+
+        match /designBasisVersions/{artifactId} {
+          allow read: if hasActiveProjectMembership(orgId, projectId);
+          allow create: if hasProjectRole(orgId, projectId, 'structuralEngineer')
+            && request.resource.data.status == 'draft'
+            && request.resource.data.createdBy == request.auth.uid;
+          allow update: if hasProjectRole(orgId, projectId, 'structuralEngineer')
+            && resource.data.status == 'draft'
+            && request.resource.data.status == resource.data.status
+            && resource.data.createdBy == request.auth.uid
+            && request.resource.data.createdBy == resource.data.createdBy;
+          allow delete: if false;
+        }
+
+        match /approvalRequests/{requestId} {
+          allow read: if hasActiveProjectMembership(orgId, projectId);
+          allow create: if hasActiveProjectMembership(orgId, projectId)
+            && request.resource.data.requestedBy == request.auth.uid
+            && request.resource.data.status == 'open';
+          // Approval decisions are authoritative server commands only.
+          allow update, delete: if false;
+        }
+
+        match /auditEvents/{eventId} {
+          allow read: if hasActiveProjectMembership(orgId, projectId);
+          // Admin SDK command handlers append these after authorization.
+          allow write: if false;
+        }
+
+        match /{document=**} {
+          allow read: if hasActiveProjectMembership(orgId, projectId);
+          allow write: if false;
+        }
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

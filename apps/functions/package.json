@@ -1,0 +1,22 @@
+{
+  "name": "@precast/functions",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "engines": { "node": "22" },
+  "scripts": {
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@precast/domain": "workspace:*",
+    "@precast/schemas": "workspace:*",
+    "firebase-admin": "^13.5.0",
+    "firebase-functions": "^6.4.0"
+  },
+  "devDependencies": { "@types/node": "^24.3.0", "vitest": "^3.2.4" }
+}
+

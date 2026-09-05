@@ -1,0 +1,53 @@
+:root {
+  color-scheme: light;
+  --ink-950: #13201e;
+  --ink-800: #263a37;
+  --ink-650: #52625f;
+  --ink-500: #75827f;
+  --line: #dce4e1;
+  --line-strong: #c8d4d0;
+  --canvas: #f4f6f5;
+  --surface: #ffffff;
+  --surface-subtle: #f9fbfa;
+  --accent: #0b7a68;
+  --accent-strong: #075e52;
+  --accent-soft: #dff3ee;
+  --info: #1f66b2;
+  --info-soft: #e5f0fb;
+  --success: #18794e;
+  --success-soft: #e3f4ea;
+  --warning: #9c5d05;
+  --warning-soft: #fff1d6;
+  --danger: #b33a3a;
+  --danger-soft: #fde8e7;
+  --shadow-sm: 0 1px 2px rgb(19 32 30 / 7%);
+  --shadow-md: 0 12px 30px rgb(19 32 30 / 9%);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+}
+
+.surface { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.status-badge { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 2px 9px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+.status-badge--neutral { color: var(--ink-650); background: #eef1f0; }
+.status-badge--info { color: var(--info); background: var(--info-soft); }
+.status-badge--success { color: var(--success); background: var(--success-soft); }
+.status-badge--warning { color: var(--warning); background: var(--warning-soft); }
+.status-badge--danger { color: var(--danger); background: var(--danger-soft); }
+.button { border: 1px solid transparent; border-radius: var(--radius-sm); min-height: 40px; padding: 0 16px; font: inherit; font-weight: 700; cursor: pointer; transition: 150ms ease; }
+.button:focus-visible { outline: 3px solid rgb(11 122 104 / 30%); outline-offset: 2px; }
+.button:disabled { cursor: not-allowed; opacity: 0.5; }
+.button--primary { color: white; background: var(--accent); }
+.button--primary:hover:not(:disabled) { background: var(--accent-strong); }
+.button--secondary { color: var(--ink-800); background: white; border-color: var(--line-strong); }
+.button--quiet { color: var(--ink-650); background: transparent; }
+.empty-state { display: grid; justify-items: center; gap: 8px; padding: 40px 24px; color: var(--ink-650); text-align: center; }
+.empty-state p { margin: 0; max-width: 42ch; }
+.empty-state__icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 14px; color: var(--accent); background: var(--accent-soft); font-size: 1.4rem; }
+

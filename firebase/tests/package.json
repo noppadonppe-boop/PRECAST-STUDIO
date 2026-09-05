@@ -1,0 +1,17 @@
+{
+  "name": "@precast/firebase-tests",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint src --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "test:emulator": "vitest run"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "@types/node": "^24.3.0",
+    "firebase": "^11.10.0",
+    "vitest": "^3.2.4"
+  }
+}

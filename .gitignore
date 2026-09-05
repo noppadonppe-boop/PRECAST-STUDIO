@@ -1,5 +1,7 @@
 # Dependencies and generated output
 node_modules/
+node_modules.interrupted-*/
+.pnpm-store/
 dist/
 coverage/
 .vite/
@@ -7,6 +9,8 @@ coverage/
 
 # Local tooling and emulators
 .firebase/
+.firebase-config/
+.firebase-cache/
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
@@ -31,4 +35,3 @@ test-results/
 !.vscode/settings.json
 .DS_Store
 Thumbs.db
-

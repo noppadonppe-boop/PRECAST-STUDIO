@@ -1,0 +1,92 @@
+import { useMemo, useState } from 'react';
+import { Button, StatusBadge, Surface } from '@precast/ui';
+import type { ApprovalRequest, PermissionContext } from '@precast/domain';
+import { approvalRequests as initialRequests, currentUser, projectMemberships, projects } from '../fixtures/workspace';
+import { Can } from '../permissions/guards';
+import { Icon } from '../components/Icon';
+
+const artifactLabels = {
+  sourceRevision: 'Source revision', designBasis: 'Design Basis', analysis: 'Analysis snapshot', estimate: 'Estimate',
+  calculation: 'Calculation report', drawingSet: 'Drawing set', releasePackage: 'Release package',
+};
+
+export function ApprovalInbox() {
+  const [requests, setRequests] = useState(initialRequests);
+  const [selected, setSelected] = useState<ApprovalRequest | null>(null);
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [notice, setNotice] = useState('');
+  const open = requests.filter((request) => request.status === 'open');
+  const decided = requests.filter((request) => request.status === 'approved');
+  const project = selected === null ? undefined : projects.find((item) => item.id === selected.projectId);
+  const permissionContext = useMemo<PermissionContext | null>(() => {
+    if (selected === null) return null;
+    const membership = projectMemberships.find((item) => item.projectId === selected.projectId);
+    if (membership === undefined) return null;
+    return {
+      userId: currentUser.uid, orgId: membership.orgId, projectId: membership.projectId, roles: membership.roles,
+      capabilities: membership.capabilities, membershipStatus: membership.status,
+      ...(membership.expiresAt === undefined ? {} : { expiresAt: membership.expiresAt }),
+      artifactStatus: 'submitted', artifactCreatedBy: selected.requestedBy, isCurrentRevision: true,
+    };
+  }, [selected]);
+
+  function openSnapshot(request: ApprovalRequest) {
+    setAcknowledged(false);
+    setNotice('');
+    setSelected(request);
+  }
+
+  function approve() {
+    if (selected === null || !acknowledged || selected.blockingConditions.length > 0) return;
+    setRequests((current) => current.map((request) => request.id === selected.id ? { ...request, status: 'approved' } : request));
+    setSelected(null);
+    setNotice(`${selected.artifactRevision} approved in local fixture state. No cloud write or issued artifact was created.`);
+  }
+
+  return (
+    <>
+      <div className="page-heading page-heading--action"><div><p className="eyebrow">MY WORK · IMMUTABLE REVIEW SNAPSHOTS</p><h1>Approval inbox</h1><p>Review requests assigned to your active project roles.</p></div><Button variant="secondary" type="button">Filter queue</Button></div>
+      {notice !== '' && <div className="toast" role="status">✓ {notice}</div>}
+
+      <div className="inbox-tabs" role="tablist" aria-label="Approval groups"><button className="active" role="tab" aria-selected="true">Needs my action <span>{open.length}</span></button><button role="tab" aria-selected="false">Submitted by me</button><button role="tab" aria-selected="false">Returned</button><button role="tab" aria-selected="false">Recently decided <span>{decided.length}</span></button></div>
+      <Surface className="approval-list">
+        <div className="approval-list__header"><span>Request</span><span>Gate / state</span><span>Due</span><span /></div>
+        {open.map((request) => {
+          const requestProject = projects.find((item) => item.id === request.projectId);
+          return <button type="button" className="approval-row" key={request.id} onClick={() => openSnapshot(request)}>
+            <span className="approval-type-icon"><Icon name={request.artifactType === 'analysis' ? 'cube' : 'shield'} /></span>
+            <span className="approval-main"><small>{requestProject?.code} · {artifactLabels[request.artifactType]}</small><strong>{requestProject?.name}</strong><span>{request.artifactRevision} · submitted by {request.requestedBy.replace('engineer-', '')}</span></span>
+            <span><StatusBadge tone={request.blockingConditions.length > 0 ? 'warning' : 'info'}>{request.blockingConditions.length > 0 ? `${request.blockingConditions.length} blockers` : 'Ready for review'}</StatusBadge><small className="cell-note">{requestProject?.gate}</small></span>
+            <span className="approval-due"><strong>{request.dueAt?.slice(0, 10)}</strong><small>{request.blockingConditions.length > 0 ? 'Needs disposition' : 'Within SLA'}</small></span>
+            <Icon name="chevron" />
+          </button>;
+        })}
+        {open.length === 0 && <div className="queue-clear"><span>✓</span><strong>Queue clear</strong><p>No immutable snapshot is waiting for your action.</p></div>}
+      </Surface>
+
+      <Surface className="workflow-note"><Icon name="shield" /><div><strong>Server remains authoritative</strong><p>This M0 interaction changes fixture state only. Emulator rules deny direct client approval; the Functions command revalidates membership, role, artifact state, blockers, hash and Separation of Duties.</p></div></Surface>
+
+      {selected !== null && permissionContext !== null && (
+        <div className="dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.currentTarget === event.target) setSelected(null); }}>
+          <div className="approval-dialog" role="dialog" aria-modal="true" aria-labelledby="approval-title">
+            <div className="dialog-header"><div><p className="eyebrow">APPROVE IMMUTABLE SNAPSHOT</p><h2 id="approval-title">{artifactLabels[selected.artifactType]} · {selected.artifactRevision}</h2></div><button aria-label="Close approval dialog" className="icon-button" onClick={() => setSelected(null)}><Icon name="close" /></button></div>
+            <div className="snapshot-banner"><span><Icon name="shield" /></span><div><strong>Snapshot identity verified</strong><p>Current fixture revision · content remains read-only</p></div><StatusBadge tone="success">Current</StatusBadge></div>
+            <dl className="snapshot-grid">
+              <div><dt>Project</dt><dd>{project?.code} · {project?.name}</dd></div>
+              <div><dt>Requested action</dt><dd>{selected.requestedAction.toUpperCase()}</dd></div>
+              <div><dt>Source / Design Basis</dt><dd>{project?.sourceRevision} / {project?.designBasisRevision}</dd></div>
+              <div><dt>Model / Analysis</dt><dd>{project?.modelRevision} / {project?.analysisRevision}</dd></div>
+              <div className="snapshot-grid__wide"><dt>SHA-256 snapshot hash</dt><dd className="hash">{selected.snapshotHash}</dd></div>
+              <div><dt>Author</dt><dd>{selected.requestedBy}</dd></div>
+              <div><dt>Approver</dt><dd>{currentUser.name}</dd></div>
+            </dl>
+            <div className={`sod-check ${selected.requestedBy === currentUser.uid ? 'sod-check--fail' : ''}`}><Icon name="shield" /><div><strong>Separation-of-Duties check</strong><p>{selected.requestedBy === currentUser.uid ? 'Blocked: the approver created this artifact.' : 'Passed: author and approver are distinct active members.'}</p></div></div>
+            {selected.blockingConditions.length > 0 && <div className="blocking-list"><strong><Icon name="warning" size={17} /> Approval blocked</strong>{selected.blockingConditions.map((condition) => <p key={condition}>• {condition}</p>)}</div>}
+            <label className="acknowledgement"><input type="checkbox" checked={acknowledged} onChange={(event) => setAcknowledged(event.target.checked)} /> <span>I reviewed the exact snapshot, upstream revisions and unresolved-item summary.</span></label>
+            <div className="dialog-actions"><Button variant="secondary" type="button" onClick={() => setSelected(null)}>Cancel</Button><Button variant="secondary" type="button">Return for correction</Button><Can action="approve" resource={selected.artifactType} context={permissionContext}><Button type="button" disabled={!acknowledged || selected.blockingConditions.length > 0} onClick={approve}>Approve snapshot</Button></Can></div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}

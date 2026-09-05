@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+  - firebase/tests
+
+verifyDepsBeforeRun: false
+
+allowBuilds:
+  esbuild: true
+  '@firebase/util': false
+  protobufjs: false
+  re2: false
