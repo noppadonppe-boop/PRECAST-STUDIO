@@ -4,6 +4,7 @@ import { can, type ArtifactType, type ArtifactUpstreamRefs, type PermissionConte
 import { designBasisPayloadSchema, designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, priceBookSchema, productModelPayloadSchema, releasePackagePayloadSchema, type ApproveArtifactCommand, type ArchiveProjectCommand, type CreateDesignBasisRevisionCommand, type CreateProductModelRevisionCommand, type CreateProjectCommand, type FreezeSourceRevisionCommand, type ReturnArtifactCommand, type SubmitArtifactCommand, type UpdateProjectCommand } from '@precast/schemas';
 import { AuthorizationError, authorizeApproval } from './authorization';
 import { invalidateDownstream } from './invalidation';
+import { assertDesignBasisCriteriaReady } from './designBasisReadiness';
 
 const artifactCollections: Record<ArtifactType, string> = {
   sourceRevision: 'sourceRevisions',
@@ -102,6 +103,7 @@ function assertSourceReady(data: UnknownRecord): void {
 }
 
 function assertDesignBasisReady(data: UnknownRecord): void {
+  assertDesignBasisCriteriaReady(data.payload);
   if (!designBasisPayloadSchema.safeParse(data.payload).success) {
     throw new AuthorizationError('Design Basis is incomplete or contains invalid engineering values.', 'failed-precondition');
   }
@@ -279,6 +281,11 @@ export async function submitArtifact(db: Firestore, actorUid: string, command: S
     if (command.artifactType === 'productModel') assertProductModelReady(data);
     if (command.artifactType === 'analysis') assertAnalysisReady(data);
     if (command.artifactType === 'calculation') assertCalculationReady(data);
+    if (command.artifactType === 'calculation') {
+      const basisId = requiredString(asRecord(project.data()), 'currentDesignBasisVersionId');
+      const basis = await tx.get(db.doc(`${root}/designBasisVersions/${basisId}`));
+      assertDesignBasisReady(asRecord(basis.data()));
+    }
     if (command.artifactType === 'estimate') assertEstimateReady(data);
     if (command.artifactType === 'drawingSet') assertDocumentationReady(data);
     if (command.artifactType === 'releasePackage') assertReleasePackageReady(data);
@@ -349,6 +356,12 @@ async function decideArtifact(
     if (command.artifactType === 'estimate') await assertCurrentPriceBook(tx, db, command.orgId, artifactData);
 
     if (decisionName === 'approve') {
+      if (command.artifactType === 'designBasis') assertDesignBasisReady(snapshotData);
+      if (command.artifactType === 'calculation') {
+        const basisId = requiredString(asRecord(project.data()), 'currentDesignBasisVersionId');
+        const basis = await tx.get(db.doc(`${root}/designBasisVersions/${basisId}`));
+        assertDesignBasisReady(asRecord(basis.data()));
+      }
       authorizeApproval(context, {
         id: command.artifactId, type: command.artifactType, status: requiredString(artifactData, 'status'),
         createdBy: requiredString(artifactData, 'createdBy'), snapshotHash: command.snapshotHash,
@@ -520,6 +533,7 @@ export async function createDesignBasisRevision(db: Firestore, actorUid: string,
     const gateStates = asRecord(projectData.gateStates);
     if (gateStates.G0 !== 'approved') throw new AuthorizationError('Gate G0 must be frozen before creating a Design Basis revision.', 'failed-precondition');
     const sourceRevisionId = requiredString(projectData, 'currentSourceRevisionId');
+    if (projectData.currentDesignBasisVersionId && command.supersedesId === undefined) throw new AuthorizationError('An existing Design Basis must be edited as a draft or superseded explicitly.', 'failed-precondition');
     if (command.supersedesId !== undefined) {
       if (previous === undefined || !previous.exists || projectData.currentDesignBasisVersionId !== command.supersedesId) throw new AuthorizationError('Only the current Design Basis can be superseded.', 'failed-precondition');
       const previousData = asRecord(previous.data());

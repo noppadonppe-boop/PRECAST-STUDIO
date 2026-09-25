@@ -1,0 +1,9 @@
+import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';import {execFileSync} from 'node:child_process';
+const out='output/stage5-update-p76';fs.mkdirSync(out,{recursive:true});
+for(const d of ['abd-load-ledger-p75','abd-skin-screen-p76'])fs.cpSync('output/'+d,out+'/'+d,{recursive:true});
+fs.mkdirSync(out+'/source-scripts',{recursive:true});for(const name of ['abd-load-ledger-p75.mjs','abd-load-ledger-p75.test.mjs','abd-skin-screen-p76.mjs','abd-skin-screen-p76.test.mjs'])fs.copyFileSync('tools/modular-program/'+name,out+'/source-scripts/'+name);
+fs.copyFileSync('knowledge/modular-program-r02/STAGE5_CONTINUATION_P76.md',out+'/KNOWLEDGE.md');
+fs.writeFileSync(out+'/test-results.txt',execFileSync(process.execPath,['--test','tools/modular-program/abd-load-ledger-p75.test.mjs','tools/modular-program/abd-skin-screen-p76.test.mjs'],{encoding:'utf8'}));
+fs.writeFileSync(out+'/README.md','# P75/P76 — Stage5 development\n\nOpen abd-load-ledger-p75/index.html and abd-skin-screen-p76/index.html. Current mass/demand accounting and local elastic screening for twelve A/B/D setups; NOT completed mould design or production release. Scripts require the existing project and hash-pinned P66/P71/P74/P60 sources, not included in this report-only package. Concrete geometry unchanged. Website still P68. No crane/floor/connection capacity certification.\n');
+const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(d,e.name)):[path.join(d,e.name)]);
+const files=walk(out).filter(p=>path.basename(p)!=='manifest.json').map(p=>({path:path.relative(out,p).replaceAll('\\','/'),bytes:fs.statSync(p).size,sha256:crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex')}));fs.writeFileSync(out+'/manifest.json',JSON.stringify({revision:'P76',stage:5,stageComplete:false,files,engineeringApproved:false,productionReleased:false},null,2));console.log({files:files.length});

@@ -1,0 +1,30 @@
+{
+  "revision": "P36",
+  "reviewer": "ASSISTANT_VISUAL_REVIEW_NOT_ENGINEERING_APPROVAL",
+  "method": "OPEN_RENDERED_PNG_CONTACT_SHEETS_AND_FULL_SIZE_SELECTED_SHEETS",
+  "contactSheetsReviewed": [
+    "CONTACT-I-01-PLAN-3D.png", "CONTACT-L-01-PLAN-3D.png", "CONTACT-U-01-PLAN-3D.png",
+    "CONTACT-I-02-ELEVATIONS-SECTIONS.png", "CONTACT-L-02-ELEVATIONS-SECTIONS.png", "CONTACT-U-02-ELEVATIONS-SECTIONS.png",
+    "CONTACT-I-03-ASSEMBLY-SCHEDULE.png", "CONTACT-L-03-ASSEMBLY-SCHEDULE.png", "CONTACT-U-03-ASSEMBLY-SCHEDULE.png"
+  ],
+  "fullSizeSheetsReviewed": [
+    "I-C1/01-PLAN-3D.png", "I-D2/02-ELEVATIONS-SECTIONS.png", "L-C2/01-PLAN-3D.png",
+    "L-B3/01-PLAN-3D.png", "U-A1/02-ELEVATIONS-SECTIONS.png", "U-D4/01-PLAN-3D.png", "U-C4/03-ASSEMBLY-SCHEDULE.png"
+  ],
+  "fixes": [
+    "Replaced centroid painter rendering with per-pixel depth test and above-roof viewing direction",
+    "Suppressed smooth-facet edges; retained casting joints and concrete window cavities",
+    "Aligned A-A to Y200 solid strip and B-B to actual X1450 section plane",
+    "Separated BOM column headings to prevent SVG whitespace collapse",
+    "Moved development bathroom partition and wardrobe away from inclined D wall"
+  ],
+  "result": "PASS_DEVELOPMENT_PRESENTATION_REVIEW",
+  "limitations": [
+    "Contact-sheet review covers all144 pages; full-size checks are representative, not every page",
+    "Rendered glazing and door planes are proposed visual infill, not selected products",
+    "SVG includes embedded raster orthographic and3D views; plans dimensions and sections remain vector",
+    "Not an architectural permit, accessibility, structural or fabrication approval"
+  ],
+  "engineeringApproved": false,
+  "productionReleased": false
+}

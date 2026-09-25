@@ -1,0 +1,6 @@
+import {render,screen,within} from '@testing-library/react';import {readFileSync} from 'node:fs';import {resolve} from 'node:path';import {expect,it} from 'vitest';
+import {ProfileThicknessStudyView} from './ProfileThicknessStudyView';import type {ProfileThicknessStudy} from './model';
+const raw=JSON.parse(readFileSync(resolve(import.meta.dirname,'../../../../output/tsc-step2l-r00/web_summary.json'),'utf8'));
+const study={...raw,drawings:raw.drawings.map((d:{id:string})=>({...d,artifact:{id:d.id,url:`/api/catalogue/artifacts/${d.id}`,bytes:100,revision:raw.revision,status:raw.status}}))} as ProfileThicknessStudy;
+it('combined view shows one new case and three controls with scope and download',()=>{render(<ProfileThicknessStudyView study={study} combined/>);expect(within(screen.getByRole('table',{name:'H4 / KP / KT เดิม และ KPT ใหม่'})).getAllByRole('row')).toHaveLength(5);expect(screen.getAllByRole('table')).toHaveLength(27);expect(screen.getByText(/ไม่ได้เพิ่ม interior-arc\/base\/Y/)).toBeInTheDocument();expect(screen.getAllByRole('button',{name:/ดาวน์โหลด/})).toHaveLength(1);expect(screen.queryByText(/ยังไม่ได้รัน KP\+KT/)).not.toBeInTheDocument();});
+it('combined stale warning names the correct phase',()=>{render(<ProfileThicknessStudyView study={{...study,status:'STALE'}} combined/>);expect(screen.getByRole('alert')).toHaveTextContent('Step 2L');});

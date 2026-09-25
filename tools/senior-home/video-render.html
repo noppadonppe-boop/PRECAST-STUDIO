@@ -1,0 +1,106 @@
+<!doctype html><meta charset="utf-8"><title>PPE Engineering · Senior home film</title>
+<style>*{box-sizing:border-box}body{margin:0;overflow:hidden;background:#e9e7df;font-family:Tahoma,Arial,sans-serif}canvas{display:block}#brand{position:absolute;top:30px;left:38px;color:#183b37;font-size:22px;font-weight:bold;letter-spacing:2px}#brand small{display:block;font-size:10px;letter-spacing:3px;margin-top:7px;font-weight:normal}#badge{position:absolute;right:35px;top:30px;background:#183b37;color:#fff;padding:10px 16px;font-size:12px;letter-spacing:1px}#cap{position:absolute;bottom:29px;left:38px;right:38px;padding:19px 24px;background:rgba(20,44,40,.94);color:white;border-left:5px solid #d9ba78}#cap h1{font-size:26px;margin:0 0 9px;font-weight:normal}#cap p{font-size:16px;margin:0;color:#e9e3d4;line-height:1.4}#index{float:right;color:#d9ba78;font-size:13px;padding-top:10px}#line{position:absolute;bottom:0;height:4px;background:#d9ba78}#note{position:absolute;right:36px;bottom:151px;color:#25453e;font-size:11px;background:#f4f1e8df;padding:7px 10px}#fade{position:absolute;inset:0;background:#f3f0e8;pointer-events:none;opacity:0}</style>
+<div id="brand">PPE ENGINEERING<small>SENIOR LIVING · PRECAST HOME</small></div><div id="badge">BIM CONCEPT FILM</div>
+<div id="note">ภาพจำลองแนวคิด • งานชั่วคราวและจุดยกต้องออกแบบก่อนใช้จริง</div><div id="cap"><span id="index"></span><h1 id="title"></h1><p id="sub"></p></div><div id="line"></div><div id="fade"></div>
+<script type="module">
+import * as T from '/tools/senior-home/video-vendor/three.module.js';
+const W=1280,H=720, scene=new T.Scene();scene.background=new T.Color('#e7ece5');scene.fog=new T.Fog('#e7ece5',35,95);
+const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(W,H);renderer.setPixelRatio(window.devicePixelRatio);renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;document.body.prepend(renderer.domElement);
+const camera=new T.PerspectiveCamera(46,W/H,.035,200);camera.up.set(0,0,1);
+scene.add(new T.HemisphereLight(0xe7efff,0x958266,2.5));const sun=new T.DirectionalLight(0xffecd3,3.5);sun.position.set(-5,-8,16);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-18,right:18,top:18,bottom:-18,near:.5,far:50});sun.shadow.normalBias=.025;sun.shadow.bias=-.00015;scene.add(sun);scene.add(new T.AmbientLight(0xffffff,.25));
+const fill=new T.DirectionalLight(0xf4eddf,1.1);fill.position.set(10,8,8);scene.add(fill);
+const v=a=>new T.Vector3(...a), mix=(a,b,t)=>a.map((x,i)=>x+(b[i]-x)*t), clamp=x=>Math.max(0,Math.min(1,x)), ease=x=>{x=clamp(x);return x*x*(3-2*x)};
+const mat=(color)=>new T.MeshStandardMaterial({color,roughness:.85});
+function box(g,x,y,z,dx,dy,dz,m){let o=new T.Mesh(new T.BoxGeometry(dx,dy,dz),m);o.position.set(x+dx/2,y+dy/2,z+dz/2);o.castShadow=o.receiveShadow=true;g.add(o);return o;}
+function rod(g,a,b,r,m){let A=v(a),B=v(b),d=B.clone().sub(A),o=new T.Mesh(new T.CylinderGeometry(r,r,d.length(),8),m);o.position.copy(A.add(B).multiplyScalar(.5));o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.normalize());o.castShadow=true;g.add(o);return o;}
+const moss=mat('#84916d'),earth=mat('#b6a58a'),soil=mat('#796047'),steel=mat('#53656a'),orange=mat('#d99a34'),yellow=mat('#f5bf42'),wood=mat('#ae8053'),concrete=mat('#bbb7a9');
+const base=new T.Group();scene.add(base);box(base,-65,-65,-.72,130,130,.1,moss);
+// Site cutaway exposes provisional pads during construction.
+const terrain=new T.Group();scene.add(terrain);box(terrain,-1.2,-4.2,-.65,12.2,11,.6,earth);
+const grounds=new T.Group();scene.add(grounds);
+for(let i=0;i<28;i++){let x=-12+(i%7)*5.4,y=11+Math.floor(i/7)*6;let h=3+(i%4)*.4;rod(grounds,[x,y,-.5],[x,y,h],.12,wood);for(let j=0;j<3;j++){let o=new T.Mesh(new T.IcosahedronGeometry(1.25+j*.12,1),mat(['#6f8058','#899466','#73835d'][j]));o.position.set(x+Math.sin(j*3)*.65,y+Math.cos(j*3)*.5,h+j*.4);o.castShadow=true;grounds.add(o);}}
+function texture(kind){let c=document.createElement('canvas');c.width=c.height=256;let q=c.getContext('2d');q.fillStyle=kind==='wood'?'#ba936a':'#d6d1c5';q.fillRect(0,0,256,256);let seed=12;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}for(let i=0;i<1000;i++){q.strokeStyle=kind==='wood'?`rgba(82,52,29,${rand()*.12})`:`rgba(70,64,55,${rand()*.05})`;q.beginPath();let x=rand()*256,y=rand()*256;q.moveTo(x,y);q.lineTo(x+(kind==='wood'?rand()*100:rand()*4),y+rand()*2);q.stroke();}if(kind==='wood'){q.strokeStyle='#a08260';for(let y=0;y<256;y+=32){q.beginPath();q.moveTo(0,y);q.lineTo(256,y);q.stroke();}}let t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(1,1);t.colorSpace=T.SRGBColorSpace;return t;}
+const woodtex=texture('wood'),pctex=texture('pc');
+const data=await(await fetch('/deliverables/PPE_Senior_Home/video/revit-meshes.json')).json();
+const materials={};for(let [id,m] of Object.entries(data.materials)){let c=new T.Color(`rgb(${m.color.join(',')})`), glass=m.transparency>0;materials[id]=new T.MeshStandardMaterial({color:c,roughness:glass?.1:.8,metalness:/AL-|ST-/.test(m.name)?.35:0,side:T.DoubleSide,transparent:glass,opacity:glass?.19:1,depthWrite:!glass});if(/WD-01|DK-01/.test(m.name)){materials[id].map=woodtex;materials[id].color.set(0xe2d3bd);}if(/PC-01/.test(m.name))materials[id].map=pctex;}
+const home=new T.Group();scene.add(home);const els=[];
+function phase(e){let s=e.mark||'',c=e.category;if(c==='Rooms')return -1;if(/Conceptual ground/.test(s))return 15;if(c==='Structural Foundations')return /pad/.test(s)?3:4;if(/Floor bearer/.test(s))return 4;if(/^PC-F/.test(s))return 5;if(c==='Walls')return /^PT-/.test(s)?11:6;if(c==='Roofs')return 8;if(/Vault joint/.test(s))return 9;if(/Landscape|Planter/.test(s))return 15;if(/DK-|LAND-|RA-|Ramp |Handrail |Veranda/.test(s))return 14;if(c==='Doors'||c==='Windows'||/mullion|transom|jamb|Curved facade|sliding track/.test(s))return 10;if(c==='Ceilings'||c==='Electrical Fixtures'||c==='Lighting Fixtures'||c==='Plumbing Fixtures'||/^FIN-|^SH01/.test(s))return 11;return 12;}
+for(let e of data.elements){let ph=phase(e);if(ph<0)continue;let g=new T.Group();home.add(g);for(let [id,a] of Object.entries(e.parts)){let geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(a,3));let uv=[];for(let j=0;j<a.length;j+=3)uv.push(a[j]*.6,a[j+1]*.6+a[j+2]*.12);geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.computeVertexNormals();let mesh=new T.Mesh(geo,materials[id]);mesh.castShadow=!(materials[id].transparent);mesh.receiveShadow=true;g.add(mesh);}let bounds=new T.Box3().setFromObject(g);els.push({...e,g,ph,bounds,center:bounds.getCenter(new T.Vector3()),size:bounds.getSize(new T.Vector3())});}
+const byPhase=Object.fromEntries(Array.from({length:16},(_,i)=>[i,els.filter(e=>e.ph===i)]));byPhase[6].sort((a,b)=>b.center.y-a.center.y||a.center.x-b.center.x);byPhase[8].sort((a,b)=>b.center.y-a.center.y);
+// Realistic conceptual temporary works, separate from the exported BIM.
+const excav=new T.Group(),forms=new T.Group(),rebar=new T.Group(),grid=new T.Group(),braces=new T.Group(),shores=new T.Group(),services=new T.Group(),joint=new T.Group();[excav,forms,rebar,grid,braces,shores,services,joint].forEach(g=>scene.add(g));
+const pads=byPhase[3];for(let e of pads){let x=e.center.x,y=e.center.y;box(excav,x-.64,y-.64,-.62,1.28,1.28,.025,soil);box(excav,x-.51,y-.51,-.6,1.02,1.02,.05,concrete);for(let i=0;i<2;i++){box(forms,x-.44,y-.44+i*.86,-.55,.88,.03,.31,wood);box(forms,x-.44+i*.86,y-.44,-.55,.03,.88,.31,wood);}for(let k=-3;k<=3;k++){rod(rebar,[x-.33,y+k*.1,-.49],[x+.33,y+k*.1,-.49],.008,steel);rod(rebar,[x+k*.1,y-.33,-.47],[x+k*.1,y+.33,-.47],.008,steel);}for(let dx of [-.1,.1])for(let dy of [-.1,.1])rod(rebar,[x+dx,y+dy,-.48],[x+dx,y+dy,.15],.012,steel);}
+const cutSoil=new T.Group();scene.add(cutSoil);let outline=new T.Shape();outline.moveTo(-1.2,-4.2);outline.lineTo(11,-4.2);outline.lineTo(11,6.8);outline.lineTo(-1.2,6.8);outline.closePath();for(let e of pads){let x=e.center.x,y=e.center.y,h=new T.Path();h.moveTo(x-.64,y-.64);h.lineTo(x-.64,y+.64);h.lineTo(x+.64,y+.64);h.lineTo(x+.64,y-.64);h.closePath();outline.holes.push(h);}let soilMesh=new T.Mesh(new T.ExtrudeGeometry(outline,{depth:.6,bevelEnabled:false}),earth);soilMesh.position.z=-.65;soilMesh.receiveShadow=true;cutSoil.add(soilMesh);
+for(let x of [.3,2.4,5.8,9.3])rod(grid,[x,-1,.03],[x,6.6,.03],.013,yellow);for(let y of [.3,2.8,5.3])rod(grid,[-.8,y,.03],[10.5,y,.03],.013,yellow);
+const braceItems=[];for(let e of byPhase[6]){if(e.size.z<1.5)continue;let c=e.center,b=e.bounds,anchor,top;if(e.size.x<.35){let sign=c.x<4?1:-1;top=[c.x,c.y,2.5];anchor=[c.x+sign*1.15,c.y,.46];}else{top=[c.x,c.y,2.5];anchor=[c.x,c.y+(c.y>3?-1.2:1.2),.46];}let g=new T.Group();braces.add(g);rod(g,top,anchor,.035,orange);box(g,anchor[0]-.11,anchor[1]-.11,.45,.22,.22,.045,steel);braceItems.push({g,e});}
+for(let y of [.55,1.9,3.35,4.95]){for(let x of [1.15,4.6]){rod(shores,[x,y,.45],[x,y,3.79],.043,orange);box(shores,x-.17,y-.17,.45,.34,.34,.04,steel);}rod(shores,[1.15,y,3.8],[4.6,y,3.8],.08,wood);rod(shores,[1.15,y,.6],[4.6,y,3.65],.025,steel);}
+rod(services,[1.5,5.1,.12],[1.5,1.1,.12],.045,mat('#6c96b1'));rod(services,[1.5,5.1,.12],[7.5,5.1,.12],.035,mat('#6c96b1'));rod(services,[7.5,5.1,.12],[7.5,5.1,.85],.035,mat('#6c96b1'));
+for(let y of [1.4,2.8,4.2])for(let k=0;k<28;k++){let a=-.84+k*1.68/28,b=-.84+(k+1)*1.68/28,R=3.885,cz=4.5-R;rod(joint,[2.9+R*Math.sin(a),y,cz+R*Math.cos(a)+.018],[2.9+R*Math.sin(b),y,cz+R*Math.cos(b)+.018],.022,yellow);}
+const crane=new T.Group();scene.add(crane);box(crane,-4.7,2.4,.18,2,4,.5,orange);box(crane,-4.4,5.1,.7,1.4,1.1,1.2,steel);for(let y of [2.8,5.8]){rod(crane,[-5.6,y,.25],[-1.7,y,.25],.09,steel);for(let x of [-5.6,-1.7]){box(crane,x-.28,y-.28,-.05,.56,.56,.1,wood);rod(crane,[x,y,0],[x,y,.4],.085,steel);}}const rig=new T.Group();scene.add(rig);
+function clear(g){while(g.children.length){let c=g.children.pop();c.geometry?.dispose();}}
+function rigFor(e,offset){clear(rig);let b=e.bounds,c=e.center,z=b.max.z+offset,hook=[c.x,c.y,z+2.2],tip=[c.x-.25,c.y+.2,z+(e.mark==='RF-05'?5.4:3.2)];rod(rig,[-3.7,4.3,1.15],tip,.15,orange);rod(rig,tip,hook,.025,steel);let sx=Math.min(e.size.x*.36,1.8),sy=Math.min(e.size.y*.36,.8);rod(rig,[c.x-sx,c.y,z+1],[c.x+sx,c.y,z+1],.055,yellow);for(let dx of [-sx,sx])for(let dy of [-sy,sy]){rod(rig,hook,[c.x+dx,c.y+dy,z+1],.017,steel);rod(rig,[c.x+dx,c.y+dy,z+1],[c.x+dx,c.y+dy,z],.016,steel);}}
+const shots=[
+ [0,10,'บ้านพักผู้สูงวัย · PRECAST','9.60 × 5.60 ม. | หลังคาโค้งเชื่อมพื้นที่นั่งเล่นและระเบียง','EXTERIOR'],
+ [10,18,'ทางเข้าต่อเนื่องถึงระเบียง','ทางลาด 1:12 • ชานพัก • ราวจับสองระดับ • พื้นต่างระดับ +0.45 ม.','ACCESS'],
+ [18,28,'ห้องนั่งเล่นและครัว','ช่องเปิดรับแสงธรรมชาติ • พื้นที่รับประทานอาหาร • ผิวสัมผัสโทนอุ่น','LIVING'],
+ [28,36,'ห้องนอนใต้หลังคาโค้ง','เตียงสูง 500 มม. จากพื้น • ทางเดินรอบเตียง • ประตูบานเลื่อน','BEDROOM'],
+ [36,44,'ห้องน้ำสำหรับผู้สูงวัย','พื้นที่อาบน้ำระดับเดียว • ที่นั่งอาบน้ำ • ราวพยุงและสายเรียกฉุกเฉิน','BATHROOM'],
+ [44,52,'เห็นความสัมพันธ์ของพื้นที่','ภาพตัดเปิดหลังคาเพื่ออธิบายผัง • ห้องน้ำ / ห้องนอน / นั่งเล่น–ครัว','CUTAWAY'],
+ [52,58,'01  เตรียมพื้นที่และวางผัง','สำรวจดิน–ระดับ • ตรวจแนวสาธารณูปโภค • กำหนดจุดฐานรากและพื้นที่เครน','SETTING OUT'],
+ [58,64,'02  ขุดฐานรากและทำคอนกรีตรองพื้น','ภาพตัดดินเพื่อให้เห็นงานใต้ดิน • ฐานรากใน BIM เป็นขนาดเบื้องต้น','EXCAVATION'],
+ [64,72,'03  เหล็กเสริม แบบหล่อ และเทฐานราก','ตรวจระยะหุ้ม–เหล็กเดือย ก่อนเท • บ่มคอนกรีตจนได้กำลังที่กำหนด','FOUNDATIONS'],
+ [72,78,'04  ตอม่อ โครงรองพื้น และท่อใต้พื้น','ตรวจระดับหัวตอม่อ • ติดตั้งจุดรองรับ • ประสานงานระบบก่อนปิดพื้น','SUBSTRUCTURE'],
+ [78,90,'05  ยกแผ่นพื้นสำเร็จรูปทีละแผ่น','วางบนจุดรองรับที่ออกแบบ • ตรวจแนว–ระดับ • เชื่อมต่อและเกราต์รอยต่อ','PRECAST FLOOR'],
+ [90,106,'06  ยกผนังและยึดค้ำยันชั่วคราว','ตั้งแผ่นตามลำดับ • ยึดค้ำยัน/จุดต่อให้มั่นคงก่อนปลดอุปกรณ์ยก','WALL ERECTION'],
+ [106,116,'07  ติดตั้งหลังคาพร้อมระบบรองรับชั่วคราว','ยกชิ้นส่วนตาม BIM • ขนาดขนส่ง จุดยก และตำแหน่งค้ำ ต้องออกแบบเฉพาะ','ROOF ERECTION'],
+ [116,122,'08  ทำรอยต่อและระบบกันน้ำ','เกราต์–ซีลรอยต่อ • แผ่นครอบรอยต่อ • ตรวจความแข็งแรงก่อนถอดค้ำ','JOINTS + WATERPROOFING'],
+ [122,128,'09  ติดตั้งประตูและหน้าต่าง','ประกอบวงกบ–กระจกนิรภัย • ซีลรอบช่องเปิด • ทดสอบการใช้งานและน้ำรั่ว','ENCLOSURE'],
+ [128,136,'10  งานระบบและงานภายใน','ฝ้า ผิวพื้น สุขภัณฑ์ และเฟอร์นิเจอร์ • ถอดค้ำหลังได้รับอนุมัติ','FIT OUT'],
+ [136,144,'11  ทางลาด ระเบียง และภูมิทัศน์','เก็บผิวกันลื่น • ตรวจราวจับ–ขอบกันล้อ • จัดทางเดินภายนอกให้ต่อเนื่อง','EXTERNAL WORKS'],
+ [144,154,'พร้อมส่งต่อสู่การพัฒนาแบบก่อสร้าง','ตรวจงานและทดสอบระบบ • วิดีโอแนวคิดจาก BIM / ยังไม่ใช่แผนยกที่อนุมัติ','PPE ENGINEERING']
+];
+window.shots=shots;
+function cameraAt(a,b,targetA,targetB,u,fov=46){camera.position.copy(v(mix(a,b,u)));camera.lookAt(v(mix(targetA,targetB,u)));camera.fov=fov;camera.updateProjectionMatrix();}
+function erected(t,start,end,list,lift=false){let q=(t-start)/(end-start)*list.length;let active=null;list.forEach((e,i)=>{let s=q-i;e.g.visible=s>0;if(s<=0)return;let f=ease(s/.74);e.g.position.z=lift?(1-f)*2.8:0;if(lift&&s<.95)active=e;});return active;}
+window.frame=(t)=>{
+let si=shots.findIndex(s=>t>=s[0]&&t<s[1]);if(si<0)si=shots.length-1;let sh=shots[si],u=ease((t-sh[0])/(sh[1]-sh[0]));document.querySelector('#title').textContent=sh[2];document.querySelector('#sub').textContent=sh[3];document.querySelector('#index').textContent=String(si+1).padStart(2,'0')+' / '+shots.length;document.querySelector('#badge').textContent=sh[4];document.querySelector('#line').style.width=(t/154*100)+'%';document.querySelector('#fade').style.opacity=si===0?Math.max(0,1-t*2):Math.max(0,1-(t-sh[0])*4)*.7;
+for(let e of els){e.g.position.set(0,0,0);e.g.visible=t<52||t>=144;for(let m of e.g.children)m.material.clippingPlanes=null;}
+[excav,forms,rebar,grid,braces,shores,services,joint,crane,rig].forEach(g=>g.visible=false);terrain.visible=t<58||t>=72;cutSoil.visible=t>=58&&t<72;grounds.visible=t<52||t>=144;renderer.localClippingEnabled=false;
+if(si===0)cameraAt([14,-13,7],[12,-12,5.9],[4.7,1.3,.8],[4.7,1.3,.9],u);
+else if(si===1)cameraAt([1.2,-6.5,2.6],[8.6,-5.8,2.4],[4.4,-1.2,.95],[8,-.3,1.55],u,57);
+else if(si===2)cameraAt([7.7,.65,2.05],[6.35,1.2,2.05],[7.8,4.1,1.6],[8.2,3.65,1.55],u,74);
+else if(si===3)cameraAt([5.28,.65,2.05],[3.1,.85,2.05],[4.15,3.7,1.65],[4.35,3.8,1.65],u,78);
+else if(si===4)cameraAt([2.08,.64,1.95],[.63,.62,1.95],[1.1,2.5,1.45],[1.55,2.45,1.4],u,88);
+else if(si===5){for(let e of els){if(e.ph===8||e.ph===9||e.category==='Ceilings')e.g.visible=false;}renderer.localClippingEnabled=true;const pl=new T.Plane(new T.Vector3(0,0,-1),2.15);for(let m of Object.values(materials))m.clippingPlanes=[pl];cameraAt([11,-10,12],[9,-9,13],[4.7,2,0],[4.7,2,0],u,44);}
+else if(si===17)cameraAt([14,-14,6.8],[8,-15,5.7],[4.7,1.5,1.5],[4.7,1.5,1.7],u);
+else{
+ cameraAt([15,-17,13],[14,-16,12],[3.4,1.4,2.6],[3.4,1.4,2.6],u,48);
+ grid.visible=t<64;excav.visible=t>=58&&t<72;forms.visible=t>=64&&t<72;rebar.visible=t>=64&&t<72;
+ for(let e of els){let starts={3:68,4:73,5:78,6:90,8:106,9:118,10:122,11:128,12:131,14:136,15:140};e.g.visible=t>=(starts[e.ph]??999);}
+ if(t>=68&&t<72){for(let e of byPhase[3]){let f=ease((t-68)/3);e.g.scale.z=f||.001;e.g.position.z=-.55*(1-f);}}else for(let e of byPhase[3])e.g.scale.z=1;
+ services.visible=t>=75&&t<131;
+ let active=null;if(t>=78&&t<90)active=erected(t,78,89.6,byPhase[5],true);
+ if(t>=90&&t<106)active=erected(t,90,105.5,byPhase[6],true);
+ braces.visible=t>=90&&t<130;for(let b of braceItems)b.g.visible=b.e.g.visible&&b.e.g.position.z<.05;
+ shores.visible=t>=105&&t<130;
+ if(t>=106&&t<116)active=erected(t,106,115.4,byPhase[8],true);
+ crane.visible=t>=78&&t<118;if(active){rig.visible=true;rigFor(active,active.g.position.z);}else if(crane.visible){clear(rig);rig.visible=true;rod(rig,[-3.7,4.3,1.15],[-1.7,4.3,8],.15,orange);}
+ joint.visible=t>=116&&t<122;
+ if(t>=122&&t<128)erected(t,122,127.3,byPhase[10]);if(t>=128&&t<136){erected(t,128,131,byPhase[11]);erected(t,131,135.4,byPhase[12]);}
+ if(t>=136&&t<144){erected(t,136,140,byPhase[14]);erected(t,140,143,byPhase[15]);}
+ if(si===7||si===8)cameraAt([12,-9,8.5],[11,-8,7.8],[4.7,2.5,-.15],[4.7,2.5,-.15],u,48);
+ if(si===12)cameraAt([16,-17,13],[14,-17,12],[3.1,2,3.3],[3.1,2,3.3],u,47);
+}
+// Interior fill lights follow physically plausible ceiling locations.
+renderer.toneMappingExposure=(si>=2&&si<=4)?1.6:1.25;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=(window.lastShot!==si)||(t>=52&&t<144);window.lastShot=si;renderer.render(scene,camera);
+return {shot:si,title:sh[2],visible:els.filter(e=>e.g.visible).length};
+};
+for(let [x,y,z] of [[7.7,2.8,2.85],[4.1,2.8,3.1],[1.3,1.6,2.75]]){let l=new T.PointLight(0xffd9a0,7,6,1);l.position.set(x,y,z);scene.add(l);}
+const captureCanvas=document.createElement('canvas');captureCanvas.width=1920;captureCanvas.height=1080;const ctx=captureCanvas.getContext('2d');
+window.capture=(t)=>{window.frame(t);ctx.setTransform(1,0,0,1,0,0);ctx.drawImage(renderer.domElement,0,0,1920,1080);ctx.scale(1.5,1.5);ctx.textBaseline='top';ctx.fillStyle='#183b37';ctx.font='bold 22px Tahoma';ctx.fillText('PPE ENGINEERING',38,31);ctx.font='10px Tahoma';ctx.fillText('S E N I O R  L I V I N G  ·  P R E C A S T  H O M E',38,64);
+let si=shots.findIndex(s=>t>=s[0]&&t<s[1]);if(si<0)si=17;let s=shots[si];ctx.font='12px Tahoma';let bw=ctx.measureText(s[4]).width+32;ctx.fillStyle='#183b37';ctx.fillRect(1245-bw,30,bw,35);ctx.fillStyle='white';ctx.fillText(s[4],1261-bw,41);
+ctx.fillStyle='rgba(20,44,40,.94)';ctx.fillRect(38,591,1204,100);ctx.fillStyle='#d9ba78';ctx.fillRect(38,591,5,100);ctx.font='26px Tahoma';ctx.fillStyle='white';ctx.fillText(s[2],67,612);ctx.font='16px Tahoma';ctx.fillStyle='#e9e3d4';ctx.fillText(s[3],67,651);ctx.font='13px Tahoma';ctx.fillStyle='#d9ba78';ctx.fillText(String(si+1).padStart(2,'0')+' / 18',1182,622);
+let note='ภาพจำลองแนวคิด • งานชั่วคราวและจุดยกต้องออกแบบก่อนใช้จริง';ctx.font='11px Tahoma';let nw=ctx.measureText(note).width+20;ctx.fillStyle='#f4f1e8df';ctx.fillRect(1244-nw,542,nw,28);ctx.fillStyle='#25453e';ctx.fillText(note,1254-nw,551);ctx.fillStyle='#d9ba78';ctx.fillRect(0,716,t/154*1280,4);
+let fade=si===0?Math.max(0,1-t*2):Math.max(0,1-(t-s[0])*4)*.7;if(fade){ctx.fillStyle=`rgba(243,240,232,${fade})`;ctx.fillRect(0,0,1280,720);}return captureCanvas.toDataURL('image/jpeg',.92).split(',')[1];};
+window.frame(0);window.ready=true;
+</script>

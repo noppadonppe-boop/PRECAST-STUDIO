@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import crypto from 'node:crypto';import {keys,sections} from './abd-end-gusset-p69.mjs';import {area} from './prism-bore-p66.mjs';import {swept,loft,properties} from './cap-geometry-p55.mjs';import {cellFaces,disk} from './prism-tools-p54.mjs';
+test('triangle minus waler notch area benchmark',()=>assert.ok(Math.abs(sections().reduce((s,p)=>s+Math.abs(area(p)),0)-(350*620/2-100*100))<1e-6));
+for(const k of keys)test(k+' source hash, clearance, mass and tools',()=>{const m=JSON.parse(fs.readFileSync(`output/abd-end-gusset-p69/${k}.json`)),raw=fs.readFileSync(m.inputSnapshot.path),base=JSON.parse(raw);assert.equal(crypto.createHash('sha256').update(raw).digest('hex'),m.inputSnapshot.sha256);assert.equal(m.stock.length,12);assert.deepEqual(m.audit.staticHits,[]);assert.deepEqual(m.audit.additionalIntegratedMoves.filter(v=>v.hits.length),[]);assert.equal(m.audit.baselineP66Passed,true);assert.ok(Math.abs(m.totalAddedKg-95.927)<1e-7);
+ for(const l of base.baseLocks){const [x,y]=l.axisMm,tool=cellFaces(disk(x,y,24,33,97));assert.ok(!m.stock.some(g=>g.solids.some(f=>swept(f,tool))));}
+ for(const g of m.stock)for(let i=0;i<g.solids.length;i++){assert.ok(properties(g.solids[i]).volumeMm3>0);for(let j=0;j<i;j++)assert.ok(!swept(g.solids[i],g.solids[j]));}
+});
+test('negative: full unnotched gusset clashes with bottom waler',()=>{const base=JSON.parse(fs.readFileSync('output/abd-base-lock-p66/A-LH-S00.json')),p=[[6,30],[356,30],[6,650]],f=loft(p.map(([n,z])=>[-n,365,z]),p.map(([n,z])=>[-n,375,z]));assert.ok(base.parts.find(p=>p.tag==='M01').cells.some(c=>swept(f,cellFaces(c))));});
+
+
+for(const k of keys)test(k+' preserves wall stock and adds only four end plates',()=>{const m=JSON.parse(fs.readFileSync('output/abd-end-gusset-p69/'+k+'.json')),old=JSON.parse(fs.readFileSync('output/abd-wall-gusset-p67/'+k+'.json'));assert.deepEqual(m.stock.slice(0,8),old.stock);assert.equal(m.stock.filter(g=>g.role==='WELDED_END_FOOT_GUSSET').length,4);for(const g of m.stock.slice(8))assert.ok(Math.abs(g.massKg-8.51725)<1e-7);});

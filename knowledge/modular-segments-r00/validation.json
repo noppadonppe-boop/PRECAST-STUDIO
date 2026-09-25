@@ -1,0 +1,1563 @@
+{
+  "date": "2026-09-16",
+  "scope": "Data consistency, nominal grid areas, panel quantities, file existence and PNG header only; visual review limitations in IMAGE_QA.md; NOT structural or mold validation.",
+  "status": "PASS_DATA_CHECKS_ONLY",
+  "checks_total": 137,
+  "checks_failed": [],
+  "checks": [
+    {
+      "name": "I_area",
+      "passed": true,
+      "detail": {
+        "polygon_m2": 18,
+        "floor_sum_m2": 18,
+        "note": "I-STD15 proposal; legacy image not changed"
+      }
+    },
+    {
+      "name": "I_bay_floor_node_counts",
+      "passed": true,
+      "detail": {
+        "area": 18,
+        "bays": 4,
+        "nodes": 0,
+        "floors": 4
+      }
+    },
+    {
+      "name": "I_floor_nonoverlap",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "I_floors_within_cells",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "I_node_ports_connect_straight_cells",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "L_area",
+      "passed": true,
+      "detail": {
+        "polygon_m2": 27,
+        "floor_sum_m2": 27,
+        "note": null
+      }
+    },
+    {
+      "name": "L_bay_floor_node_counts",
+      "passed": true,
+      "detail": {
+        "area": 27,
+        "bays": 4,
+        "nodes": 1,
+        "floors": 6
+      }
+    },
+    {
+      "name": "L_floor_nonoverlap",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "L_floors_within_cells",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "L_node_ports_connect_straight_cells",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "U_area",
+      "passed": true,
+      "detail": {
+        "polygon_m2": 45,
+        "floor_sum_m2": 45,
+        "note": null
+      }
+    },
+    {
+      "name": "U_bay_floor_node_counts",
+      "passed": true,
+      "detail": {
+        "area": 45,
+        "bays": 6,
+        "nodes": 2,
+        "floors": 10
+      }
+    },
+    {
+      "name": "U_floor_nonoverlap",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "U_floors_within_cells",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "U_node_ports_connect_straight_cells",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "unique_segment_tags_47",
+      "passed": true,
+      "detail": 47
+    },
+    {
+      "name": "48_unique_buildings",
+      "passed": true,
+      "detail": 48
+    },
+    {
+      "name": "16_per_plan_type",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "no_manufacturing_approval",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-A1-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-A1-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-A2-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-A2-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-A3-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-A3-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-A4-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-A4-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-B1-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-B1-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-B2-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-B2-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-B3-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-B3-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-B4-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-B4-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-C1-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-C1-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-C2-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-C2-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-C3-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-C3-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-C4-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-C4-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-D1-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-D1-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-D2-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-D2-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-D3-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-D3-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-L-D4-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 20,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-L-D4-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-A1-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-A1-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-A2-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-A2-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-A3-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-A3-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-A4-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-A4-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-B1-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-B1-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-B2-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-B2-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-B3-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-B3-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-B4-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-B4-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-C1-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-C1-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-C2-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-C2-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-C3-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-C3-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-C4-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-C4-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-D1-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-D1-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-D2-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-D2-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-D3-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-D3-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "PM-U-D4-R00_bom",
+      "passed": true,
+      "detail": {
+        "known_panels": 34,
+        "exclusions": [
+          "node support/edge/portal members",
+          "structural connections",
+          "foundations",
+          "end infill frames/glass",
+          "reinforcement/prestress",
+          "waterproofing/insulation/MEP"
+        ]
+      }
+    },
+    {
+      "name": "PM-U-D4-R00_grouped_matches",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "32_variant_boms",
+      "passed": true,
+      "detail": 32
+    },
+    {
+      "name": "864_unique_panel_instances",
+      "passed": true,
+      "detail": 864
+    },
+    {
+      "name": "PM-I-A1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-A2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-A3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-A4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-B1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-B2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-B3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-B4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-C1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-C2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-C3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-C4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-D1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-D2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-D3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-I-D4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "PM-L-A1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1278,
+        "height": 1230
+      }
+    },
+    {
+      "name": "PM-L-A2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1225,
+        "height": 1284
+      }
+    },
+    {
+      "name": "PM-L-A3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1224,
+        "height": 1285
+      }
+    },
+    {
+      "name": "PM-L-A4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1224,
+        "height": 1285
+      }
+    },
+    {
+      "name": "PM-L-B1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1224,
+        "height": 1285
+      }
+    },
+    {
+      "name": "PM-L-B2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-L-B3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1223,
+        "height": 1286
+      }
+    },
+    {
+      "name": "PM-L-B4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-L-C1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-L-C2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1225,
+        "height": 1284
+      }
+    },
+    {
+      "name": "PM-L-C3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-L-C4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1224,
+        "height": 1285
+      }
+    },
+    {
+      "name": "PM-L-D1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1223,
+        "height": 1286
+      }
+    },
+    {
+      "name": "PM-L-D2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1223,
+        "height": 1286
+      }
+    },
+    {
+      "name": "PM-L-D3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-L-D4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-U-A1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1223,
+        "height": 1286
+      }
+    },
+    {
+      "name": "PM-U-A2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1225,
+        "height": 1284
+      }
+    },
+    {
+      "name": "PM-U-A3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-U-A4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1224,
+        "height": 1285
+      }
+    },
+    {
+      "name": "PM-U-B1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-U-B2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-U-B3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1224,
+        "height": 1285
+      }
+    },
+    {
+      "name": "PM-U-B4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-U-C1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1223,
+        "height": 1286
+      }
+    },
+    {
+      "name": "PM-U-C2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1214,
+        "height": 1295
+      }
+    },
+    {
+      "name": "PM-U-C3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1223,
+        "height": 1286
+      }
+    },
+    {
+      "name": "PM-U-C4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-U-D1-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1225,
+        "height": 1284
+      }
+    },
+    {
+      "name": "PM-U-D2-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1222,
+        "height": 1287
+      }
+    },
+    {
+      "name": "PM-U-D3-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1223,
+        "height": 1286
+      }
+    },
+    {
+      "name": "PM-U-D4-R00_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1223,
+        "height": 1286
+      }
+    },
+    {
+      "name": "TS-A_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "TS-B_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "TS-C_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    },
+    {
+      "name": "TS-D_png_header",
+      "passed": true,
+      "detail": {
+        "width": 1536,
+        "height": 1024
+      }
+    }
+  ],
+  "images": [
+    {
+      "label": "PM-I-A1-R00",
+      "path": "../../output/split-shell-16/A1_gable_office.png",
+      "bytes": 2305397,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-A2-R00",
+      "path": "../../output/split-shell-16/A2_gable_home.png",
+      "bytes": 2339687,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-A3-R00",
+      "path": "../../output/split-shell-16/A3_gable_cafe.png",
+      "bytes": 2621828,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-A4-R00",
+      "path": "../../output/split-shell-16/A4_gable_resort.png",
+      "bytes": 2478172,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-B1-R00",
+      "path": "../../output/split-shell-16/B1_curved_vault_office.png",
+      "bytes": 2196432,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-B2-R00",
+      "path": "../../output/split-shell-16/B2_curved_vault_home.png",
+      "bytes": 2301942,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-B3-R00",
+      "path": "../../output/split-shell-16/B3_curved_vault_cafe.png",
+      "bytes": 2329011,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-B4-R00",
+      "path": "../../output/split-shell-16/B4_curved_vault_resort.png",
+      "bytes": 2365176,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-C1-R00",
+      "path": "../../output/split-shell-16/C1_rounded_portal_office.png",
+      "bytes": 2392384,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-C2-R00",
+      "path": "../../output/split-shell-16/C2_rounded_portal_home.png",
+      "bytes": 2362406,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-C3-R00",
+      "path": "../../output/split-shell-16/C3_rounded_portal_cafe.png",
+      "bytes": 2555619,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-C4-R00",
+      "path": "../../output/split-shell-16/C4_rounded_portal_resort.png",
+      "bytes": 2513857,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-D1-R00",
+      "path": "../../output/split-shell-16/D1_trapezoid_office.png",
+      "bytes": 2406906,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-D2-R00",
+      "path": "../../output/split-shell-16/D2_trapezoid_home.png",
+      "bytes": 2301363,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-D3-R00",
+      "path": "../../output/split-shell-16/D3_trapezoid_cafe.png",
+      "bytes": 2404504,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-I-D4-R00",
+      "path": "../../output/split-shell-16/D4_trapezoid_resort.png",
+      "bytes": 2188679,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "PM-L-A1-R00",
+      "path": "../../output/ilu-standard-r00/L-A1_gable_office.png",
+      "bytes": 2268856,
+      "width": 1278,
+      "height": 1230
+    },
+    {
+      "label": "PM-L-A2-R00",
+      "path": "../../output/ilu-standard-r00/L-A2_gable_home.png",
+      "bytes": 2395252,
+      "width": 1225,
+      "height": 1284
+    },
+    {
+      "label": "PM-L-A3-R00",
+      "path": "../../output/ilu-standard-r00/L-A3_gable_cafe.png",
+      "bytes": 2593427,
+      "width": 1224,
+      "height": 1285
+    },
+    {
+      "label": "PM-L-A4-R00",
+      "path": "../../output/ilu-standard-r00/L-A4_gable_resort.png",
+      "bytes": 2509009,
+      "width": 1224,
+      "height": 1285
+    },
+    {
+      "label": "PM-L-B1-R00",
+      "path": "../../output/ilu-standard-r00/L-B1_curved_vault_office.png",
+      "bytes": 2228459,
+      "width": 1224,
+      "height": 1285
+    },
+    {
+      "label": "PM-L-B2-R00",
+      "path": "../../output/ilu-standard-r00/L-B2_curved_vault_home.png",
+      "bytes": 2477557,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-L-B3-R00",
+      "path": "../../output/ilu-standard-r00/L-B3_curved_vault_cafe.png",
+      "bytes": 2477539,
+      "width": 1223,
+      "height": 1286
+    },
+    {
+      "label": "PM-L-B4-R00",
+      "path": "../../output/ilu-standard-r00/L-B4_curved_vault_resort.png",
+      "bytes": 2348643,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-L-C1-R00",
+      "path": "../../output/ilu-standard-r00/L-C1_rounded_portal_office.png",
+      "bytes": 2531056,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-L-C2-R00",
+      "path": "../../output/ilu-standard-r00/L-C2_rounded_portal_home.png",
+      "bytes": 2299062,
+      "width": 1225,
+      "height": 1284
+    },
+    {
+      "label": "PM-L-C3-R00",
+      "path": "../../output/ilu-standard-r00/L-C3_rounded_portal_cafe.png",
+      "bytes": 2280001,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-L-C4-R00",
+      "path": "../../output/ilu-standard-r00/L-C4_rounded_portal_resort.png",
+      "bytes": 2243138,
+      "width": 1224,
+      "height": 1285
+    },
+    {
+      "label": "PM-L-D1-R00",
+      "path": "../../output/ilu-standard-r00/L-D1_trapezoid_office.png",
+      "bytes": 2250063,
+      "width": 1223,
+      "height": 1286
+    },
+    {
+      "label": "PM-L-D2-R00",
+      "path": "../../output/ilu-standard-r00/L-D2_trapezoid_home.png",
+      "bytes": 2463404,
+      "width": 1223,
+      "height": 1286
+    },
+    {
+      "label": "PM-L-D3-R00",
+      "path": "../../output/ilu-standard-r00/L-D3_trapezoid_cafe.png",
+      "bytes": 2436690,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-L-D4-R00",
+      "path": "../../output/ilu-standard-r00/L-D4_trapezoid_resort.png",
+      "bytes": 2301826,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-U-A1-R00",
+      "path": "../../output/ilu-standard-r00/U-A1_gable_office.png",
+      "bytes": 2467410,
+      "width": 1223,
+      "height": 1286
+    },
+    {
+      "label": "PM-U-A2-R00",
+      "path": "../../output/ilu-standard-r00/U-A2_gable_home.png",
+      "bytes": 2143694,
+      "width": 1225,
+      "height": 1284
+    },
+    {
+      "label": "PM-U-A3-R00",
+      "path": "../../output/ilu-standard-r00/U-A3_gable_cafe.png",
+      "bytes": 2348082,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-U-A4-R00",
+      "path": "../../output/ilu-standard-r00/U-A4_gable_resort.png",
+      "bytes": 2465187,
+      "width": 1224,
+      "height": 1285
+    },
+    {
+      "label": "PM-U-B1-R00",
+      "path": "../../output/ilu-standard-r00/U-B1_curved_vault_office.png",
+      "bytes": 2503390,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-U-B2-R00",
+      "path": "../../output/ilu-standard-r00/U-B2_curved_vault_home.png",
+      "bytes": 2532020,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-U-B3-R00",
+      "path": "../../output/ilu-standard-r00/U-B3_curved_vault_cafe.png",
+      "bytes": 2580875,
+      "width": 1224,
+      "height": 1285
+    },
+    {
+      "label": "PM-U-B4-R00",
+      "path": "../../output/ilu-standard-r00/U-B4_curved_vault_resort.png",
+      "bytes": 2515973,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-U-C1-R00",
+      "path": "../../output/ilu-standard-r00/U-C1_rounded_portal_office.png",
+      "bytes": 2180887,
+      "width": 1223,
+      "height": 1286
+    },
+    {
+      "label": "PM-U-C2-R00",
+      "path": "../../output/ilu-standard-r00/U-C2_rounded_portal_home.png",
+      "bytes": 2399325,
+      "width": 1214,
+      "height": 1295
+    },
+    {
+      "label": "PM-U-C3-R00",
+      "path": "../../output/ilu-standard-r00/U-C3_rounded_portal_cafe.png",
+      "bytes": 2469704,
+      "width": 1223,
+      "height": 1286
+    },
+    {
+      "label": "PM-U-C4-R00",
+      "path": "../../output/ilu-standard-r00/U-C4_rounded_portal_resort.png",
+      "bytes": 2267123,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-U-D1-R00",
+      "path": "../../output/ilu-standard-r00/U-D1_trapezoid_office.png",
+      "bytes": 2291085,
+      "width": 1225,
+      "height": 1284
+    },
+    {
+      "label": "PM-U-D2-R00",
+      "path": "../../output/ilu-standard-r00/U-D2_trapezoid_home.png",
+      "bytes": 2430333,
+      "width": 1222,
+      "height": 1287
+    },
+    {
+      "label": "PM-U-D3-R00",
+      "path": "../../output/ilu-standard-r00/U-D3_trapezoid_cafe.png",
+      "bytes": 2297434,
+      "width": 1223,
+      "height": 1286
+    },
+    {
+      "label": "PM-U-D4-R00",
+      "path": "../../output/ilu-standard-r00/U-D4_trapezoid_resort.png",
+      "bytes": 2450149,
+      "width": 1223,
+      "height": 1286
+    },
+    {
+      "label": "TS-A",
+      "path": "../../output/ilu-standard-r00/TS-A_typical_segments.png",
+      "bytes": 2084306,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "TS-B",
+      "path": "../../output/ilu-standard-r00/TS-B_typical_segments.png",
+      "bytes": 2041100,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "TS-C",
+      "path": "../../output/ilu-standard-r00/TS-C_typical_segments.png",
+      "bytes": 2074984,
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "label": "TS-D",
+      "path": "../../output/ilu-standard-r00/TS-D_typical_segments.png",
+      "bytes": 2060057,
+      "width": 1536,
+      "height": 1024
+    }
+  ]
+}

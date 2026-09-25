@@ -1,0 +1,19 @@
+{
+  "id": "R02-P18-WALL-SHARED",
+  "date": "2026-09-17",
+  "authority": "USER",
+  "user_statement": "ใช้ขอบผนังร่วม และให้รายงานด้วยว่า อยู่ ขั้นที่ที่เท่าไร 1-8",
+  "development_direction": "WALL_SHARED",
+  "report_programme_stage_each_delivery": true,
+  "programme_stage": 2,
+  "programme_stage_total": 8,
+  "scope": "ACCEPTED_DEVELOPMENT_DIRECTION_NOT_STRUCTURAL_DESIGN_APPROVAL",
+  "notch_geometry_authority": "ASSISTANT_COORDINATION_PROPOSAL",
+  "notch_clearance_mm": 20,
+  "notch_clearance_approved": false,
+  "column_section_selected": false,
+  "roof_level_selected": false,
+  "head_depth_selected": false,
+  "engineering_approved": false,
+  "production_released": false
+}

@@ -1,0 +1,26 @@
+import fs from 'node:fs';import crypto from 'node:crypto';import {contactSolve,moments,cross} from './foot-contact-p84.mjs';
+const out='output/foot-demand-p84';fs.mkdirSync(out,{recursive:true});const hash=p=>crypto.createHash('sha256').update(fs.readFileSync(p)).digest('hex'),rows=[];
+for(const family of ['A','B','D'])for(const side of ['LH','RH']){
+ const key=`${family}-${side}-W01`,basePath=`output/abd-base-lock-p66/${key}.json`,base=JSON.parse(fs.readFileSync(basePath)),s=family==='D'?200/2825:0,L=Math.hypot(1,s);
+ const uv=([x,y,z=0])=>{if(side==='RH')x=1490-x;return [(x-s*y)/L,(s*x+y)/L,z];};
+ for(const owner of ['M01','M03']){
+  const source=`output/wall-frame-p83/${key}-${owner}-h25.json`,wall=JSON.parse(fs.readFileSync(source));
+  for(const [i,g]of wall.footGroups.entries()){
+   const tag=`${owner}-F${i+1}`,foot=base.baseFeet.find(p=>p.tag===tag),locks=base.baseLocks.filter(p=>p.foot===tag);if(locks.length!==4)throw Error('Expected four actual base screws');
+   const rawPolygons=foot.cells.map(c=>c.poly.map(uv).map(p=>p.slice(0,2))),mm=rawPolygons.map(moments),A=mm.reduce((a,m)=>a+m.A,0),origin=[mm.reduce((a,m)=>a+m.x,0)/A,mm.reduce((a,m)=>a+m.y,0)/A,0],polygons=rawPolygons.map(p=>p.map(q=>q.map((v,j)=>v-origin[j]))),bolts=locks.map(p=>({tag:p.tag,positionMm:uv(p.axisMm).map((v,j)=>v-origin[j]),nominalEngagementMm:p.nominalEngagementMm}));
+   const F=g.forceN.map(v=>-v),offset=g.referenceMm.map((v,j)=>v-origin[j]),Mx=cross(offset,F),M=g.momentNmm.map((v,j)=>-v+Mx[j]),results=[];
+   for(const kContact of [100,1000,10000])for(const effectiveLength of [30,50,80]){
+    const kBolt=200000*245/effectiveLength,r=contactSolve({polygons,bolts:bolts.map(b=>b.positionMm),load:[F[2],M[0],M[1]],kContact,kBolt});
+    results.push({...r,effectiveBoltLengthMm:effectiveLength,scenario:`KC${kContact}-LE${effectiveLength}`});
+   }
+   const bc=[0,1].map(j=>bolts.reduce((a,b)=>a+b.positionMm[j]/4,0)),shiftMoment=cross([-bc[0],-bc[1],0],F),torsion=M[2]+shiftMoment[2],J=bolts.reduce((a,b)=>a+(b.positionMm[0]-bc[0])**2+(b.positionMm[1]-bc[1])**2,0);
+   const shear=bolts.map(b=>{const [x,y]=b.positionMm.map((v,j)=>v-(bc[j]??0));return [-(F[0]/4-torsion*y/J),-(F[1]/4+torsion*x/J)];});
+   const baseline=results.find(r=>r.scenario==='KC1000-LE50'),boltResults=bolts.map((b,j)=>({...b,baseCaseTensionN:baseline.boltTensionsN[j],tensionEnvelopeN:Math.max(...results.map(r=>r.boltTensionsN[j])),shearReactionOnPlateN:shear[j],shearMagnitudeN:Math.hypot(...shear[j]),nominalTensileStressMPa:baseline.boltTensionsN[j]/245,verifiedCapacityN:null}));
+   const sumShear=[0,1].map(j=>shear.reduce((a,v)=>a+v[j],0)+F[j]),sumMz=bolts.reduce((a,b,j)=>a+b.positionMm[0]*shear[j][1]-b.positionMm[1]*shear[j][0],0)+M[2];
+   const record={revision:'P84',key,owner,tag,id:base.id,units:'mm N MPa Nmm',inputs:[basePath,source].map(path=>({path,sha256:hash(path)})),localAxes:'Right-handed P83 u,v,z fabrication basis; RH mirrored back before extraction. Plate origin at net area centroid, z=0.',originMm:origin,plateAreaMm2:A,plateThicknessMm:30,polygons,appliedForceN:F,appliedMomentNmm:M,sourceFootReaction:g,bolts:boltResults,scenarios:results,baselineScenario:'KC1000-LE50',shearEquilibriumResidual:{forceN:sumShear,momentNmm:sumMz},basis:{E_MPa:200000,stressAreaMm2:245,stressAreaStatus:'M20 coarse-thread development assumption; product/pitch/certificate not selected',contactStiffnessNPerMm3:[100,1000,10000],effectiveBoltLengthMm:[30,50,80],boltPreloadN:0,frictionCredit:false,plateModel:'Rigid plate; no plate prying amplification or flexural stiffness',bedModel:'Compression-only local springs; prescribed stationary bed',shearModel:'Elastic rigid bolt group, equal in-plane bolt stiffness, all shanks engaged; clearance slip/preload/friction not modelled'},limitations:['One-way demand handoff from P83 rigid-foot wall model; base flexibility has NOT been fed back to P83.','No gravity or dynamic load, seam redistribution, bolt grade/thread stripping, plate bending, washer bearing, weld or bed strength check.','Contact stiffness/effective bolt length are sensitivity assumptions, not measured properties or allowable values.','Nominal stress is demand only; do not interpret it as an allowable-strength comparison.'],engineeringApproved:false,productionReleased:false,stageComplete:false};
+   fs.writeFileSync(`${out}/${key}-${tag}.json`,JSON.stringify(record,null,2));rows.push({key,tag,file:`${key}-${tag}.json`,maxTensionN:Math.max(...boltResults.map(b=>b.tensionEnvelopeN)),maxShearN:Math.max(...boltResults.map(b=>b.shearMagnitudeN)),baselineContactAreaMm2:baseline.contactAreaMm2,baselineMaxPressureMPa:baseline.maxContactPressureMPa,scenarioCount:results.length});
+  }
+ }
+}
+fs.writeFileSync(out+'/register.json',JSON.stringify({revision:'P84',records:rows,sourceHashes:Object.fromEntries(['tools/modular-program/foot-contact-p84.mjs','tools/modular-program/foot-demand-p84.mjs'].map(p=>[p,hash(p)])),engineeringApproved:false,productionReleased:false,stageComplete:false},null,2));
+console.log(JSON.stringify({feet:rows.length,scenarios:rows.reduce((a,r)=>a+r.scenarioCount,0),maxTensionN:Math.max(...rows.map(r=>r.maxTensionN)),maxShearN:Math.max(...rows.map(r=>r.maxShearN))}));

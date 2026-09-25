@@ -1,3 +1,4 @@
+import { completeCriteriaFixture } from '../../../tools/testing/designCriteriaFixture';
 import { randomUUID } from 'node:crypto';
 import { deleteApp, initializeApp } from 'firebase-admin/app';
 import { getFirestore, Timestamp, type Firestore } from 'firebase-admin/firestore';
@@ -17,12 +18,13 @@ const orgId = 'org-workflow';
 const projectId = 'project-workflow';
 const artifactId = 'db-r02';
 const upstreamRefs = { sourceRevisionId: 'src-r02' };
-const payload = {
+const legacyPayload = {
   jurisdiction: 'Thailand', designCode: 'ACI 318', designCodeEdition: '2019', loadingCode: 'ASCE 7', loadingCodeEdition: '2022', units: 'kN-m-MPa' as const,
   designLifeYears: 50, riskCategory: 'II', concrete: { fc28Mpa: 40, fcLiftMpa: 20, densityKgM3: 2400, stiffnessMpa: 30000, durabilityClass: 'Moderate', source: 'Specification S-001' },
   reinforcement: { fyMpa: 500, source: 'Specification S-001' }, handling: { liftingDynamicFactor: 1.5, transportDynamicFactor: 1.3, storageSupportRule: 'Two aligned bearing points.', source: 'Handling standard' },
   fireResistanceMinutes: 120, inheritedFrom: 'type-2-residential-v1', overrideReasons: {},
 };
+const payload = { ...legacyPayload, criteria: completeCriteriaFixture(legacyPayload) };
 const snapshotHash = computeArtifactSnapshotHash({ artifactType: 'designBasis', artifactId, artifactRevision: 'DB-R02', createdBy: 'engineer-1', upstreamRefs, payload });
 const sourcePayload = { fileName: 'source.ifc', unit: 'metre' };
 const sourceHash = computeArtifactSnapshotHash({ artifactType: 'sourceRevision', artifactId: 'src-r02', artifactRevision: 'SRC-R02', createdBy: 'bim-1', upstreamRefs: {}, payload: sourcePayload });
@@ -92,6 +94,12 @@ beforeEach(async () => {
 afterAll(async () => deleteApp(app));
 
 describe('transactional workflow commands', () => {
+  it('rejects a legacy Design Basis at submission even when its old numeric fields are valid', async () => {
+    await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`).update({ payload: legacyPayload });
+    const legacyHash = computeArtifactSnapshotHash({ artifactType: 'designBasis', artifactId, artifactRevision: 'DB-R02', createdBy: 'engineer-1', upstreamRefs, payload: legacyPayload });
+    await expect(submitArtifact(db, 'engineer-1', { ...submitCommand(), expectedDraftHash: legacyHash })).rejects.toThrow('Design Criteria incomplete');
+    expect((await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`).get()).data()?.status).toBe('draft');
+  });
   it('composes, independently approves, and releases an immutable production package', async () => {
     const readyProduct = canonicalizeProductModel({ ...productPayload, anchors: [...productPayload.anchors, { id: 'lift-b', panelId: 'panel-b', kind: 'lifting', positionM: { x: 4, y: 2.7, z: 0.075 }, capacityKn: 25 }] });
     const productUpstreams = { sourceRevisionId: 'src-r02', designBasisVersionId: artifactId }; const productHash = computeArtifactSnapshotHash({ artifactType: 'productModel', artifactId: 'pm-r01', artifactRevision: 'PM-R01', createdBy: 'engineer-1', upstreamRefs: productUpstreams, payload: readyProduct as unknown as Record<string, unknown> });
@@ -261,7 +269,9 @@ describe('transactional workflow commands', () => {
     const command = { orgId, projectId, designBasisId: 'db-r03', revision: 'DB-R03', payload, idempotencyKey: randomUUID() };
     await expect(createDesignBasisRevision(db, 'engineer-1', command)).rejects.toThrow('Gate G0');
     await db.doc(`organizations/${orgId}/projects/${projectId}`).update({ 'gateStates.G0': 'approved' });
-    expect(await createDesignBasisRevision(db, 'engineer-1', command)).toMatchObject({ state: 'draft' });
+    await expect(createDesignBasisRevision(db, 'engineer-1', command)).rejects.toThrow('superseded explicitly');
+    await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/${artifactId}`).update({ status: 'approved', locked: true });
+    expect(await createDesignBasisRevision(db, 'engineer-1', { ...command, supersedesId: artifactId })).toMatchObject({ state: 'draft' });
     await db.doc(`organizations/${orgId}/projects/${projectId}/designBasisVersions/db-r03`).update({ status: 'approved', locked: true });
     const next = { ...command, designBasisId: 'db-r04', revision: 'DB-R04', supersedesId: 'db-r03', idempotencyKey: randomUUID() };
     expect(await createDesignBasisRevision(db, 'engineer-1', next)).toMatchObject({ resourceId: 'db-r04' });

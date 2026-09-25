@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';import {root} from './build-r02.mjs';import {budget,model,checklist} from './local-transition-p30.mjs';
+const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8);
+test('P30 unchanged node with 100+20 exceeds overall cap height',()=>{near(budget().capHighZ,3039.7);near(model().minimumNodeLoweringForTrialStackMm,39.7);assert.equal(budget().heightOnlyPass,false);});
+test('P30 local node 40/50 lowering only provides 0.3/10.3 trial margin',()=>{near(budget({nodeLoweringMm:40}).remainingHeightMm,.3);near(budget({nodeLoweringMm:50}).remainingHeightMm,10.3);for(const c of model().cases){assert.equal(c.mainRoofChanged,false);assert.equal(c.fullTransitionFitVerified,false);}});
+test('P30 impossible parameters rejected and larger caps rechecked',()=>{assert.throws(()=>budget({coverThicknessMm:30}));assert.throws(()=>budget({nodeLoweringMm:NaN}));assert.equal(budget({nodeLoweringMm:50,coverThicknessMm:150}).heightOnlyPass,false);});
+test('P30 preserves approval boundary and outstanding weather checkpoint',()=>{assert.equal(model().selectedCase,null);assert.equal(model().productionReleased,false);assert.equal(checklist().percent,85);assert.equal(checklist().items.find(i=>i.id==='P2-16').status,'IN_PROGRESS');});
+test('P30 saved outputs reproduce source',()=>{for(const [f,m] of [['register.json',model()],['stage2-checklist.json',checklist()]])assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'output/local-transition-p30',f))),m);});

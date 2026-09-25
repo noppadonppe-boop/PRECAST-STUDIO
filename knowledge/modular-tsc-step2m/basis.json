@@ -1,0 +1,15 @@
+{
+  "id":"STUDY-TS-C-S2M-R00","revision":"S2M-R00","date":"2026-09-16",
+  "status":"ARC_CROWN_REFINEMENT_STUDY_NOT_FOR_DESIGN",
+  "upstream":"output/tsc-step2l-r00/combined_mesh_results.json",
+  "new_mesh":"M1","new_FEM_solves":1,
+  "mesh_rule":"Start from KPT. Keep its 27 wall cells, 16 Y cells and 8 thickness layers. Split its 16 coarse interior arc cells in two, yielding 48 uniform arc cells. Split the last two 50mm flat roof cells next to crown in two, yielding 24 roof cells per half. Mirror both halves, conforming shared nodes throughout.",
+  "profile_counts_per_half":{"wall":27,"arc":48,"roof":24},
+  "expected_elements":25344,"physical_thickness_m":0.175,
+  "comparison_pairs":[["KPT","M1"]],
+  "unchanged":"FULL / NC320 trial / t175 / exterior3x3m including separate floor / R.4 / bay1.5 / F-R / bonded crown / freeY / explicit consistent SW+roofLL50kgf/m2 / no prestress in trial only",
+  "cut_selection":"Same S2L physical exact-angle coordinates; both traces at all six cuts, no smoothing or sign adjustment.",
+  "criteria":"Unchanged S2H numerical QA; S2E490points point/RMS/spread5% with10kPa floor; S2I trace/nodal and pair5% with.1kN/.1kNm floors, quadrature1e-6. Not strength or serviceability code criteria.",
+  "limits":["Only one directional refinement pair, not global convergence proof","Base/Y grading not increased","No real joint/contact/stiffness selection","No other loads, thicknesses, cracking, openings, handling or code design"],
+  "engineering_approval":false,"manufacturing_release":false
+}

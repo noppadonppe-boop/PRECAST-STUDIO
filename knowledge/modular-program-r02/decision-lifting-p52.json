@@ -1,0 +1,19 @@
+{
+  "id": "R02-P52-CONCRETE-LIFTING-DEVELOPMENT",
+  "stage": 5,
+  "authority": "USER",
+  "request": "ระบบยกคอนกรีต ให้ใส่เหล็กเสริมเป็นแนวไว้ก่อน ไม่ต้องใส่ขนาด ให้สมมุติว่ากำลังยกเพียงพอ",
+  "acceptedDevelopmentBasis": {
+    "showReinforcementShapesAndRoutes": true,
+    "reinforcementDiameterMm": null,
+    "reinforcementSpacingMm": null,
+    "concreteLiftingCapacity": "ASSUMED_SUFFICIENT_FOR_DEVELOPMENT_ONLY",
+    "verifiedCapacityKN": null,
+    "strengthAtLiftMPa": null
+  },
+  "supersedes": "P51: lack of concrete reinforcement sizes or release-strength data is no longer a reason to withhold DEVELOPMENT lifting layouts",
+  "preserves": ["Step 2 segment geometry/thickness", "P40 mould design scope", "actual mass/CG and demand calculations", "separate empty-mould, concrete and rotation states", "no automatic Stage 6 start"],
+  "notAssumedVerified": ["anchor product", "lifting frame", "slings/shackles", "steel lugs/welds", "factory floor", "crane at working radius", "rotation and erection"],
+  "engineeringApproved": false,
+  "productionReleased": false
+}

@@ -1,0 +1,6 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {continuousBeam} from './continuous-beam-p49.mjs';
+const eq=(a,b,t=1e-7)=>assert.ok(Math.abs(a-b)<t*Math.max(1,Math.abs(b)),`${a} != ${b}`);
+test('simply supported beam exact UDL',()=>{const r=continuousBeam({length:1000,supports:[0,1000],I:1e6,q:1});eq(r.maxMomentNmm,125000);eq(r.maxDeflectionMm,5*1000**4/(384*200000*1e6));});
+test('two equal continuous spans closed-form reactions and moment',()=>{const r=continuousBeam({length:2000,supports:[0,1000,2000],I:1e6,q:1});[375,1250,375].forEach((v,i)=>eq(r.reactions[i].forceN,v));eq(r.maxMomentNmm,125000);eq(r.forceResidualN,0);eq(r.momentResidualNmm,0);});
+test('equal end springs add rigid translation P/2k to simply supported shape',()=>{const r=continuousBeam({length:1000,supports:[0,1000],I:1e6,q:1,supportK:100});eq(r.reactions[0].displacementMm,5);eq(r.maxDeflectionMm,5+5*1000**4/(384*200000*1e6));});
+test('overhang: mesh subdivision invariance',()=>{const b={length:2660,supports:[332.5,997.5,1662.5,2327.5],I:1e6,q:.3828125};const a=continuousBeam(b),c=continuousBeam({...b,subdivisions:4});a.reactions.forEach((v,i)=>eq(v.forceN,c.reactions[i].forceN));eq(a.maxMomentNmm,c.maxMomentNmm,1e-5);assert.ok(Math.abs(a.maxDeflectionMm-c.maxDeflectionMm)<1e-5);});

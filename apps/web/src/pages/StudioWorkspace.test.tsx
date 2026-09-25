@@ -8,6 +8,24 @@ function open(path = '/org/org-siam/projects') {
   render(<MemoryRouter initialEntries={[path]}><AuthProvider><App /></AuthProvider></MemoryRouter>);
 }
 describe('Studio UX journeys', () => {
+  it('creates an unapproved criteria draft, preserves edits during navigation and explains missing evidence', () => {
+    open('/org/org-siam/projects/p-rama9/stages/g1');
+    fireEvent.click(screen.getByRole('button', { name: 'ใช้ชุดมาตรฐานแนะนำสำหรับโครงการไทย' }));
+    const precast = screen.getByRole('region', { name: 'มาตรฐานพรีคาสท์' });
+    expect(within(precast).getByRole('textbox', { name: 'รหัส / ชื่อมาตรฐาน' })).toHaveValue('ACI/PCI CODE-319');
+    fireEvent.change(screen.getByRole('textbox', { name: 'สถานที่ตั้งและเขตอำนาจ' }), { target: { value: 'โครงการทดสอบ จังหวัดระยอง' } });
+    fireEvent.click(screen.getByRole('button', { name: 'พรีคาสท์และการติดตั้ง' }));
+    expect(screen.getByRole('spinbutton', { name: 'ตัวคูณพลวัตขณะยก' })).toHaveValue(null);
+    fireEvent.click(screen.getByRole('button', { name: 'ตรวจความพร้อม' }));
+    expect(screen.getByRole('button', { name: /กำลังอัดขณะยก.*ยังไม่กำหนด/ })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'ส่งตรวจ Design Basis' })).toBeDisabled();
+    expect(screen.getByText('ยังไม่รับรองการคำนวณตามมาตรฐาน')).toBeVisible();
+    fireEvent.click(screen.getByRole('link', { name: /7 BOQ & Estimate/ }));
+    fireEvent.click(screen.getByRole('link', { name: /2 Design Criteria/ }));
+    expect(screen.getByRole('textbox', { name: 'สถานที่ตั้งและเขตอำนาจ' })).toHaveValue('โครงการทดสอบ จังหวัดระยอง');
+    fireEvent.click(screen.getByRole('button', { name: 'หน่วยและแหล่งอ้างอิง' }));
+    expect(screen.getByRole('table')).toHaveTextContent('1 MPa = 1 N/mm² = 1,000 kN/m²');
+  });
   it('combines search, gate and assignee filters without changing portfolio totals', () => {
     open();
     const table = screen.getByRole('table');

@@ -1,0 +1,20 @@
+{
+  "revision":"WEB-16","date":"2026-09-16","previous_status":"status-web15.json",
+  "status":"LOCAL_REVIEW_READY","product_slots":48,
+  "protected_image_artifacts":80,"concept_images":52,"engineering_images":28,
+  "step2o":"BASE_PROFILE_REFINEMENT_STUDY_NOT_FOR_DESIGN",
+  "new_FEM_solves":1,"new_mesh":"NB","reference_mesh":"M1",
+  "new_run_elements":27648,"new_run_nodes":127009,"new_run_gauss_points_checked":746496,
+  "new_run_traction_cuts_met":6,"new_run_traction_cuts_total":6,
+  "pair_specific_local_groups_met":3,"pair_specific_local_groups_total":4,
+  "base_max_point_change":0.5988154653081516,"base_max_spread_relative":0.09718120429259383,
+  "prior_arc_convergence_issue_closed":false,
+  "whole_model_local_stress_convergence":"NOT_ESTABLISHED",
+  "build":"PASS","web_typescript":"PASS",
+  "build_warning":"Existing lazy Joint3DViewer chunk exceeds 500 kB; build succeeds.",
+  "numerical_evidence_tests_passed":79,"ui_tests_passed":41,"http_security_tests_passed":13,"total_tests_passed":133,
+  "r01_snapshot_checks_passed":162,"new_pngs_visually_checked":1,
+  "browser_visual_qa":"NOT_RUN","firebase_real_identity_integration_verified":false,
+  "team_service_deployed":false,"public_catalog_enabled":false,
+  "engineering_approval":false,"manufacturing_release":false
+}

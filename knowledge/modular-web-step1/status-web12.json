@@ -1,0 +1,19 @@
+{
+  "revision":"WEB-12","date":"2026-09-16","previous_status":"status-web11.json",
+  "status":"LOCAL_REVIEW_READY","product_slots":48,
+  "protected_image_artifacts":76,"concept_images":52,"engineering_images":24,
+  "step2k":"DIRECTIONAL_PROFILE_THICKNESS_STUDY_NOT_FOR_DESIGN",
+  "new_full_bay_runs":2,"reference_runs":1,"traction_cuts":18,
+  "traction_cuts_meeting_all_criteria":2,"pair_specific_local_groups_met":2,"pair_specific_local_groups_total":8,
+  "gauss_points_checked":834624,
+  "cut_selection_correction":"Physical-angle coordinates replace row-fraction selector for nonuniform KP arc. Initial evidence retained; verified report only is published to catalogue.",
+  "whole_model_local_stress_convergence":"NOT_ESTABLISHED",
+  "build":"PASS","web_typescript":"PASS",
+  "build_warning":"Existing lazy Joint3DViewer chunk exceeds 500 kB; no build failure.",
+  "http_data_security_tests_passed":13,"numerical_evidence_tests_passed":60,
+  "step2k_evidence_tests_passed":5,"ui_model_tests_passed":33,"total_tests_passed":106,
+  "r01_snapshot_checks_passed":162,"new_pngs_visually_checked":2,
+  "browser_visual_qa":"NOT_RUN","firebase_real_identity_integration_verified":false,
+  "team_service_deployed":false,"public_catalog_enabled":false,
+  "engineering_approval":false,"manufacturing_release":false
+}

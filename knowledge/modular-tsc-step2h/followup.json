@@ -1,0 +1,13 @@
+{
+  "id":"S2H-H4-FOLLOWUP-R00",
+  "reason":"Initial H2/H3 selected global checks passed but none of 8 sampled stress groups met all S2E criteria. Add one finer mesh without relaxing criteria or erasing original comparisons.",
+  "declared_after":"Initial six H1-H3 runs",
+  "declared_before":"Either H4 run",
+  "mesh":{"id":"H4","target_m":0.10,"arc_divisions":24,"through_thickness":6},
+  "patterns":["FULL","LEFT"],
+  "comparison_pair":["H3","H4"],
+  "criteria_source":"knowledge/modular-tsc-step2h/basis.json",
+  "original_six_run_report_preserved":true,
+  "engineering_approval":false,
+  "manufacturing_release":false
+}

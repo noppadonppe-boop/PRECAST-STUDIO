@@ -1,0 +1,190 @@
+{
+  "schema_version": "1.0",
+  "programme_revision": "R01",
+  "accepted_date": "2026-09-16",
+  "project": "Precast-Module",
+  "approval": {
+    "product_plan": "USER_ACCEPTED",
+    "authority": "latest_user_confirmation_five_decisions",
+    "engineering_basis": "NOT_APPROVED",
+    "engineering_design": "NOT_APPROVED",
+    "manufacturing_release": false
+  },
+  "execution_scope_this_turn": [
+    "knowledge",
+    "skill",
+    "source_identity_check",
+    "plan_data_validation"
+  ],
+  "standardization": {
+    "segment_length_mm": 1500,
+    "applies_to": [
+      "I",
+      "L",
+      "U"
+    ],
+    "legacy_I": {
+      "recipe": "LEGACY20",
+      "length_mm": 2000,
+      "preserve_originals": true,
+      "do_not_relabel_as_STD15": true
+    },
+    "target_I_recipe": "STD15",
+    "target_I_standardized_images_status": "NOT_CREATED",
+    "profiles_from_R00": "STARTING_GEOMETRY_NOT_ENGINEERING_APPROVED"
+  },
+  "thickness_policy": {
+    "unit": "mm",
+    "target_range": [
+      150,
+      200
+    ],
+    "study_candidates": [
+      150,
+      175,
+      200
+    ],
+    "candidate_list_status": "ASSISTANT_PROPOSED_STUDY_GRID",
+    "scope": [
+      "wall_roof_half_shell",
+      "floor_panel",
+      "corner_node_panels"
+    ],
+    "prefer_common_if_feasible": true,
+    "allow_engineered_piece_exceptions": true,
+    "allow_increase_beyond_target_when_justified": true,
+    "selected_thickness_mm": null,
+    "exception_requires": [
+      "calculation_basis",
+      "reanalysis_if_input_changes",
+      "mass_clearance_joint_mould_impact",
+      "responsible_engineer_review"
+    ],
+    "structural_support_members": "SECTION_TBD_NOT_ASSUMED_UNIFORM_PLATE"
+  },
+  "access": {
+    "initial": "INTERNAL_TEAM",
+    "authentication_required": true,
+    "authorization_per_artifact": true,
+    "public_catalog_enabled": false,
+    "future_publication": "SEPARATE_DECISION_AND_ARTIFACT_ALLOWLIST",
+    "engineering_and_fabrication": "RESTRICTED"
+  },
+  "pilot": {
+    "family": "C",
+    "typical": "TS-C",
+    "accepted_by_user": true,
+    "suggested_building": "I-C1",
+    "suggested_building_status": "ASSISTANT_SEQUENCE_PROPOSAL",
+    "expand_after_pilot": [
+      "A",
+      "B",
+      "D"
+    ]
+  },
+  "code": {
+    "primary_source_id": "EIT-011008-21-LOCAL-001",
+    "selection": "USER_SELECTED",
+    "identity": "VERIFIED_FROM_LOCAL_COVER",
+    "clause_checks": "NOT_STARTED",
+    "future_comparisons": [
+      "ACI_EDITION_TBD",
+      "AUSTRALIAN_EDITION_TBD"
+    ]
+  },
+  "loads": {
+    "roof_LL": {
+      "user_value": 50,
+      "user_unit": "kg/m2",
+      "interpreted_unit": "kgf/m2",
+      "si_kN_m2": 0.4903325,
+      "area_basis": null,
+      "status": "USER_REQUESTED_PENDING_CODE_AND_AREA_BASIS_REVIEW"
+    },
+    "floor_LL": {
+      "user_value": 150,
+      "user_unit": "kg/m2",
+      "interpreted_unit": "kgf/m2",
+      "si_kN_m2": 1.4709975,
+      "status": "USER_REQUESTED_PENDING_OCCUPANCY_REVIEW"
+    },
+    "standard_gravity_m_s2": 9.80665,
+    "combinations": null
+  },
+  "materials": {
+    "concrete_types": [
+      "LIGHTWEIGHT",
+      "NORMAL"
+    ],
+    "fc_cylinder_candidates_ksc": [
+      240,
+      320,
+      350
+    ],
+    "strength_mapping_to_concrete_type": "TBD",
+    "reinforcement_candidates": [
+      "SD40",
+      "SD50",
+      "HIGH_STRENGTH_WIRE"
+    ],
+    "concrete_selected": null,
+    "reinforcement_selected": null,
+    "prestress_decision": "UNDECIDED",
+    "density_kg_m3": null,
+    "E_MPa": null,
+    "nu": null
+  },
+  "recipes": {
+    "I": {
+      "area_m2": 18,
+      "straight_bays": 4,
+      "half_shells": 8,
+      "floors_total": 4,
+      "N90_kits": 0,
+      "NR15": 0,
+      "NW15": 0,
+      "TR_kits": 0,
+      "known_primary_panels": 12
+    },
+    "L": {
+      "area_m2": 27,
+      "straight_bays": 4,
+      "half_shells": 8,
+      "floors_total": 6,
+      "N90_kits": 1,
+      "NR15": 2,
+      "NW15": 4,
+      "TR_kits": 2,
+      "known_primary_panels": 20
+    },
+    "U": {
+      "area_m2": 45,
+      "straight_bays": 6,
+      "half_shells": 12,
+      "floors_total": 10,
+      "N90_kits": 2,
+      "NR15": 4,
+      "NW15": 8,
+      "TR_kits": 4,
+      "known_primary_panels": 34
+    }
+  },
+  "recipe_status": "NOMINAL_GRID_AND_CONCEPT_PANELIZATION_NOT_COMPLETE_MANUFACTURING_BOM",
+  "stage_status": {
+    "plan": "DOCUMENTED",
+    "source_identity": "VERIFIED",
+    "step0_engineering_basis": "DRAFT_INCOMPLETE",
+    "step1_website": "NOT_STARTED_IN_THIS_PROGRAMME",
+    "step2_analysis": "NOT_STARTED",
+    "step3_design": "NOT_STARTED",
+    "step4_fabrication": "NOT_STARTED",
+    "step5_revit": "NOT_STARTED"
+  },
+  "references": {
+    "legacy_catalog": "../modular-segments-r00/catalog.json",
+    "legacy_register": "../modular-segments-r00/variant_register.json",
+    "legacy_grid": "../modular-segments-r00/placement_grid.json",
+    "roles": "../ROLE_PERMISSION_KNOWLEDGE.md",
+    "skill": "../../skills/precast-modular-workflow/SKILL.md"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "R02-P32-USER-SCOPE-AND-RELEASE-REQUEST",
+  "authority": "EXPLICIT_USER_MESSAGE",
+  "user_statement": "ตรวจข้อมูล/เรขาคณิตผ่าน 154 รายการ อนุมัติผลิต ทุกรายการ และสร้างตามคำแนะนำไห้อยู่ภายใน scope ที่กำหนดไม่ออกนอกเรื่องออกนอกทะเล",
+  "user_production_approval_statement_received": true,
+  "production_release_applied": false,
+  "reason": "154_IS_AUTOMATED_TEST_COUNT_NOT_CERTIFIED_CAST_PIECES; ENGINEERING_DESIGN_AND_RESPONSIBLE_REVIEW_EVIDENCE_NOT_PROVIDED",
+  "proceed_with_in_scope_development": true,
+  "main_stage": 2,
+  "change_height_limit_authorized": false,
+  "expand_programme_authorized": false,
+  "engineering_approved": false,
+  "production_released": false,
+  "existing_height_occupancy_risk": "RETAINED_UNRESOLVED_NOT_A_BARRIER_TO_NON_RELEASE_DEVELOPMENT",
+  "stop_after_main_stage_completion_for_user_review": true
+}

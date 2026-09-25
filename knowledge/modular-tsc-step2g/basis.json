@@ -1,0 +1,19 @@
+{
+  "id":"STUDY-TS-C-S2G-R00","revision":"S2G-R00","date":"2026-09-16",
+  "scope":"CURVED_PURE_MOMENT_PLANE_STRAIN_COUPON_NOT_FULL_BAY",
+  "geometry":{"outer_radius_m":0.4,"angle_deg":90,"width_m":1.5,"thicknesses_m":[0.15,0.175,0.2]},
+  "material":{"E_MPa":28321.786532937494,"nu":0.2,"status":"INHERITED_TRIAL_NOT_PRODUCTION_SELECTION"},
+  "moment_per_width_kNm_m":1,
+  "models":[{"id":"H8-CHORD","element":"stdBrick","geometry":"CHORD"},{"id":"H20-CHORD","element":"20NodeBrick","geometry":"CHORD"},{"id":"H20-CURVED","element":"20NodeBrick","geometry":"QUADRATIC_ARC"}],
+  "meshes":[{"id":"G1","arc":8,"radial":2,"width":2},{"id":"G2","arc":16,"radial":4,"width":2},{"id":"G3","arc":32,"radial":8,"width":2}],
+  "nu_zero_control":{"t_m":0.175,"model":"H20-CURVED","meshes":["G1","G2","G3"],"reason":"Plane-strain/plane-stress coincide at nu=0; not a concrete property proposal"},
+  "boundary":"Uy=0 everywhere; Uz=0 on theta=0 face; one Ux datum at theta=0,r=Rm,Y=b/2. Radial faces free. End theta=90 has exact Airy sigma_tt traction integrated consistently. No gravity, rigid clamp, connectors, prestress or steel.",
+  "geometry_comparison":"H20-CHORD midside nodes are Cartesian edge averages of the same 8 corners, yielding the same faceted geometry as H8. H20-CURVED arc-edge midside nodes lie on the circle, yielding a quadratic approximation, NOT exact circular geometry. Same partitions do not mean same DOF/cost.",
+  "stress_order":["tt","rr","yy","rt","ry","ty"],
+  "stress_axes":"er radial out, et increasing theta in XZ plane, ey global+Y. Components are explicit tensor projections; tension positive; kPa.",
+  "sample_grid":{"theta_deg":[22.5,45,67.5],"y_m":[0.375,0.75,1.125],"fraction_from_inner":[0.1,0.3,0.5,0.7,0.9]},
+  "load_integration":{"radial_gauss":8,"width_gauss":3},
+  "qa_declared_before_solving":{"equilibrium_relative":0.000001,"load_resultant_error":0.00000001,"stress_reproduction_kPa":0.000001,"energy_exact_relative":0.02,"last_pair_energy_change":0.02,"sample_displacement_relative":0.02,"gauss_component_rms_relative":0.05,"fixed_component_rms_relative":0.05,"fixed_max_point_relative":0.05,"fixed_one_sided_spread_relative":0.05,"stress_floor_kPa":10,"relative_volume_error":0.001,"inverse_residual_m":0.000000001,"scope":"Diagnostic coupon checks only. All six stress components and all listed accuracy targets; no production approval and no relaxation of earlier Step2 criteria."},
+  "sources":[{"title":"NPTEL curved beam Airy elasticity; plane-strain adaptation derived and checked in this study","url":"https://archive.nptel.ac.in/content/storage2/courses/105106049/lecnotes/mainch10.html"},{"title":"OpenSees v3.8.0 20-node element implementation","url":"https://github.com/OpenSees/OpenSees/blob/v3.8.0/SRC/element/brick/Twenty_Node_Brick.cpp"},{"title":"Shape functions and Gauss order, verified by Step2F affine patch","url":"https://github.com/OpenSees/OpenSees/blob/v3.8.0/SRC/element/UP-ucsd/shp3dv.cpp"}],
+  "engineering_approval":false,"manufacturing_release":false
+}

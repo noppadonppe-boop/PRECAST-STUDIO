@@ -1,0 +1,16 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Shared workspace files. The folder is organized by menu/document, never by user.
+    match /{workspaceRoot}/{category}/{documentId}/{fileId}/{fileName} {
+      allow read: if request.auth != null && workspaceRoot == 'PRECAST MODULE' && category in ['projects', 'intake', 'criteria', 'panel', 'loads', 'analysis', 'design', 'cost', 'report', 'shop', 'release', 'review', 'team', 'libraries', 'settings'];
+      allow create: if resource == null && request.auth != null && workspaceRoot == 'PRECAST MODULE'
+        && category in ['projects', 'intake', 'criteria', 'panel', 'loads', 'analysis', 'design', 'cost', 'report', 'shop', 'release', 'review', 'team', 'libraries', 'settings']
+        && request.resource.size > 0 && request.resource.size <= 100 * 1024 * 1024
+        && request.resource.metadata.uploadedBy == request.auth.uid
+        && request.resource.contentType != null;
+      allow update, delete: if false;
+    }
+    match /{path=**} { allow read, write: if false; }
+  }
+}

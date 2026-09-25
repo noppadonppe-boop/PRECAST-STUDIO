@@ -1,3 +1,4 @@
+import type { DesignCriteria } from './designCriteria';
 import type { Gate, GateState } from './workflow';
 import type { RevitDraftingExportProfile } from './exportProfiles';
 
@@ -79,6 +80,7 @@ export interface SourceValidationSummary {
 }
 
 export interface DesignBasisPayload {
+  criteria?: DesignCriteria;
   jurisdiction: string;
   designCode: string;
   designCodeEdition: string;

@@ -1,0 +1,7 @@
+import {render,screen} from '@testing-library/react';
+import {expect,it} from 'vitest';
+import {CoordinatedMouldPanel} from './CoordinatedMouldPanel';
+const a=(name:string)=>({id:'P99-'+name,filename:'fixture-'+name,href:'/api/catalogue/moulds/artifacts/P99-'+name,bytes:100,sha256:'fixture',contentType:name.endsWith('png')?'image/png':'application/json'});
+it('P99 shows revised scope completion without claiming production approval',()=>{render(<CoordinatedMouldPanel files={[a('board.png'),a('parts.png'),a('model.json')]} typicalId="TS-C"/>);expect(screen.getByRole('heading',{name:'P99 — แบบรวมแม่แบบปัจจุบัน'})).toBeInTheDocument();expect(screen.getByText(/ขั้นที่ 5 ปิด 100% ตามขอบเขตแม่แบบฉบับวางแผน P100/)).toBeInTheDocument();expect(screen.getByText(/ไม่ใช่อนุมัติผลิต/)).toBeInTheDocument();expect(screen.getAllByRole('button')).toHaveLength(3);expect(screen.getByAltText('TS-C P99 ประกอบและถอด')).toBeInTheDocument();expect(screen.getByAltText('TS-C P99 ชุดย่อย')).toBeInTheDocument();});
+it('P99 isolated model grant does not reveal images',()=>{render(<CoordinatedMouldPanel files={[a('model.json')]} typicalId="TS-C"/>);expect(screen.queryByRole('img')).not.toBeInTheDocument();expect(screen.getAllByRole('button')).toHaveLength(1);});
+it('P99 no grant has no content',()=>{const {container}=render(<CoordinatedMouldPanel files={[]} typicalId="TS-C"/>);expect(container).toBeEmptyDOMElement();});

@@ -1,0 +1,75 @@
+    for v in [plan,roofplan,bath]:
+        style(v,25);v.HideElements(List[DB.ElementId]([paving.Id]))
+        for cat in [DB.BuiltInCategory.OST_Sections,DB.BuiltInCategory.OST_Elev,DB.BuiltInCategory.OST_RoomSeparationLines]:
+            try:v.SetCategoryHidden(eid(cat),True)
+            except:pass
+    crop(plan,-1.1,-4.2,-1,10.5,6.8,5)
+    crop(roofplan,-.7,-.85,-1,10.5,6.7,6)
+    crop(bath,-.4,-.4,-1,6.25,5.95,5)
+    plan_dimension(plan,[0,9.6],6.45);plan_dimension(plan,[0,2.4,5.8,9.6],5.98)
+    plan_dimension(plan,[0,5.6],-.65,'y');plan_dimension(plan,[-3.6,-1.8,0],-.65,'y')
+    plan_dimension(plan,[.3,2.1,7.5,9.3],-4.0)
+    plan_dimension(roofplan,[0,5.8,9.6],6.35);plan_dimension(roofplan,[0,1.4,2.8,4.2,5.6],-.45,'y')
+    for x,y,s in [(.4,1.68,'01 BATH'),(.4,4.45,'02 UTILITY'),(3.05,2.18,'03 BEDROOM'),(6.55,2.47,'04 LIVING'),(6.35,4.66,'KITCHEN'),(3.8,-.7,'FLUSH VERANDA +450'),(3.4,-2.62,'RAMP 1:12  /  UP >'),(.52,-2.4,'LOWER\nLANDING'),(7.85,-2.65,'UPPER\nLANDING'),(7.1,.48,'D01'),(2.48,.70,'D02'),(5.87,.70,'D03'),(2.51,3.72,'D04')]:textv(plan,x,y,s,2.3)
+    for j in range(4):textv(roofplan,2.6,j*1.4+.8,'PC-R%02d'%(j+1),3)
+    textv(roofplan,6.7,2.8,'RF-05\nWARM FLAT ROOF',3)
+    textv(roofplan,1.5,-.3,'CURVED PRECAST VAULT',2.5)
+    # Reference north only; actual site orientation not assigned.
+    for v in [plan,roofplan]:
+        linev(v,10.05,4.7,10.05,5.6);linev(v,10.05,5.6,9.92,5.36);linev(v,10.05,5.6,10.18,5.36);textv(v,9.9,5.95,'N*',3)
+    def circle(v,x,y,r):
+        for a,b,c in [(p(x+r,y),p(x-r,y),p(x,y+r)),(p(x-r,y),p(x+r,y),p(x,y-r))]:doc.Create.NewDetailCurve(v,DB.Arc.Create(a,b,c))
+    # Furniture-free circles are deliberately shown as coordination clearances.
+    for v in [plan,bath]:
+        circle(v,1.04,1.06,.775);circle(v,4.05,1.50,.775)
+    plan_dimension(bath,[.15,2.35],-.12);plan_dimension(bath,[2.45,3.35,4.85,5.75],2.45)
+    plan_dimension(bath,[.15,3.15],-.18,'y')
+    for x,y,s in [(.25,3.7,'UTILITY / LINEN'),(.4,1.8,'1550 TURN'),(.3,2.45,'FLUSH\nSHOWER'),(1.55,2.3,'WC'),(3.32,1.9,'1550 TURN'),(3.7,3.68,'1500 x 2000\nBED'),(2.58,3.65,'900'),(5.05,3.65,'900'),(2.47,.6,'1100 CLEAR'),(5.02,.6,'1100 CLEAR')]:textv(bath,x,y,s,2.2)
+    # Real building elevations, with view direction facing out from the facade.
+    elevs=[]
+    for nm,pt,dirvec in [('SOUTH - Entrance facade',p(4.8,-5.0),DB.XYZ(0,-1,0)),('NORTH - Garden facade',p(4.8,7.2),DB.XYZ(0,1,0)),('EAST - Living facade',p(11.0,2.8),DB.XYZ(1,0,0)),('WEST - Vault facade',p(-2,2.8),DB.XYZ(-1,0,0))]:
+        marker=DB.ElevationMarker.CreateElevationMarker(doc,vft(DB.ViewFamily.Elevation).Id,pt,50)
+        v=marker.CreateElevation(doc,plan.Id,0);doc.Regenerate()
+        cur=v.ViewDirection;ang=math.atan2(dirvec.Y,dirvec.X)-math.atan2(cur.Y,cur.X)
+        DB.ElementTransformUtils.RotateElement(doc,marker.Id,li(pt,pt+DB.XYZ.BasisZ),ang);doc.Regenerate()
+        v.Name=nm;style(v,50)
+        bb=v.CropBox;inv=bb.Transform.Inverse
+        q=[inv.OfPoint(p(x,y,z)) for x in [-.6,10.2] for y in [-3.9,5.95] for z in [-.6,4.95]]
+        bb.Min=DB.XYZ(min(a.X for a in q),min(a.Y for a in q),m(-18));bb.Max=DB.XYZ(max(a.X for a in q),max(a.Y for a in q),0)
+        v.CropBox=bb;v.CropBoxActive=True;v.CropBoxVisible=False;setp(v,DB.BuiltInParameter.VIEWER_BOUND_OFFSET_FAR,m(18))
+        v.HideElements(List[DB.ElementId]([paving.Id]));elevs.append(v)
+    sections=[]
+    for nm,org,right,direc,w,depth in [('SECTION A-A - Across bedroom and living',p(4.8,2.65,0),DB.XYZ(1,0,0),DB.XYZ(0,-1,0),5.45,7),('SECTION B-B - Bedroom front to rear',p(4.10,1.0,0),DB.XYZ(0,1,0),DB.XYZ(1,0,0),5.25,5.8)]:
+        trf=DB.Transform.Identity;trf.Origin=org;trf.BasisX=right;trf.BasisY=DB.XYZ.BasisZ;trf.BasisZ=direc
+        bb=DB.BoundingBoxXYZ();bb.Transform=trf;bb.Min=p(-w,-.65,0);bb.Max=p(w,4.95,depth)
+        v=DB.ViewSection.CreateSection(doc,vft(DB.ViewFamily.Section).Id,bb);v.Name=nm;style(v,50);v.CropBoxVisible=False
+        v.HideElements(List[DB.ElementId]([paving.Id]));sections.append(v)
+    for v in elevs+sections:
+        for cat in [DB.BuiltInCategory.OST_Sections,DB.BuiltInCategory.OST_Elev]:
+            try:v.SetCategoryHidden(eid(cat),True)
+            except:pass
+    # Section line locations are explicit native annotations on the floor plan.
+    linev(plan,-.25,2.65,10.0,2.65);textv(plan,-.3,2.98,'A',3);textv(plan,9.7,2.98,'A',3)
+    linev(plan,4.1,-3.9,4.1,5.8);textv(plan,4.2,5.85,'B',3);textv(plan,4.2,-3.8,'B',3)
+    axo=DB.View3D.CreateIsometric(doc,vft(DB.ViewFamily.ThreeDimensional).Id);axo.Name='3D - Exterior - PPE Senior Home'
+    cut=DB.View3D.CreateIsometric(doc,vft(DB.ViewFamily.ThreeDimensional).Id);cut.Name='3D - Interior cutaway - PPE Senior Home'
+    for v in [axo,cut]:
+        v.Scale=50;v.DetailLevel=DB.ViewDetailLevel.Fine;v.DisplayStyle=DB.DisplayStyle.ShadingWithEdges
+        forward=DB.XYZ(-.8,1,-.65).Normalize();right=forward.CrossProduct(DB.XYZ.BasisZ).Normalize();up=right.CrossProduct(forward).Normalize()
+        v.SetOrientation(DB.ViewOrientation3D(p(16,-15,12),up,forward))
+        for cat in [DB.BuiltInCategory.OST_Levels,DB.BuiltInCategory.OST_CLines,DB.BuiltInCategory.OST_SectionBox]:
+            try:v.SetCategoryHidden(eid(cat),True)
+            except:pass
+        bb=DB.BoundingBoxXYZ();bb.Min=p(-.7,-4.0,-.05);bb.Max=p(10.25,6.0,4.95);v.SetSectionBox(bb);v.IsSectionBoxActive=True
+    bb=DB.BoundingBoxXYZ();bb.Min=p(-.3,-1.9,.2);bb.Max=p(9.9,5.8,2.3);cut.SetSectionBox(bb)
+    cut.HideElements(List[DB.ElementId]([r.Id for r in roofs]))
+    # Consistent light warm concrete appearance at roof panel ends.
+    for roof in roofs:
+        op=DB.Options();op.ComputeReferences=True
+        for geom in roof.get_Geometry(op):
+            if isinstance(geom,DB.Solid):
+                for face in geom.Faces:
+                    if isinstance(face,DB.PlanarFace) and abs(face.FaceNormal.Z)<.1:
+                        try:doc.Paint(roof.Id,face,concrete.Id)
+                        except:pass
+

@@ -1,0 +1,1941 @@
+{
+  "schemaVersion": 1,
+  "programmeRevision": "R02",
+  "storageMode": "LOCAL_FIRST",
+  "orgId": null,
+  "remoteProjectId": null,
+  "sources": [
+    {
+      "path": "knowledge/modular-program-r01/product_matrix.json",
+      "sha256": "8420db25c05a68325967068463a7bac77ba8ab916eac0a53d0398df157e1fe85"
+    },
+    {
+      "path": "knowledge/modular-program-r02/decisions.json",
+      "sha256": "c7ad28b38e184ded3f30e40a4c279348f227a58b2ed36a26a0c11ec12a2c139d"
+    }
+  ],
+  "products": [
+    {
+      "id": "PM-I-A1",
+      "displayCode": "I-A1",
+      "plan": "I",
+      "family": "A",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-I-A1-R02"
+    },
+    {
+      "id": "PM-I-A2",
+      "displayCode": "I-A2",
+      "plan": "I",
+      "family": "A",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-I-A2-R02"
+    },
+    {
+      "id": "PM-I-A3",
+      "displayCode": "I-A3",
+      "plan": "I",
+      "family": "A",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-I-A3-R02"
+    },
+    {
+      "id": "PM-I-A4",
+      "displayCode": "I-A4",
+      "plan": "I",
+      "family": "A",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-I-A4-R02"
+    },
+    {
+      "id": "PM-I-B1",
+      "displayCode": "I-B1",
+      "plan": "I",
+      "family": "B",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-I-B1-R02"
+    },
+    {
+      "id": "PM-I-B2",
+      "displayCode": "I-B2",
+      "plan": "I",
+      "family": "B",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-I-B2-R02"
+    },
+    {
+      "id": "PM-I-B3",
+      "displayCode": "I-B3",
+      "plan": "I",
+      "family": "B",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-I-B3-R02"
+    },
+    {
+      "id": "PM-I-B4",
+      "displayCode": "I-B4",
+      "plan": "I",
+      "family": "B",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-I-B4-R02"
+    },
+    {
+      "id": "PM-I-C1",
+      "displayCode": "I-C1",
+      "plan": "I",
+      "family": "C",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-I-C1-R02"
+    },
+    {
+      "id": "PM-I-C2",
+      "displayCode": "I-C2",
+      "plan": "I",
+      "family": "C",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-I-C2-R02"
+    },
+    {
+      "id": "PM-I-C3",
+      "displayCode": "I-C3",
+      "plan": "I",
+      "family": "C",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-I-C3-R02"
+    },
+    {
+      "id": "PM-I-C4",
+      "displayCode": "I-C4",
+      "plan": "I",
+      "family": "C",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-I-C4-R02"
+    },
+    {
+      "id": "PM-I-D1",
+      "displayCode": "I-D1",
+      "plan": "I",
+      "family": "D",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-I-D1-R02"
+    },
+    {
+      "id": "PM-I-D2",
+      "displayCode": "I-D2",
+      "plan": "I",
+      "family": "D",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-I-D2-R02"
+    },
+    {
+      "id": "PM-I-D3",
+      "displayCode": "I-D3",
+      "plan": "I",
+      "family": "D",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-I-D3-R02"
+    },
+    {
+      "id": "PM-I-D4",
+      "displayCode": "I-D4",
+      "plan": "I",
+      "family": "D",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-I-D4-R02"
+    },
+    {
+      "id": "PM-L-A1",
+      "displayCode": "L-A1",
+      "plan": "L",
+      "family": "A",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-L-A1-R02"
+    },
+    {
+      "id": "PM-L-A2",
+      "displayCode": "L-A2",
+      "plan": "L",
+      "family": "A",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-L-A2-R02"
+    },
+    {
+      "id": "PM-L-A3",
+      "displayCode": "L-A3",
+      "plan": "L",
+      "family": "A",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-L-A3-R02"
+    },
+    {
+      "id": "PM-L-A4",
+      "displayCode": "L-A4",
+      "plan": "L",
+      "family": "A",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-L-A4-R02"
+    },
+    {
+      "id": "PM-L-B1",
+      "displayCode": "L-B1",
+      "plan": "L",
+      "family": "B",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-L-B1-R02"
+    },
+    {
+      "id": "PM-L-B2",
+      "displayCode": "L-B2",
+      "plan": "L",
+      "family": "B",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-L-B2-R02"
+    },
+    {
+      "id": "PM-L-B3",
+      "displayCode": "L-B3",
+      "plan": "L",
+      "family": "B",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-L-B3-R02"
+    },
+    {
+      "id": "PM-L-B4",
+      "displayCode": "L-B4",
+      "plan": "L",
+      "family": "B",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-L-B4-R02"
+    },
+    {
+      "id": "PM-L-C1",
+      "displayCode": "L-C1",
+      "plan": "L",
+      "family": "C",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-L-C1-R02"
+    },
+    {
+      "id": "PM-L-C2",
+      "displayCode": "L-C2",
+      "plan": "L",
+      "family": "C",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-L-C2-R02"
+    },
+    {
+      "id": "PM-L-C3",
+      "displayCode": "L-C3",
+      "plan": "L",
+      "family": "C",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-L-C3-R02"
+    },
+    {
+      "id": "PM-L-C4",
+      "displayCode": "L-C4",
+      "plan": "L",
+      "family": "C",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-L-C4-R02"
+    },
+    {
+      "id": "PM-L-D1",
+      "displayCode": "L-D1",
+      "plan": "L",
+      "family": "D",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-L-D1-R02"
+    },
+    {
+      "id": "PM-L-D2",
+      "displayCode": "L-D2",
+      "plan": "L",
+      "family": "D",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-L-D2-R02"
+    },
+    {
+      "id": "PM-L-D3",
+      "displayCode": "L-D3",
+      "plan": "L",
+      "family": "D",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-L-D3-R02"
+    },
+    {
+      "id": "PM-L-D4",
+      "displayCode": "L-D4",
+      "plan": "L",
+      "family": "D",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-L-D4-R02"
+    },
+    {
+      "id": "PM-U-A1",
+      "displayCode": "U-A1",
+      "plan": "U",
+      "family": "A",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-U-A1-R02"
+    },
+    {
+      "id": "PM-U-A2",
+      "displayCode": "U-A2",
+      "plan": "U",
+      "family": "A",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-U-A2-R02"
+    },
+    {
+      "id": "PM-U-A3",
+      "displayCode": "U-A3",
+      "plan": "U",
+      "family": "A",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-U-A3-R02"
+    },
+    {
+      "id": "PM-U-A4",
+      "displayCode": "U-A4",
+      "plan": "U",
+      "family": "A",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-U-A4-R02"
+    },
+    {
+      "id": "PM-U-B1",
+      "displayCode": "U-B1",
+      "plan": "U",
+      "family": "B",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-U-B1-R02"
+    },
+    {
+      "id": "PM-U-B2",
+      "displayCode": "U-B2",
+      "plan": "U",
+      "family": "B",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-U-B2-R02"
+    },
+    {
+      "id": "PM-U-B3",
+      "displayCode": "U-B3",
+      "plan": "U",
+      "family": "B",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-U-B3-R02"
+    },
+    {
+      "id": "PM-U-B4",
+      "displayCode": "U-B4",
+      "plan": "U",
+      "family": "B",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-U-B4-R02"
+    },
+    {
+      "id": "PM-U-C1",
+      "displayCode": "U-C1",
+      "plan": "U",
+      "family": "C",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-U-C1-R02"
+    },
+    {
+      "id": "PM-U-C2",
+      "displayCode": "U-C2",
+      "plan": "U",
+      "family": "C",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-U-C2-R02"
+    },
+    {
+      "id": "PM-U-C3",
+      "displayCode": "U-C3",
+      "plan": "U",
+      "family": "C",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-U-C3-R02"
+    },
+    {
+      "id": "PM-U-C4",
+      "displayCode": "U-C4",
+      "plan": "U",
+      "family": "C",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-U-C4-R02"
+    },
+    {
+      "id": "PM-U-D1",
+      "displayCode": "U-D1",
+      "plan": "U",
+      "family": "D",
+      "use": 1,
+      "useName": "office",
+      "currentRevisionId": "PM-U-D1-R02"
+    },
+    {
+      "id": "PM-U-D2",
+      "displayCode": "U-D2",
+      "plan": "U",
+      "family": "D",
+      "use": 2,
+      "useName": "home",
+      "currentRevisionId": "PM-U-D2-R02"
+    },
+    {
+      "id": "PM-U-D3",
+      "displayCode": "U-D3",
+      "plan": "U",
+      "family": "D",
+      "use": 3,
+      "useName": "cafe",
+      "currentRevisionId": "PM-U-D3-R02"
+    },
+    {
+      "id": "PM-U-D4",
+      "displayCode": "U-D4",
+      "plan": "U",
+      "family": "D",
+      "use": 4,
+      "useName": "resort",
+      "currentRevisionId": "PM-U-D4-R02"
+    }
+  ],
+  "productRevisions": [
+    {
+      "id": "PM-I-A1-R02",
+      "productId": "PM-I-A1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-A1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-A2-R02",
+      "productId": "PM-I-A2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-A2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-A3-R02",
+      "productId": "PM-I-A3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-A3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-A4-R02",
+      "productId": "PM-I-A4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-A4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-B1-R02",
+      "productId": "PM-I-B1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-B1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-B2-R02",
+      "productId": "PM-I-B2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-B2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-B3-R02",
+      "productId": "PM-I-B3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-B3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-B4-R02",
+      "productId": "PM-I-B4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-B4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-C1-R02",
+      "productId": "PM-I-C1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-C1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-C2-R02",
+      "productId": "PM-I-C2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-C2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-C3-R02",
+      "productId": "PM-I-C3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-C3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-C4-R02",
+      "productId": "PM-I-C4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-C4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-D1-R02",
+      "productId": "PM-I-D1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-D1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-D2-R02",
+      "productId": "PM-I-D2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-D2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-D3-R02",
+      "productId": "PM-I-D3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-D3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-I-D4-R02",
+      "productId": "PM-I-D4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 18,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-I-D4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-A1-R02",
+      "productId": "PM-L-A1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02",
+        "TS-A-NR15-R02",
+        "TS-A-NW15-R02",
+        "TS-A-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-A1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-A2-R02",
+      "productId": "PM-L-A2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02",
+        "TS-A-NR15-R02",
+        "TS-A-NW15-R02",
+        "TS-A-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-A2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-A3-R02",
+      "productId": "PM-L-A3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02",
+        "TS-A-NR15-R02",
+        "TS-A-NW15-R02",
+        "TS-A-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-A3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-A4-R02",
+      "productId": "PM-L-A4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02",
+        "TS-A-NR15-R02",
+        "TS-A-NW15-R02",
+        "TS-A-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-A4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-B1-R02",
+      "productId": "PM-L-B1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02",
+        "TS-B-NR15-R02",
+        "TS-B-NW15-R02",
+        "TS-B-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-B1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-B2-R02",
+      "productId": "PM-L-B2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02",
+        "TS-B-NR15-R02",
+        "TS-B-NW15-R02",
+        "TS-B-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-B2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-B3-R02",
+      "productId": "PM-L-B3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02",
+        "TS-B-NR15-R02",
+        "TS-B-NW15-R02",
+        "TS-B-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-B3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-B4-R02",
+      "productId": "PM-L-B4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02",
+        "TS-B-NR15-R02",
+        "TS-B-NW15-R02",
+        "TS-B-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-B4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-C1-R02",
+      "productId": "PM-L-C1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02",
+        "TS-C-NR15-R02",
+        "TS-C-NW15-R02",
+        "TS-C-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-C1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-C2-R02",
+      "productId": "PM-L-C2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02",
+        "TS-C-NR15-R02",
+        "TS-C-NW15-R02",
+        "TS-C-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-C2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-C3-R02",
+      "productId": "PM-L-C3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02",
+        "TS-C-NR15-R02",
+        "TS-C-NW15-R02",
+        "TS-C-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-C3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-C4-R02",
+      "productId": "PM-L-C4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02",
+        "TS-C-NR15-R02",
+        "TS-C-NW15-R02",
+        "TS-C-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-C4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-D1-R02",
+      "productId": "PM-L-D1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02",
+        "TS-D-NR15-R02",
+        "TS-D-NW15-R02",
+        "TS-D-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-D1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-D2-R02",
+      "productId": "PM-L-D2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02",
+        "TS-D-NR15-R02",
+        "TS-D-NW15-R02",
+        "TS-D-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-D2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-D3-R02",
+      "productId": "PM-L-D3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02",
+        "TS-D-NR15-R02",
+        "TS-D-NW15-R02",
+        "TS-D-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-D3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-L-D4-R02",
+      "productId": "PM-L-D4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 27,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02",
+        "TS-D-NR15-R02",
+        "TS-D-NW15-R02",
+        "TS-D-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-L-D4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-A1-R02",
+      "productId": "PM-U-A1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02",
+        "TS-A-NR15-R02",
+        "TS-A-NW15-R02",
+        "TS-A-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-A1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-A2-R02",
+      "productId": "PM-U-A2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02",
+        "TS-A-NR15-R02",
+        "TS-A-NW15-R02",
+        "TS-A-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-A2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-A3-R02",
+      "productId": "PM-U-A3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02",
+        "TS-A-NR15-R02",
+        "TS-A-NW15-R02",
+        "TS-A-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-A3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-A4-R02",
+      "productId": "PM-U-A4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-A-H15-LH-R02",
+        "TS-A-H15-RH-R02",
+        "TS-A-F15-R02",
+        "TS-A-NR15-R02",
+        "TS-A-NW15-R02",
+        "TS-A-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-A4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-B1-R02",
+      "productId": "PM-U-B1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02",
+        "TS-B-NR15-R02",
+        "TS-B-NW15-R02",
+        "TS-B-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-B1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-B2-R02",
+      "productId": "PM-U-B2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02",
+        "TS-B-NR15-R02",
+        "TS-B-NW15-R02",
+        "TS-B-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-B2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-B3-R02",
+      "productId": "PM-U-B3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02",
+        "TS-B-NR15-R02",
+        "TS-B-NW15-R02",
+        "TS-B-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-B3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-B4-R02",
+      "productId": "PM-U-B4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-B-H15-LH-R02",
+        "TS-B-H15-RH-R02",
+        "TS-B-F15-R02",
+        "TS-B-NR15-R02",
+        "TS-B-NW15-R02",
+        "TS-B-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-B4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-C1-R02",
+      "productId": "PM-U-C1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02",
+        "TS-C-NR15-R02",
+        "TS-C-NW15-R02",
+        "TS-C-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-C1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-C2-R02",
+      "productId": "PM-U-C2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02",
+        "TS-C-NR15-R02",
+        "TS-C-NW15-R02",
+        "TS-C-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-C2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-C3-R02",
+      "productId": "PM-U-C3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02",
+        "TS-C-NR15-R02",
+        "TS-C-NW15-R02",
+        "TS-C-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-C3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-C4-R02",
+      "productId": "PM-U-C4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-C-H15-LH-R02",
+        "TS-C-H15-RH-R02",
+        "TS-C-F15-R02",
+        "TS-C-NR15-R02",
+        "TS-C-NW15-R02",
+        "TS-C-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-C4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-D1-R02",
+      "productId": "PM-U-D1",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02",
+        "TS-D-NR15-R02",
+        "TS-D-NW15-R02",
+        "TS-D-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-D1-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-D2-R02",
+      "productId": "PM-U-D2",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02",
+        "TS-D-NR15-R02",
+        "TS-D-NW15-R02",
+        "TS-D-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-D2-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-D3-R02",
+      "productId": "PM-U-D3",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02",
+        "TS-D-NR15-R02",
+        "TS-D-NW15-R02",
+        "TS-D-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-D3-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "PM-U-D4-R02",
+      "productId": "PM-U-D4",
+      "programmeRevision": "R02",
+      "nominalGridAreaM2": 45,
+      "bayGridMm": 1500,
+      "segmentRevisionIds": [
+        "TS-D-H15-LH-R02",
+        "TS-D-H15-RH-R02",
+        "TS-D-F15-R02",
+        "TS-D-NR15-R02",
+        "TS-D-NW15-R02",
+        "TS-D-TR-R02"
+      ],
+      "geometryRevisionId": null,
+      "geometryStatus": "NOT_CREATED",
+      "engineeringStatus": "DEFERRED",
+      "revitStatus": "NOT_CREATED",
+      "legacyReferenceTag": "PM-U-D4-R00",
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    }
+  ],
+  "segmentTypes": [
+    {
+      "id": "TS-A-H15-LH",
+      "family": "A",
+      "kind": "H15-LH",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-A-H15-LH-R02"
+    },
+    {
+      "id": "TS-A-H15-RH",
+      "family": "A",
+      "kind": "H15-RH",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-A-H15-RH-R02"
+    },
+    {
+      "id": "TS-A-F15",
+      "family": "A",
+      "kind": "F15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-A-F15-R02"
+    },
+    {
+      "id": "TS-A-NR15",
+      "family": "A",
+      "kind": "NR15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-A-NR15-R02"
+    },
+    {
+      "id": "TS-A-NW15",
+      "family": "A",
+      "kind": "NW15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-A-NW15-R02"
+    },
+    {
+      "id": "TS-A-TR",
+      "family": "A",
+      "kind": "TR",
+      "entityKind": "UNRESOLVED_KIT",
+      "currentRevisionId": "TS-A-TR-R02"
+    },
+    {
+      "id": "TS-B-H15-LH",
+      "family": "B",
+      "kind": "H15-LH",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-B-H15-LH-R02"
+    },
+    {
+      "id": "TS-B-H15-RH",
+      "family": "B",
+      "kind": "H15-RH",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-B-H15-RH-R02"
+    },
+    {
+      "id": "TS-B-F15",
+      "family": "B",
+      "kind": "F15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-B-F15-R02"
+    },
+    {
+      "id": "TS-B-NR15",
+      "family": "B",
+      "kind": "NR15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-B-NR15-R02"
+    },
+    {
+      "id": "TS-B-NW15",
+      "family": "B",
+      "kind": "NW15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-B-NW15-R02"
+    },
+    {
+      "id": "TS-B-TR",
+      "family": "B",
+      "kind": "TR",
+      "entityKind": "UNRESOLVED_KIT",
+      "currentRevisionId": "TS-B-TR-R02"
+    },
+    {
+      "id": "TS-C-H15-LH",
+      "family": "C",
+      "kind": "H15-LH",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-C-H15-LH-R02"
+    },
+    {
+      "id": "TS-C-H15-RH",
+      "family": "C",
+      "kind": "H15-RH",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-C-H15-RH-R02"
+    },
+    {
+      "id": "TS-C-F15",
+      "family": "C",
+      "kind": "F15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-C-F15-R02"
+    },
+    {
+      "id": "TS-C-NR15",
+      "family": "C",
+      "kind": "NR15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-C-NR15-R02"
+    },
+    {
+      "id": "TS-C-NW15",
+      "family": "C",
+      "kind": "NW15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-C-NW15-R02"
+    },
+    {
+      "id": "TS-C-TR",
+      "family": "C",
+      "kind": "TR",
+      "entityKind": "UNRESOLVED_KIT",
+      "currentRevisionId": "TS-C-TR-R02"
+    },
+    {
+      "id": "TS-D-H15-LH",
+      "family": "D",
+      "kind": "H15-LH",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-D-H15-LH-R02"
+    },
+    {
+      "id": "TS-D-H15-RH",
+      "family": "D",
+      "kind": "H15-RH",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-D-H15-RH-R02"
+    },
+    {
+      "id": "TS-D-F15",
+      "family": "D",
+      "kind": "F15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-D-F15-R02"
+    },
+    {
+      "id": "TS-D-NR15",
+      "family": "D",
+      "kind": "NR15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-D-NR15-R02"
+    },
+    {
+      "id": "TS-D-NW15",
+      "family": "D",
+      "kind": "NW15",
+      "entityKind": "SEGMENT_TYPE",
+      "currentRevisionId": "TS-D-NW15-R02"
+    },
+    {
+      "id": "TS-D-TR",
+      "family": "D",
+      "kind": "TR",
+      "entityKind": "UNRESOLVED_KIT",
+      "currentRevisionId": "TS-D-TR-R02"
+    }
+  ],
+  "segmentRevisions": [
+    {
+      "id": "TS-A-H15-LH-R02",
+      "segmentTypeId": "TS-A-H15-LH",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 150,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-A-H15-RH-R02",
+      "segmentTypeId": "TS-A-H15-RH",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 150,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-A-F15-R02",
+      "segmentTypeId": "TS-A-F15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-A-NR15-R02",
+      "segmentTypeId": "TS-A-NR15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-A-NW15-R02",
+      "segmentTypeId": "TS-A-NW15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-A-TR-R02",
+      "segmentTypeId": "TS-A-TR",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": null,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-B-H15-LH-R02",
+      "segmentTypeId": "TS-B-H15-LH",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 150,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-B-H15-RH-R02",
+      "segmentTypeId": "TS-B-H15-RH",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 150,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-B-F15-R02",
+      "segmentTypeId": "TS-B-F15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-B-NR15-R02",
+      "segmentTypeId": "TS-B-NR15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-B-NW15-R02",
+      "segmentTypeId": "TS-B-NW15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-B-TR-R02",
+      "segmentTypeId": "TS-B-TR",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": null,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-C-H15-LH-R02",
+      "segmentTypeId": "TS-C-H15-LH",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 150,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-C-H15-RH-R02",
+      "segmentTypeId": "TS-C-H15-RH",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 150,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-C-F15-R02",
+      "segmentTypeId": "TS-C-F15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-C-NR15-R02",
+      "segmentTypeId": "TS-C-NR15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-C-NW15-R02",
+      "segmentTypeId": "TS-C-NW15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-C-TR-R02",
+      "segmentTypeId": "TS-C-TR",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": null,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-D-H15-LH-R02",
+      "segmentTypeId": "TS-D-H15-LH",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 150,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-D-H15-RH-R02",
+      "segmentTypeId": "TS-D-H15-RH",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 150,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-D-F15-R02",
+      "segmentTypeId": "TS-D-F15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-D-NR15-R02",
+      "segmentTypeId": "TS-D-NR15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-D-NW15-R02",
+      "segmentTypeId": "TS-D-NW15",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": 175,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    },
+    {
+      "id": "TS-D-TR-R02",
+      "segmentTypeId": "TS-D-TR",
+      "programmeRevision": "R02",
+      "developmentThicknessMm": null,
+      "engineeringThicknessMm": null,
+      "geometryStatus": "PARAMETERS_ONLY",
+      "engineeringStatus": "NOT_CHECKED",
+      "castDimensionsMm": null,
+      "visibility": "INTERNAL_TEAM",
+      "approvedForManufacture": false
+    }
+  ],
+  "assemblyInstances": [],
+  "artifacts": [],
+  "pilot": {
+    "productId": "PM-I-C1",
+    "family": "C",
+    "externalWidthMm": 3000,
+    "externalHeightMm": 3000,
+    "heightDatum": "UNDERSIDE_FLOOR_TO_HIGHEST_STRUCTURAL_ROOF_SURFACE",
+    "externalRadiusMm": 400,
+    "wallRoofDevelopmentThicknessMm": 150,
+    "floorDevelopmentThicknessMm": 175,
+    "bayGridMm": 1500,
+    "jointGapMm": null,
+    "castLengthMm": null,
+    "status": "GEOMETRY_INPUTS_ONLY_NOT_A_DRAWING"
+  },
+  "approval": {
+    "engineeringApproved": false,
+    "productionReleased": false
+  }
+}

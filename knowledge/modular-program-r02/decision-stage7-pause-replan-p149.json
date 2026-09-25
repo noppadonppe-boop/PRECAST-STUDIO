@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "PROGRAMME-R02-STAGE7-PAUSE-REPLAN-P149",
+  "date": "2026-09-21",
+  "authority": "USER_REQUESTED_PAUSE_AND_KNOWLEDGE_REPLAN",
+  "status": "PAUSED_PENDING_USER_REVIEW_OF_REPLAN",
+  "formal_stage": 7,
+  "user_label": "STEP_8_CREATE_STAAD_FILE_MODEL",
+  "numbering_note": "R02 formal Stage 7 is STAAD/EIT; formal Stage 8 remains reconciliation and human production approval.",
+  "pause_scope": [
+    "NEW_STAAD_MODEL_GENERATION",
+    "NEW_NATIVE_SOLVER_RUNS",
+    "RC_AND_JOINT_DESIGN_EXPANSION",
+    "BATCH_48_PRODUCTION"
+  ],
+  "allowed_while_paused": [
+    "READ_ONLY_AUDIT",
+    "KNOWLEDGE_AND_PLAN_UPDATES"
+  ],
+  "historical_outputs_preserved": true,
+  "replacement_sequence": [
+    "7A_FREEZE_AND_MODEL_CONTRACT",
+    "7B_UNIFIED_STAAD_COMPILER",
+    "7C_PM_I_C1_PILOT",
+    "7D_BATCH_48_PRIMARY_STD",
+    "7E_LOADS_AND_CODE_TRACKS",
+    "7F_NATIVE_ANALYSIS_AND_QA",
+    "7G_RC_JOINT_DESIGN_AND_HANDOFF",
+    "8_RECONCILE_AND_HUMAN_PRODUCTION_APPROVAL"
+  ],
+  "intermediate_milestone": {
+    "id": "M7-FILE-48",
+    "purpose": "Close creation and native reference validation of 48 primary STAAD files without claiming final engineering approval.",
+    "closes_formal_stage7": false
+  },
+  "resume_requires_user_instruction": true,
+  "stage7_completion_percent": 5,
+  "final_analysed_products": 0,
+  "rc_designed_products": 0,
+  "engineering_approved": false,
+  "production_released": false,
+  "knowledge_path": "STAGE7_PAUSE_REPLAN_P149.md"
+}

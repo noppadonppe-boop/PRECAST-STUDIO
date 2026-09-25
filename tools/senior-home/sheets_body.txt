@@ -1,0 +1,97 @@
+    s0=sheet('A001','Design overview and proposed materials')
+    vp(s0,axo,290,360)
+    note(s0,60,175,'01  EXTERIOR AXONOMETRIC  /  1:50',3.5)
+    note(s0,565,520,'A HOME FOR AGEING IN PLACE',4)
+    note(s0,565,502,'Reference: user-supplied concept image.\nEnclosed envelope: 9600 x 5600 = 53.76 m2.\n1 bedroom + bath + utility + living / kitchen.\nFront veranda 17.28 m2, plus ramp / landings.\nSelected form: curved bedroom volume\nand lower flat-roof living wing.\nFFL +450. Vault spring +3200 / crown +4500.\nDimensions not shown in image are assumed.',3,235)
+    note(s0,565,411,'PROPOSED MATERIALS',4)
+    note(s0,565,393,'PC-01: structural lightweight precast.\n35 MPa / 1800 kg/m3 - proposed only.\nWall 150 mm; floor 180 PC + 30 screed\n+ 10 tile. Vault 120 PC + 80 mineral wool\n+ 12 timber lining + 5 waterproofing.\nGL-01: 6+6 laminated safety glass.\nAL-01: black powder-coated frames.\nFL-01: slip-resistant timber-look finish.\nFL-02: wet-room slip-resistant tile.\nDK-01: textured composite deck, gaps <=5.\nWarm oak joinery; 3000K lighting.',3,235)
+    note(s0,565,278,'DESIGN STATUS',4)
+    note(s0,565,260,'Architectural BIM concept / P01.\nConfirm site, soil, flood level and orientation.\nEngineer to size foundation, reinforcement,\npanel connections, lifting and transport.\nMEP fixtures show positions only.\nNo structural or code compliance certified.',3,235)
+    note(s0,40,139,'BIM CONTENT',4)
+    note(s0,40,123,'Native Revit walls, floors, roofs, hosted doors, rooms, material assets, schedules and coordinated views.\nCustom glazing, furnishings, ramp, rails and fixtures include categorized DirectShape geometry.\nOverall image dimensions retained; room divisions, levels and material properties are design assumptions.',2.8,755)
+    s1=sheet('A101','Floor plan and accessible approach')
+    vp(s1,plan,294,337)
+    note(s1,60,102,'01  FLOOR PLAN + APPROACH  /  1:25',3.5)
+    note(s1,562,517,'ACCESS AND CIRCULATION',4)
+    note(s1,562,499,'01  Bathroom with flush shower and seat.\n02  Utility / linen / washing machine.\n03  Bedroom with 1500 x 2000 bed.\n04  Living, dining and compact kitchen.\n\nRaised FFL: 450 mm above assumed grade.\nRamp rise/run = 450/5400 = 1:12.\nRamp structural width 1800; handrail clear\nwidth approx. 1562. Landings 1800 square.\nHandrails at 700 and 900 above ramp.\nVeranda guard nominal 1100 high.\nMain entry nominal 2400 sliding door.\nTarget entrance clear opening >=1100.\nBathroom / bedroom openings 1100 clear.\nCentral turn circles 1550 diameter.\nBedside circulation 900 nominal each side.\nDoor tracks and wet-room entrance flush.',3,242)
+    note(s1,562,302,'DRAWING BASIS',4)
+    note(s1,562,284,'Dimensions in mm; levels in mm.\nN* is drawing reference north only.\nNo site boundary or survey is implied.\nA-A and B-B correspond to A301 sections.\nDimension witness lines are annotation\nreferences; recheck after model edits.\n\nAccessibility reference: U.S. Access Board\nADA guides for ramps and bathing rooms,\nused for design guidance, not Thai approval.\nConfirm local requirements and resident\nneeds at detailed-design stage.',3,242)
+    s2=sheet('A102','Roof plan and precast assembly')
+    vp(s2,roofplan,295,360)
+    note(s2,65,185,'01  ROOF AND PANEL PLAN  /  1:25',3.5)
+    note(s2,565,514,'PANEL AND ROOF BASIS',4)
+    note(s2,565,495,'PC-R01..04: 1400 nominal casting bays.\nCurved vault spans 5800 across the home.\nNominal 15 mm open structural panel joint.\nWeather cap / membrane bridges joints.\nRoof crown +4500; spring +3200.\nRF-05: living wing flat warm roof.\nNominal top +3500; drainage falls and\nlow points to supplier/detail design.\nRainwater pipes shown at rear positions.\n\nFloor: 8 nominal 2400 x 2800 panels.\nExterior wall panels: 150 thick.\nPanel widths are concept casting bays.\nActual segmentation for transport, crane\ncapacity and lifting stability remains open.\nDo not transport the shown 5800-wide\nvault as a single approved shipping unit.',3,240)
+    note(s2,40,145,'ASSEMBLY SEQUENCE / CONCEPT',4)
+    note(s2,40,125,'1  Survey and design foundations.  2  Install pedestals / bearers.  3  Place precast floor panels.\n4  Erect and temporarily brace wall panels.  5  Install roof segments and engineered connections.\n6  Complete membrane, joints, glazing and MEP.  7  Finish flush surfaces and verify resident access.',3,750)
+    s3=sheet('A201','External elevations')
+    for v,x,y in [(elevs[0],225,423),(elevs[1],625,423),(elevs[2],225,208),(elevs[3],625,208)]:vp(s3,v,x,y)
+    for x,y,txt in [(65,530,'01 SOUTH - ENTRANCE / 1:50'),(465,530,'02 NORTH - GARDEN / 1:50'),(65,315,'03 EAST - LIVING / 1:50'),(465,315,'04 WEST - VAULT / 1:50')]:note(s3,x,y,txt,3.5)
+    for x,y in [(65,350),(465,350),(65,135),(465,135)]:note(s3,x,y,'DATUM +0  |  FFL +450  |  FLAT ROOF +3500\nVAULT SPRING +3200  |  VAULT CROWN +4500',2.7,345)
+    s4=sheet('A301','Building sections and construction basis')
+    vp(s4,sections[0],290,415);vp(s4,sections[1],290,210)
+    note(s4,65,524,'01  SECTION A-A / ACROSS THE TWO VOLUMES / 1:50',3.5)
+    note(s4,65,316,'02  SECTION B-B / BEDROOM FRONT TO REAR / 1:50',3.5)
+    note(s4,565,518,'LEVELS AND BUILD-UP',4)
+    note(s4,565,498,'+000  Assumed finished external grade.\n+450  Finished floor / veranda.\n+230  Nominal structural floor soffit.\n+3150 Internal partition top.\n+3200 Vault profile spring datum.\n+3500 Flat roof nominal top datum.\n+4500 Vault profile crown datum.\n\nFloor: 10 tile / 30 screed / 180 PC.\nVault: 5 membrane / 120 PC /\n80 mineral wool / 12 timber lining.\nFlat roof: 5 membrane / 30 screed /\n120 PC / 70 insulation / 15 lining.\n\nFloor bearers, pedestals and pad footings\nare schematic placeholders. Connection\ncapacities, settlement and uplift require\nengineering for the actual site.\n\nResolve roof support at the vault / flat\nroof interface, drainage, waterproofing\nand condensation before construction.',3,238)
+    note(s4,65,107,'Sections are cut from the BIM model. See A101 for section locations.\nNo reinforcement, structural calculations or concealed MEP is included.',2.8,450)
+    s5=sheet('A401','Senior living layout and interior')
+    vp(s5,bath,214,376);vp(s5,cut,615,391)
+    note(s5,45,232,'01  BATH + BEDROOM CLEARANCES / 1:25',3.5)
+    note(s5,442,232,'02  INTERIOR CUTAWAY / 1:50',3.5)
+    note(s5,40,202,'RESIDENT COMFORT AND SAFETY',4)
+    note(s5,40,183,'Flush shower, folding seat, grab bars and emergency pull cord.\n1550 diameter turn space indicated; maintain clear of stored items.\nBathroom opening 1100 clear with external surface sliding leaf.\nBedside aisles 900 nominal; bed top 500 above floor.\nBasin top approx. 840 above floor, with knee clearance below.',3,365)
+    note(s5,444,183,'Warm 3000K lighting, bedside outlets at 600 and switches at 1000.\nSlip-resistant wet finishes and a flush transition to the veranda.\nKitchen worktop target 800 above floor; open prep shelf provided.\nSelect grab-bar fixings and supports for the actual resident.\nConfirm toilet seat height, side transfer and fixture clearances.',3,365)
+    # Native schedules: live model areas, materials and door types.
+    schedules=[]
+    for cat,nm in [(DB.BuiltInCategory.OST_Walls,'Q01 Wall material quantities'),(DB.BuiltInCategory.OST_Floors,'Q02 Floor material quantities'),(DB.BuiltInCategory.OST_Roofs,'Q03 Roof material quantities')]:
+        sch=DB.ViewSchedule.CreateMaterialTakeoff(doc,eid(cat));sch.Name=nm;de=sch.Definition;fields=list(de.GetSchedulableFields())
+        for bip in [DB.BuiltInParameter.MATERIAL_NAME,DB.BuiltInParameter.MATERIAL_VOLUME]:
+            sf=next((f for f in fields if f.ParameterId==eid(bip)),None)
+            if sf:
+                fld=de.AddField(sf);fld.GridColumnWidth=m(.19 if bip==DB.BuiltInParameter.MATERIAL_NAME else .05)
+                if bip==DB.BuiltInParameter.MATERIAL_VOLUME:fld.DisplayType=DB.ScheduleFieldDisplayType.Totals
+                else:de.AddSortGroupField(DB.ScheduleSortGroupField(fld.FieldId))
+        de.IsItemized=False;de.ShowGrandTotal=True;schedules.append(sch)
+    sch=DB.ViewSchedule.CreateSchedule(doc,eid(DB.BuiltInCategory.OST_Rooms));sch.Name='Q04 Room area schedule'
+    for bip in [DB.BuiltInParameter.ROOM_NUMBER,DB.BuiltInParameter.ROOM_NAME,DB.BuiltInParameter.ROOM_AREA]:
+        sf=next((f for f in sch.Definition.GetSchedulableFields() if f.ParameterId==eid(bip)),None)
+        if sf:
+            fld=sch.Definition.AddField(sf);fld.GridColumnWidth=m(.035 if bip==DB.BuiltInParameter.ROOM_NUMBER else .14 if bip==DB.BuiltInParameter.ROOM_NAME else .06)
+    schedules.append(sch)
+    s6=sheet('A601','Schedules and specification register')
+    for sch,x,y in [(schedules[0],40,525),(schedules[1],40,388),(schedules[2],40,230),(schedules[3],340,525)]:DB.ScheduleSheetInstance.Create(doc,s6.Id,sch.Id,p(x/1000.,y/1000.))
+    note(s6,340,425,'DOOR / OPENING REGISTER',4)
+    note(s6,340,405,'D01  Main sliding entrance: nominal 2400 x 2400.\n        Target clear width >=1100; supplier to verify track/leaf.\nD02  Bath: 1100 clear x 2200 opening; sliding oak panel.\nD03  Bedroom: 1100 clear x 2200 opening; sliding oak panel.\nD04  Utility: nominal 1000 x 2100 hinged panel.\n        Confirm actual clear width after ironmongery selection.',3,448)
+    note(s6,340,326,'MATERIAL / PROCUREMENT NOTES',4)
+    note(s6,340,306,'PC-01 strength and density are proposed Revit material properties.\nRequire supplier mix design, test certificates and structural design.\nWet-area waterproofing extends continuously beneath tile finishes.\nSpecify verified wet slip resistance appropriate to barefoot use.\nGlazing 6+6 laminated is a starting specification; check wind/pane size.\nDeck fasteners, rail anchors and exposed steel need corrosion protection.\nUse low-emission washable interior finishes with rounded joinery edges.',3,448)
+    note(s6,340,215,'QUANTITY AND MODEL LIMITS',4)
+    note(s6,340,195,'Material take-offs are live quantities of the modelled categories.\nDirectShape furniture, rails, glazing and fittings are schematic solids.\nNo reinforcing steel, connection steel or wastage is quantified.\nRamps and rails are classified model geometry, not parametric systems.\nReferences: supplied image; access-board.gov ADA guides for ramps,\nclear turning spaces and bathing rooms (consulted 06 Sep 2026).\nLocal Thai applicability, actual site and resident needs remain to verify.',2.8,448)
+    doc.Regenerate()
+    if tr.Commit()!=DB.TransactionStatus.Committed:raise Exception('Drawing transaction failed')
+    log('Seven A1 sheets committed')
+    rvtpath=os.path.join(OUT,'PPE_Engineering_Senior_Home_R2026.rvt')
+    save=DB.SaveAsOptions();save.OverwriteExistingFile=True;save.MaximumBackups=1;doc.SaveAs(rvtpath,save);log('RVT SAVED')
+    audit={'rvt':rvtpath,'revitVersion':app.VersionNumber,'status':'ARCHITECTURAL CONCEPT P01','envelopeM':[9.6,5.6],'fflM':.45,'ramp':{'riseM':.45,'runM':5.4,'widthM':1.8,'clearBetweenRailsM':1.562,'ratio':12},'sheets':[{'number':s.SheetNumber,'name':s.Name} for s in sheets],'counts':{},'rooms':[],'warnings':[w.GetDescriptionText() for w in doc.GetWarnings()],'roofBounds':[]}
+    for cls in [DB.Wall,DB.Floor,DB.RoofBase,DB.DirectShape,DB.ViewSection,DB.ViewSchedule]:audit['counts'][cls.__name__]=len(list(DB.FilteredElementCollector(doc).OfClass(cls)))
+    for room in rooms:audit['rooms'].append({'name':room.Name,'number':room.Number,'areaM2':room.Area*.3048**2})
+    for r in roofs:
+        b=r.get_BoundingBox(None);audit['roofBounds'].append({'mark':r.get_Parameter(DB.BuiltInParameter.ALL_MODEL_MARK).AsString(),'minM':[float(q)*.3048 for q in [b.Min.X,b.Min.Y,b.Min.Z]],'maxM':[float(q)*.3048 for q in [b.Max.X,b.Max.Y,b.Max.Z]]})
+    try:
+        opts=DB.PDFExportOptions();opts.Combine=True;opts.FileName='PPE_Engineering_Senior_Home_Drawings';opts.PaperFormat=DB.ExportPaperFormat.Default
+        audit['pdfExport']=doc.Export(OUT,List[DB.ElementId]([s.Id for s in sheets]),opts);log('PDF EXPORTED')
+    except Exception as ex:audit['pdfError']=str(ex);log(str(ex))
+    try:
+        opts=DB.ImageExportOptions();opts.ExportRange=DB.ExportRange.SetOfViews;opts.SetViewsAndSheets(List[DB.ElementId]([axo.Id,cut.Id]+[s.Id for s in sheets]));opts.FilePath=os.path.join(OUT,'PPE');opts.HLRandWFViewsFileType=DB.ImageFileType.PNG;opts.ShadowViewsFileType=DB.ImageFileType.PNG;opts.ImageResolution=DB.ImageResolution.DPI_150;opts.ZoomType=DB.ZoomFitType.FitToPage;opts.PixelSize=2200;doc.ExportImage(opts);log('PREVIEWS EXPORTED')
+    except Exception as ex:log('Images '+str(ex))
+    with codecs.open(os.path.join(OUT,'model-audit.json'),'w','utf-8') as f:f.write(json.dumps(audit,indent=2))
+    uidoc=revit.uidoc.Application.OpenAndActivateDocument(rvtpath);uidoc.ActiveView=axo
+    log('COMPLETE')
+except Exception:
+    log(traceback.format_exc())
+    try:
+        if tr and tr.HasStarted():tr.RollBack()
+    except:pass
+    try:
+        if doc and doc.IsValidObject and not doc.IsModifiable:doc.Close(False)
+    except:pass
+    raise

@@ -8,6 +8,7 @@ import { AuthProvider } from './auth/AuthContext';
 import { dataMode } from './firebase/client';
 import { StagingRehearsal } from './pages/StagingRehearsal';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { Catalogue } from './catalogue/Catalogue';
 
 const root = document.getElementById('root');
 if (root === null) throw new Error('Missing application root.');
@@ -16,7 +17,7 @@ createRoot(root).render(
   <StrictMode>
     <ErrorBoundary>
     <BrowserRouter>
-      {dataMode === 'staging' ? <StagingRehearsal /> : <AuthProvider>
+      {window.location.pathname.startsWith('/catalogue') ? <Catalogue /> : dataMode === 'staging' ? <StagingRehearsal /> : <AuthProvider>
         <App />
       </AuthProvider>}
     </BrowserRouter>

@@ -1,0 +1,20 @@
+import {fireEvent,render,screen,within} from '@testing-library/react';import {readFileSync} from 'node:fs';import {resolve} from 'node:path';import {expect,it} from 'vitest';
+import {LocalMeshStudyView} from './LocalMeshStudyView';import type {LocalMeshStudy} from './model';
+const raw=JSON.parse(readFileSync(resolve(import.meta.dirname,'../../../../output/tsc-step2i-r00/web_summary.json'),'utf8'));
+const study={...raw,drawings:raw.drawings.map((d:{id:string;title:string})=>({...d,artifact:{id:d.id,url:`/api/catalogue/artifacts/${d.id}`,bytes:100,revision:raw.revision,status:raw.status}}))} as LocalMeshStudy;
+it('keeps FULL-only new solves separate from LEFT audits and switches actual comparisons and cut forces',()=>{
+  render(<LocalMeshStudyView study={study}/>);
+  expect(within(screen.getByRole('table',{name:'FULL / เพิ่ม mesh เฉพาะทิศทางจาก H4'})).getAllByRole('row')).toHaveLength(5);
+  fireEvent.change(screen.getByRole('combobox',{name:'คู่เปรียบเทียบ mesh เฉพาะบริเวณ'}),{target:{value:'IY/IBY'}});
+  fireEvent.change(screen.getByRole('combobox',{name:'บริเวณ mesh เฉพาะที่'}),{target:{value:'side_edge'}});
+  expect(screen.getByText(/ใกล้ขอบด้านข้าง: .* จุด · IY → IBY/)).toBeInTheDocument();
+  const selector=screen.getByRole('combobox',{name:'ชุดตรวจ traction'});expect(within(selector).getAllByRole('option')).toHaveLength(11);
+  expect(within(selector).queryByRole('option',{name:/LEFT \/ IB/})).not.toBeInTheDocument();
+  fireEvent.change(selector,{target:{value:'QSB-T175-FR-LEFT-H4'}});
+  fireEvent.change(screen.getByRole('combobox',{name:'แนวตัด traction'}),{target:{value:'C45'}});
+  expect(screen.getByRole('heading',{name:'Traction · LEFT / H4 / C45'})).toBeInTheDocument();
+  const value=study.traction.runs.find(r=>r.id==='QSB-T175-FR-LEFT-H4')!.cuts.find(c=>c.id==='C45')!.traces.lower.order6.resultant_6[0];
+  expect(screen.getByRole('cell',{name:value!.toFixed(6)})).toBeInTheDocument();
+  expect(screen.getByRole('heading',{name:/ภาพคงที่ FULL/})).toBeInTheDocument();expect(screen.getAllByRole('button',{name:/ดาวน์โหลด/})).toHaveLength(2);
+});
+it('shows stale evidence and retains non-design warning',()=>{render(<LocalMeshStudyView study={{...study,status:'STALE'}}/>);expect(screen.getByRole('alert')).toHaveTextContent('STALE');expect(screen.getByText(/ยังไม่รับรอง local-stress convergence/)).toBeInTheDocument();});

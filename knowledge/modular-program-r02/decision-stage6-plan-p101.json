@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "id": "R02-STAGE6-PLAN-P101",
+  "date": "2026-09-18",
+  "authority": "USER_REQUESTED_CLOSE_STAGE5_AND_PLAN_STAGE6",
+  "status": "PLAN_COMPLETE_AWAITING_EXECUTION_AUTHORIZATION",
+  "last_completed_stage": 5,
+  "last_completed_revision": "P100",
+  "planned_stage": 6,
+  "planned_stage_name": "P6_48_REVIT_DELIVERIES",
+  "target_revit_version": "2026",
+  "product_count": 48,
+  "pilot_product_id": "PM-I-C1",
+  "authoring_strategy": "HYBRID_NATIVE_REVIT_SHARED_FAMILIES_WITH_LIMITED_CATEGORIZED_DIRECTSHAPE",
+  "source_geometry": {
+    "products": "output/stage3-designs-p36",
+    "typical_index": "output/stage2-review-p35/typical-index.json",
+    "stage5_reference": "output/stage5-closure-p100/register.json"
+  },
+  "required_deliverables_per_product": [
+    "RVT",
+    "A1_PDF",
+    "MODEL_DERIVED_PNG",
+    "SEGMENT_SCHEDULE_CSV",
+    "QA_JSON",
+    "README_TH",
+    "ZIP"
+  ],
+  "minimum_a1_sheets_per_product": 7,
+  "checkpoints": 10,
+  "planning_percent": 100,
+  "execution_percent": 0,
+  "execution_authorized": false,
+  "firebase_required": false,
+  "native_revit_open_save_export_required": true,
+  "website_integration_required": true,
+  "production_engineering_excluded": ["PE-01", "PE-02", "PE-03"],
+  "staad_stage_excluded": true,
+  "engineering_approved": false,
+  "production_released": false,
+  "plan_path": "knowledge/modular-program-r02/STAGE6_PLAN_P101.md"
+}

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Precast Modular Workflow"
+  short_description: "Manage modular catalogue and engineering stage gates"
+  default_prompt: "Use $precast-modular-workflow to continue the requested stage of the Precast-Module I/L/U programme using the current approved plan."
+

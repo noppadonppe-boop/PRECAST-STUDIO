@@ -12,7 +12,7 @@ describe('shared workspace rules', () => {
   it('lets anonymous and registered users read and update the same category document', async () => {
     const guest = environment.authenticatedContext('guest', { firebase: { sign_in_provider: 'anonymous' } }).firestore();
     const member = environment.authenticatedContext('member').firestore();
-    const path = 'precast-studio/root/cost/project-one';
+    const path = 'PRECAST MODULE/root/cost/project-one';
     const data = { data: { rate: 3450 }, revision: 1, updatedAt: new Date().toISOString(), updatedBy: 'guest' };
     await assertSucceeds(setDoc(doc(guest, path), data));
     await assertSucceeds(getDoc(doc(member, path)));
@@ -24,11 +24,11 @@ describe('shared workspace rules', () => {
     const guest = environment.authenticatedContext('guest').firestore();
     const publicDb = environment.unauthenticatedContext().firestore();
     const data = { data: { notes: 'draft' }, revision: 1, updatedAt: new Date().toISOString(), updatedBy: 'guest' };
-    await assertFails(getDoc(doc(publicDb, 'precast-studio/root/cost/project-one')));
+    await assertFails(getDoc(doc(publicDb, 'PRECAST MODULE/root/cost/project-one')));
     await assertFails(setDoc(doc(guest, 'users/guest/notes/draft'), data));
-    await assertFails(setDoc(doc(guest, 'precast-studio/root/unknown/draft'), data));
-    await assertFails(setDoc(doc(guest, 'precast-studio/root/settings/draft'), { ...data, updatedBy: 'another-user' }));
-    await assertSucceeds(setDoc(doc(guest, 'precast-studio/root/audit/event'), data));
-    await assertFails(setDoc(doc(guest, 'precast-studio/root/audit/event'), { ...data, revision: 2 }));
+    await assertFails(setDoc(doc(guest, 'PRECAST MODULE/root/unknown/draft'), data));
+    await assertFails(setDoc(doc(guest, 'PRECAST MODULE/root/settings/draft'), { ...data, updatedBy: 'another-user' }));
+    await assertSucceeds(setDoc(doc(guest, 'PRECAST MODULE/root/audit/event'), data));
+    await assertFails(setDoc(doc(guest, 'PRECAST MODULE/root/audit/event'), { ...data, revision: 2 }));
   });
 });

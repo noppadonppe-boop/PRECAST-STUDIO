@@ -1,0 +1,18 @@
+{
+  "revision": "P100",
+  "programmeStage": 5,
+  "date": "2026-09-18",
+  "authority": "USER_APPROVED_STAGE5_STOP_AT_P99_AND_SCOPE_TRANSFER",
+  "stage5Scope": "PLANNING_MOULD_DRAWINGS_AND_COORDINATED_CONCEPT_MODELS_FOR_44_SETUPS",
+  "stageCompletionPercent": 100,
+  "stageComplete": true,
+  "stageAcceptedByUser": true,
+  "transferredToProductionEngineering": [
+    "PE-01_FABRICATION_CUT_HOLE_THREAD_WELD_SEAL_AND_BOM_DETAILS",
+    "PE-02_CONNECTION_BRACE_BASE_ANCHOR_AND_STABILITY_CAPACITY_CHECKS",
+    "PE-03_REMAINING_MOULD_LIFTING_RIGGING_ROTATION_AND_FLOOR_REACTIONS"
+  ],
+  "nextStageAuthorized": false,
+  "engineeringApproved": false,
+  "productionReleased": false
+}

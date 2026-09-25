@@ -1,0 +1,19 @@
+{
+  "id": "R02-P29-CONCRETE-COVER-HEIGHT",
+  "date": "2026-09-17",
+  "authority": "EXPLICIT_USER_ANSWERS",
+  "user_statements": ["ชิ้นคอนกรีตเพิ่มเติม", "คงความสูงรวมไม่เกิน 3,000 มม."],
+  "node_weather_cover_direction": "ADDITIONAL_CONCRETE_PIECES",
+  "overall_height_limit_mm": 3000,
+  "height_datum": "UNDERSIDE_FLOOR_TO_HIGHEST_ASSEMBLED_SURFACE_INCLUDING_CONCRETE_COVER",
+  "cover_thickness_selected_mm": null,
+  "installation_gap_selected_mm": null,
+  "geometry_strategy_selected": null,
+  "study_only": {"cover_thickness_mm": 100, "installation_gap_mm": 20, "existing_roof_peak_mm": 3000, "stacked_peak_mm": 3120, "exceeds_limit_mm": 120},
+  "supersedes": ["UNRESOLVED_WEATHER_SYSTEM_DIRECTION", "EXCLUSION_OF_NODE_COVER_FROM_OVERALL_HEIGHT"],
+  "coordination_status": "ROOF_COVER_INTERFACE_REVISION_REQUIRED",
+  "affected_references": ["output/weather-route-p21/register.json", "output/weather-envelope-p22/register.json", "output/closure-audit-p23/register.json"],
+  "historical_geometry_preserved": true,
+  "engineering_approved": false,
+  "production_released": false
+}

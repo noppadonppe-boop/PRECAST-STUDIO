@@ -1,0 +1,14 @@
+{
+  "id": "R02-P30-LOCAL-TRANSITION",
+  "authority": "EXPLICIT_USER_ANSWER",
+  "user_statement": "ศึกษาชิ้นเปลี่ยนระดับเฉพาะ L/U โดยคงหลังคาหลักเดิม (แนะนำ)",
+  "geometry_strategy": "LOCAL_L_U_TRANSITIONS_KEEP_MAIN_ROOF",
+  "scope": "DEVELOPMENT_STUDY_NOT_GEOMETRY_FREEZE",
+  "preserve_main_profile_references": ["output/typical-review-p05/register.json", "output/abd-typicals-p08/register.json"],
+  "overall_height_limit_mm": 3000,
+  "cover_material_direction": "CONCRETE",
+  "node_roof_level_selected_mm": null,
+  "transition_dimensions_selected": false,
+  "engineering_approved": false,
+  "production_released": false
+}

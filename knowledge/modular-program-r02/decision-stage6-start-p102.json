@@ -1,0 +1,11 @@
+{
+  "id": "R02-STAGE6-START-P102",
+  "authority": "USER_EXPLICIT_APPROVAL_START_STAGE6_P101_UNTIL_100_PERCENT",
+  "stage": 6,
+  "plan": "STAGE6_PLAN_P101.md",
+  "execution_authorized": true,
+  "continue_until_stage_acceptance_complete": true,
+  "auto_start_stage7": false,
+  "engineering_approved": false,
+  "production_released": false
+}

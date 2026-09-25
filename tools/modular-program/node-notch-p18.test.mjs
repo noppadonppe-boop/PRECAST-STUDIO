@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {root} from './build-r02.mjs';
+import {model,polygonProperties} from './node-notch-p18.mjs';
+import {intersect} from './portal-space-p16.mjs';
+const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
+test('P18 user direction is accepted without selecting engineering details',()=>{const m=model();assert.equal(m.decision.development_direction,'WALL_SHARED');assert.equal(m.decision.authority,'USER');assert.equal(m.decision.column_section_selected,false);assert.equal(m.decision.notch_clearance_approved,false);assert.equal(m.programmeStage,2);});
+test('P18 polygon area and centroid agree with rectangle minus void',()=>{const r=model().records[0],[w,l,t]=r.dimensionsMm,n=212.5,a=w*l-n*n,p=polygonProperties(r.polygonXYMm);near(p.areaMm2,a);near(p.centroidMm[0],(w*l*w/2-n*n*(w-n/2))/a);near(p.centroidMm[1],(w*l*l/2-n*n*n/2)/a);near(r.mass.concreteMassKg,1725.835125);near(r.mass.reductionFromP12Kg,18.965625);near(r.mass.netVolumeM3,a*t/1e9);});
+test('P18 decomposed solids clear P2 and total to polygon volume',()=>{const m=model(),b=m.pilot.remainingSolidsInNodeMm;for(const s of b)assert.equal(intersect(s,m.pilot.columnSpace),null);assert.equal(intersect(b[0],b[1]),null);near(b.reduce((s,q)=>s+q.size.reduce((a,v)=>a*v,1),0)/1e9,m.records[0].mass.netVolumeM3);near(2800-(b[0].min[0]+b[0].size[0]),20);near(b[1].min[1]-200,20);});
+test('P18 excludes total building and lift approval and keeps historical floor',()=>{const m=model(),r=m.records[0];assert.equal(m.wholeNodeMassKg,null);assert.equal(r.liftingPlan.anchorCoordinatesMm,null);assert.equal(r.liftingPlan.releasedForLifting,false);assert.equal(r.supportGeometry,null);assert.equal(r.productionReleased,false);assert.equal(m.pilot.wallGeometryChanged,false);const old=JSON.parse(fs.readFileSync(path.join(root,'output/node-floor-p12/register.json')));near(old.records[0].mass.concreteMassKg,1744.80075);assert.match(m.pilot.otherNode,/PENDING/);});
+test('P18 saved register matches computed proposal',()=>assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root,'output/node-notch-p18/register.json'))),model()));

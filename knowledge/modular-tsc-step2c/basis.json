@@ -1,0 +1,63 @@
+{
+  "id": "STUDY-TS-C-S2C-R00",
+  "revision": "S2C-R00",
+  "date": "2026-09-16",
+  "scope": "DIAGNOSTIC_FIXED_STATIONS_AND_CURVED_COUPON_NOT_FULL_BAY_SOLID_VALIDATION",
+  "upstream": "output/tsc-step2b-r00/shell_results.json",
+  "fixed_station_study": {
+    "thickness_m": 0.175,
+    "joints": ["P-H", "F-R"],
+    "pattern": "FULL",
+    "meshes": ["M2", "M3", "M4"],
+    "hand": "LH",
+    "stations": [
+      {"id":"W-1500","region":"wall","z_m":1.5},
+      {"id":"C-22.5","region":"shoulder","angle_from_wall_deg":22.5},
+      {"id":"C-45","region":"shoulder","angle_from_wall_deg":45},
+      {"id":"C-67.5","region":"shoulder","angle_from_wall_deg":67.5},
+      {"id":"R-0800","region":"roof","x_m":0.8}
+    ],
+    "y_samples_m": [0.375, 0.75, 1.125],
+    "integration_y_interval_m": [0.3, 1.2],
+    "recovery": "Bilinear polynomial through four Gauss values inside each element; one-sided values averaged on shared edges; no cross-element smoothing. Parameter along exact analytic profile. Piecewise-exact integration in Y over fixed interval. Integral of each local component is diagnostic, not a global cut force or connector demand.",
+    "purpose": "Diagnose moving sampling locations; does not supersede failed S2B peak criterion."
+  },
+  "coupon": {
+    "outer_radius_m": 0.4,
+    "thicknesses_m": [0.15, 0.175, 0.2],
+    "angle_deg": 90,
+    "width_m": 1.5,
+    "moment_per_width_kNm_m": 1.0,
+    "poisson_ratios": [0.0, 0.2],
+    "nu_zero_reason": "Independent plane-stress/plane-strain coincident benchmark, not concrete material selection",
+    "models": ["stdBrick_3D_WITH_PLANE_STRAIN_CONSTRAINTS", "ShellMITC4_MATCHED_STRIP"],
+    "solid_bc": "Uy=0 at every node; theta=0 Uz=0 along full end face; one Ux datum at theta=0,r=Rm,Y=width/2. Radial faces free. This deliberately suppresses width/edge effects.",
+    "shell_bc": "Uy=Rx=Rz=0 at every node; theta=0 Uz=Ry=0; one Ux datum at theta=0,Y=width/2. Same end moment resultant as solid.",
+    "load": "No gravity. Solid theta=90 end: consistent nodal tractions from exact Airy sigma_theta; shell end: nodal My totaling -moment_per_width*width. Unit diagnostic moment is NOT a building design load.",
+    "meshes": [
+      {"id":"C1","arc":16,"radial":4,"width":2},
+      {"id":"C2","arc":32,"radial":8,"width":2},
+      {"id":"C3","arc":64,"radial":16,"width":2}
+    ],
+    "reference": "Airy phi=A ln(r)+B r^2 ln(r)+C r^2; sigma_rr=A/r^2+B(2ln(r)+1)+2C; sigma_tt=-A/r^2+B(2ln(r)+3)+2C. Solve sigma_rr(ri)=sigma_rr(ro)=0 and integral r*sigma_tt dr=1. Plane-strain energy from 3D Hooke law; sigma_yy=nu*(sigma_rr+sigma_tt).",
+    "comparison": "Energy/compliance and through-thickness stress versus analytic elasticity; shell linear N/t +/- 6M/t^2 recovery is a model assumption, not concrete capacity. Not interchangeable boundary tractions through thickness."
+  },
+  "qa_targets_declared_before_run": {
+    "fixed_station_change_relative": 0.05,
+    "fixed_component_reference_floor": 0.1,
+    "coupon_global_equilibrium_relative": 0.000001,
+    "coupon_analytic_boundary_relative": 0.00000001,
+    "coupon_solid_energy_exact_relative": 0.02,
+    "coupon_last_pair_energy_relative": 0.02,
+    "coupon_midsection_stress_normalized_rms_relative": 0.05,
+    "scope": "Diagnostic numerical targets only, not code acceptance; preserve all failures"
+  },
+  "sources": [
+    {"title":"OpenSeesPy stdBrick formulation and response","url":"https://openseespydoc.readthedocs.io/en/latest/src/stdBrick.html"},
+    {"title":"OpenSeesPy ElasticIsotropic","url":"https://openseespydoc.readthedocs.io/en/latest/src/elasticIsotropic.html"},
+    {"title":"NPTEL Chapter 10.3.1 — curved beam elasticity, equations 10.34–10.41","url":"https://archive.nptel.ac.in/content/storage2/courses/105106049/lecnotes/mainch10.html"}
+  ],
+  "limitations": ["Coupon is plane-strain constrained, not full 3D bay with free side edges", "Unit pure moment only; not gravity or actual joint loads", "Original S2B peak convergence remains unresolved", "No strength, cracking, serviceability, reinforcement or joint capacity checks", "No final thickness or production approval"],
+  "engineering_approval": false,
+  "manufacturing_release": false
+}

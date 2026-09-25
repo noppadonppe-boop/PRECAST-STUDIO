@@ -1,0 +1,23 @@
+{
+  "revision": "S2B-R00",
+  "source_id": "EIT-011008-21-LOCAL-001",
+  "source_sha256": "08cbbbce6ff0fb6e0fc457628c5a7acdf51d37a7f9ea044a5ba41463e2648c36",
+  "clauses": [{
+    "clause": "8.5.1",
+    "printed_page": 55,
+    "pdf_page_1based": 67,
+    "read_method": "TEXT_EXTRACTION_AND_FULL_PAGE_VISUAL_REVIEW",
+    "equation_used": "Ec = 0.043 * wc^1.5 * sqrt(fc_prime)",
+    "units": "Ec, fc_prime in MPa; wc in kg/m3 as stated by source",
+    "density_range_kg_m3": [1440,2560],
+    "case_density_kg_m3": 2400,
+    "case_fc_ksc": 320,
+    "case_fc_MPa": 31.38128,
+    "case_E_MPa": 28321.786532937494,
+    "verification_status": "EQUATION_TRANSCRIPTION_AND_APPLICABILITY_TO_TRIAL_DENSITY_CHECKED_NOT_DESIGN_APPROVAL",
+    "not_used": "4700 sqrt(fc_prime) normal-density alternative noted for 2320 kg/m3; MKS appendix approximations not mixed into SI calculation",
+    "limitations": "Density is an assistant-proposed study value, not measured; Ec is estimated, not a material test; no strength or crack/serviceability check performed."
+  }],
+  "redistribute_source_pdf": false,
+  "approval": false
+}

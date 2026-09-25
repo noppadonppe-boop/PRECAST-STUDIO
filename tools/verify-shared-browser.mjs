@@ -58,7 +58,7 @@ try {
   if (projectId) await pages[0].evaluate(async (id) => {
     const { firebaseAuth } = await import('/src/firebase/client.ts');
     const token = await firebaseAuth.currentUser.getIdToken();
-    const url = 'https://firestore.googleapis.com/v1/projects/precast-studio/databases/(default)/documents/precast-studio/root';
+    const url = 'https://firestore.googleapis.com/v1/projects/precast-studio/databases/(default)/documents/PRECAST%20MODULE/root';
     const headers = { Authorization: `Bearer ${token}` };
     for (const path of [`projects/${id}`, `panel/${id}`, `panel/${id}-notes`, `cost/${id}`]) {
       const result = await fetch(`${url}/${path}`, { method: 'DELETE', headers });

@@ -1,0 +1,17 @@
+{
+  "id": "R02-STAGE-REVIEW-GATE-2026-09-17",
+  "authority": "USER_EXPLICIT_WORKFLOW_INSTRUCTION",
+  "applies_to_programme_stages": [1, 2, 3, 4, 5, 6, 7, 8],
+  "continue_within_authorized_stage_until_acceptance_complete": true,
+  "stop_at_routine_submilestone": false,
+  "completion_requires_all_stage_acceptance_items": true,
+  "completion_percent_required": 100,
+  "state_after_stage_completion": "AWAITING_USER_STAGE_REVIEW",
+  "auto_start_next_stage": false,
+  "next_stage_requires_new_user_instruction": true,
+  "review_changes_stay_in_same_stage": true,
+  "allow_necessary_clarification_before_completion": true,
+  "continue_independent_work_while_clarification_pending": true,
+  "engineering_approval_implied": false,
+  "production_release_implied": false
+}

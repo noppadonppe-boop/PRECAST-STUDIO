@@ -2,7 +2,10 @@
 node_modules/
 node_modules.interrupted-*/
 .pnpm-store/
+.local-engineering-runtime/
+__pycache__/
 dist/
+dist-catalogue/
 coverage/
 .vite/
 *.tsbuildinfo
@@ -39,3 +42,59 @@ Thumbs.db
 # Local editable Revit model and automatic backup; IFC is the versioned test input.
 /Precast_Module_Test.rvt
 /Precast_Module_Test.0001.rvt
+/samples/test-module/*.rvt
+
+# Repository policy: keep GitHub focused on source code and system structure.
+# Heavy drawings, engineering outputs and reference media stay local.
+/output/
+/deliverables/
+/references/
+/Australia Spec/
+/Picture Stock/
+/apps/web/public/
+/samples/
+
+# Locally vendored runtimes/tool binaries
+/tools/**/python-packages/
+/tools/**/video-python/
+/tools/**/video-vendor/
+
+# TypeScript build products emitted beside source files
+/apps/**/*.js
+/apps/**/*.js.map
+/packages/**/*.js
+/packages/**/*.js.map
+/firebase/**/*.js
+/firebase/**/*.js.map
+*.d.ts
+
+# BIM/CAD, calculation exchange, office and media deliverables
+*.rvt
+*.rfa
+*.rte
+*.ifc
+*.dwg
+*.dxf
+*.std
+*.pdf
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+*.zip
+*.7z
+*.mp4
+*.mov
+*.avi
+*.wav
+*.png
+*.jpg
+*.jpeg
+*.webp
+
+# Compiled/native binaries should come from package managers or local tooling.
+*.exe
+*.dll
+*.pyd
+*.log
+*.flag

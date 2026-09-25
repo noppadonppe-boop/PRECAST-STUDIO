@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {root,keys,build,properties,swept,loft,dot,cross,pressure} from './cap-geometry-p55.mjs';
+const close=(a,b,t=1e-6)=>assert.ok(Math.abs(a-b)<t,`${a} != ${b}`);
+for(const key of keys)test(`${key}: rigid pose, exact solid, hydrostatic force and skin release`,()=>{const m=build(key),s=JSON.parse(fs.readFileSync(path.join(root,m.source.path)));close(m.concrete.properties.volumeMm3/1e9,s.mass.meshVolumeM3,1e-10);s.mass.concreteGeometricCgCastingMm.forEach((v,i)=>close(m.concrete.sourceCgRoundtripMm[i],v));close(dot(cross(...m.transform.basisRows.slice(0,2)),m.transform.basisRows[2]),1);close(m.concrete.boundsMm[2][0],0);close(m.concrete.boundsMm[2][1],100);assert.equal(m.parts.length,5);assert.deepEqual(m.audit.initialClashes,[]);m.audit.skinOnlyContinuousMoves.forEach(v=>assert.deepEqual(v.collisions,[]));m.pressure.forceResidualKN.forEach(v=>close(v,0,1e-8));m.pressure.momentResidualKNmm.forEach(v=>close(v,0,1e-5));m.parts.forEach(p=>assert.ok(p.properties.volumeMm3>0));assert.equal(m.productionReleased,false);});
+const box=(x,z=0)=>loft([[x,0,z],[x+1,0,z],[x+1,1,z],[x,1,z]],[[x,0,z+1],[x+1,0,z+1],[x+1,1,z+1],[x,1,z+1]]);
+test('SAT detects mid-path collision and rejects touching or clear sweep',()=>{assert.equal(swept(box(0),box(2),[4,0,0]),true);assert.equal(swept(box(0),box(1)),false);assert.equal(swept(box(0),box(2,2),[4,0,0]),false);close(properties(box(0)).volumeMm3,1);});
+test('Hydrostatic rectangular tank benchmark: exact triangular side pressure',()=>{const f=loft([[0,0,0],[100,0,0],[100,200,0],[0,200,0]],[[0,0,100],[100,0,100],[100,200,100],[0,200,100]]),p=pressure(f);close(p.totalForceKN[2],-.05);close(p.faces.find(f=>f.normal[0]>.9).forceKN[0],.025);close(p.faces.find(f=>f.normal[1]>.9).forceKN[1],.0125);close(p.faces.find(f=>f.normal[2]<-.9).forceKN[2],-.05);});

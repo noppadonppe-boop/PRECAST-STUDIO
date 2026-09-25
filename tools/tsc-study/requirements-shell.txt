@@ -1,0 +1,3 @@
+# Isolated, local internal-study runtime; not part of the web application.
+openseespy==3.7.1.2
+openseespywin==3.8.0.0; sys_platform == 'win32'

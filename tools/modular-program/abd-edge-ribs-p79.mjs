@@ -1,0 +1,2 @@
+import fs from 'node:fs';import {build,keys} from './abd-edge-ribs-p78.mjs';
+fs.mkdirSync('output/abd-edge-ribs-p79',{recursive:true});for(const key of process.argv[2]?[process.argv[2]]:keys){const m=build(key,{revisedRoute:true});fs.writeFileSync(`output/abd-edge-ribs-p79/${key}.json`,JSON.stringify(m,null,2));console.log({key,stock:m.stock.length,status:m.status,motion:m.audit.supplementaryMoves.filter(r=>r.hits.length),tools:m.audit.toolChecks.filter(r=>r.hits.length)});}

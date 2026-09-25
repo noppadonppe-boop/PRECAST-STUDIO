@@ -1,0 +1,48 @@
+{
+  "revision": "P117",
+  "status": "PARTIAL_SOURCE_REVIEW_NOT_DESIGN_COMPLIANCE",
+  "source": {
+    "id": "NCC2025-V2-USER-LOCAL",
+    "path": "Australia Spec/NCC-2025-Volume-Two_Optimized.pdf",
+    "sha256": "d8786a838dacfb82bfbbf0255d68a854aac4ac6456969b6db70f155acc139911",
+    "pdfPages": 330,
+    "textReviewedPages1Based": [1,4,35,37,38,58,59,60,61,62,63,91,94,96,172,181,208,215],
+    "visuallyReviewedPages1Based": [208,215],
+    "stateTerritoryAdoptionVerified": false,
+    "publicRedistributionApproved": false
+  },
+  "clauseRegister": [
+    {"clause":"A1G1-A1G3","printedPage":38,"pdfPage":38,"finding":"Volume One covers Classes 2-9; Volume Two generally Classes 1 and 10; Volume Three is plumbing/drainage, not a substitute structural concrete code.","status":"SCOPE_TEXT_REVIEWED"},
+    {"clause":"A6G2","printedPages":[58,59,60],"pdfPages":[58,59,60],"finding":"Residential Class 1a/1b depends on actual dwelling and accommodation arrangement; holiday resort use alone does not determine a unique class.","status":"CLASSIFICATION_TEXT_REVIEWED"},
+    {"clause":"A6G3-A6G4","printedPages":[61,62,63],"pdfPages":[61,62,63],"finding":"Multi-dwelling and transient accommodation require classification review; hotel/motel residential parts can be Class 3 subject to the stated limitations.","status":"CLASSIFICATION_TEXT_REVIEWED"},
+    {"clause":"A6G6","printedPage":63,"pdfPage":63,"finding":"Office use routes to Class 5; confirm actual project and jurisdiction.","status":"CLASSIFICATION_TEXT_REVIEWED"},
+    {"clause":"A6G7","printedPage":63,"pdfPage":63,"finding":"Cafe use routes to Class 6; NSW/SA variations are flagged by this document and still require review.","status":"CLASSIFICATION_TEXT_REVIEWED"},
+    {"clause":"Schedule of referenced documents, Table 1","printedPage":208,"pdfPage":208,"finding":"Recorded action-standard editions and listed amendments below; this is an edition register, not access to those standard clauses.","status":"TEXT_AND_TABLE_VISUALLY_REVIEWED"},
+    {"clause":"Schedule of referenced documents, Table 1","printedPage":215,"pdfPage":215,"finding":"AS 3600:2018 including amendments 1 and 2 is listed.","status":"TEXT_AND_TABLE_VISUALLY_REVIEWED"}
+  ],
+  "auReferencedStandards": [
+    {"id":"AS/NZS 1170.0","edition":2002,"listedAmendments":[1,3,4],"purpose":"General principles and action combinations","page":208,"fullTextLocated":false},
+    {"id":"AS/NZS 1170.1","edition":2002,"listedAmendments":[1,2],"purpose":"Permanent, imposed and other actions","page":208,"fullTextLocated":false},
+    {"id":"AS/NZS 1170.2","edition":2021,"listedAmendments":[1,2],"purpose":"Wind actions","page":208,"fullTextLocated":false},
+    {"id":"AS/NZS 1170.3","edition":2003,"listedAmendments":[1,2],"purpose":"Snow and ice, applicability unresolved for intended coverage","page":208,"fullTextLocated":false},
+    {"id":"AS 1170.4","edition":2024,"listedAmendments":[],"purpose":"Earthquake actions in Australia","page":208,"fullTextLocated":false},
+    {"id":"AS 3600","edition":2018,"listedAmendments":[1,2],"purpose":"Concrete structures","page":215,"fullTextLocated":false}
+  ],
+  "productUseRouting": [
+    {"useId":1,"use":"Office","productSlots":12,"provisionalClass":"5","nccVolume":"One","projectClassificationApproved":false},
+    {"useId":2,"use":"Home","productSlots":12,"provisionalClass":"1a for standalone single dwelling; other configurations require reassessment","nccVolume":"Two, subject to configuration","projectClassificationApproved":false},
+    {"useId":3,"use":"Cafe","productSlots":12,"provisionalClass":"6","nccVolume":"One","projectClassificationApproved":false},
+    {"useId":4,"use":"Resort","productSlots":12,"provisionalClass":null,"candidateClasses":["1a","1b","3"],"nccVolume":"Depends on operating model and site arrangement","projectClassificationApproved":false}
+  ],
+  "remainingInputs": [
+    "Licensed full ACI 318-19 for Thai-load/ACI-design track; preview is not sufficient",
+    "Licensed full AU action/concrete standards and applicable amendments",
+    "NCC Volume One at the jurisdiction-selected edition",
+    "Applicable Thai load, wind, earthquake and steel material clauses",
+    "Jurisdiction/adoption date, occupancy and importance, exposure/durability and regional coverage envelope",
+    "RCDC edition AND amendment implementation verification; program code name alone insufficient"
+  ],
+  "numericDesignClausesVerified": false,
+  "engineeringApproved": false,
+  "productionReleased": false
+}

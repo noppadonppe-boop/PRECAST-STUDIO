@@ -1,0 +1,17 @@
+{
+  "id":"STUDY-TS-C-S2I-R00","revision":"S2I-R00","date":"2026-09-16",
+  "scope":"DIRECTIONAL_LOCAL_MESH_AND_STRESS_TRACTION_AUDIT_NOT_DESIGN",
+  "upstream":"output/tsc-step2h-r00/quadratic_bay_followup.json",
+  "reference_mesh":{"id":"H4","target_m":0.10,"arc_divisions":24,"through_thickness":6},
+  "new_patterns":["FULL"],
+  "new_meshes":[{"id":"IB","base_refine":true,"edge_refine":false},{"id":"IY","base_refine":false,"edge_refine":true},{"id":"IBY","base_refine":true,"edge_refine":true}],
+  "mesh_rule":"Start with H4 physical knots. IB divides first 3 wall cells above each base into 4 each. IY divides first and last Y cells into 4 each, second and penultimate into 2 each. IBY combines both. Other wall/roof/arc/thickness cells unchanged; no hanging nodes. This structured grading affects connected rows along the bay; it is not an unstructured adaptive mesh.",
+  "interpretation":"Controlled directional sensitivity for FULL only, not an all-direction convergence sequence; no extrapolation to LEFT or other thicknesses.",
+  "unchanged":"t175 / exterior 3x3m including floor / R.40 / bay1.50m / NC320 E28321.786532937494MPa nu.20 rho2400 / F-R bonded crown and same face-base restraints / free Y sides / uncracked / explicit consistent SW plus vertical roof LL50kgf/m2 / floor separate LP-A / no prestress in this trial",
+  "cut_audit":{"old_runs":"All 8 S2H runs, FULL/LEFT H1-H4","new_runs":"All 3 FULL directional meshes","stations":["W-TOP","C22.5","C45","C67.5","R-START","CROWN"],"method":"Integrate sigma*n dA and (x-origin) cross sigma*n on both element traces of each section; no averaging across the interface. Compare lower trace to nodal cut and upper to opposite nodal cut. No equivalent load subtraction from continuum stress traction; nodal cut reference already subtracts selected elements' consistent face-node loads.","quadrature_orders":[4,6],"traction_components":["Fx","Fy","Fz","Mx","My","Mz"],"stress_units":"kPa","resultant_units":"kN and kNm","moment_origin":"Same physical section mid-thickness and Y=.75 as nodal cut","reference_floor_force_kN":0.1,"reference_floor_moment_kNm":0.1,"all_six_trace_vs_nodal_relative":0.05,"all_six_trace_pair_relative":0.05,"quadrature_change_relative":0.000001},
+  "local_sampling":"Same 490 S2E physical XYZ points and s/y/n axes, one-sided values retained. Apply unchanged 5% point/RMS/spread diagnostics; a sensitivity pair meeting them is not whole-model convergence.",
+  "qa_source":"knowledge/modular-tsc-step2h/basis.json",
+  "limits":["FULL-only new solves","No change to actual support/crown design, contact or stiffness","No thickness or arc refinement in directional meshes","No exact full-bay reference, concrete cracking, lateral/uplift, handling, openings or design approval","Cut-traction integration is an independent postprocessing check, not an independent FE formulation","No code strength, reinforcement or bolt design"],
+  "sources":[{"title":"OpenSees eleForce resisting forces (nodal reference)","url":"https://openseespydoc.readthedocs.io/en/latest/src/eleForce.html"},{"title":"OpenSees 3.8.0 Twenty_Node_Brick implementation (runtime hash and affine patch checked)","url":"https://github.com/OpenSees/OpenSees/blob/v3.8.0/SRC/element/brick/Twenty_Node_Brick.cpp"}],
+  "engineering_approval":false,"manufacturing_release":false
+}

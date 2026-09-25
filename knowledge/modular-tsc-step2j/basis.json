@@ -1,0 +1,21 @@
+{
+  "id":"STUDY-TS-C-S2J-R00","revision":"S2J-R00","date":"2026-09-16",
+  "scope":"EXACT_GRAVITY_COUPON_TRACTION_BENCHMARK_NOT_MODULE_DESIGN",
+  "context":"output/tsc-step2i-r00/traction_results.json",
+  "geometry":{"length_m":1.5,"width_m":0.25,"thickness_m":0.175,"origin":"X at midspan; Z at mid-depth; Y from 0 to width"},
+  "material":{"E_MPa":28321.786532937494,"nu":0.2,"density_kg_m3":2400,"gravity_m_s2":9.80665,"selection":"Existing trial elastic constants only, not final material"},
+  "formulation":"20NodeBrick",
+  "meshes":[{"id":"J1","nx":8,"ny":2,"nz":2},{"id":"J2","nx":16,"ny":2,"nz":2},{"id":"J3","nx":32,"ny":2,"nz":2},{"id":"J4","nx":64,"ny":2,"nz":2},{"id":"J5","nx":32,"ny":2,"nz":4},{"id":"J6","nx":32,"ny":2,"nz":8},{"id":"J7","nx":64,"ny":2,"nz":8}],
+  "nu_zero_controls":["J3","J7"],
+  "boundary":"Uy=0 at all nodes (plane strain). Remove rigid modes with Ux=0 at X=0,Y=w/2,Z=0 and Uz=0 at X=+-L/2,Y=w/2,Z=0. End faces receive prescribed exact traction, including self-equilibrated cubic normal stress. Top/bottom free. End tractions carry gravity; datum restraints are not bearings and expected net datum reactions are zero. This is NOT a TS-C support model or free-Y bay.",
+  "loads":"Explicit consistent body force (0,0,-rho*g) with 3x3x3 integration plus exact end tractions sigma*n with 3x3 surface integration. No element body-force argument, roof LL, prestress or double gravity.",
+  "exact_reference":"Project-derived polynomial plane-strain elasticity solution for constant gravity. Formula and derivation in README. Check displacement gradients, Hooke law, div(sigma)+b=0, top/bottom traction, end resultants and section resultants independently before FE use. This is not an EIT/ACI formula.",
+  "sections_x_over_L":[-0.25,0,0.25],
+  "cut_method":"Reuse the unchanged S2I traction integrator on both one-sided element faces, 4x4 and 6x6. Compare to analytic resultants and to nodal cut with consistent face-node loads subtracted. All moments about section center Xcut,Y=w/2,Z=0.",
+  "stress_order":["xx","yy","zz","xy","yz","zx"],
+  "units":"m, kN, kPa; physical shear stress; tension positive",
+  "qa_declared_before_solving":{"equilibrium_relative":0.000001,"gauss_reproduction_kPa":0.000001,"affine_patch_relative":0.00000001,"displacement_relative":0.02,"energy_relative":0.02,"component_rms_relative":0.05,"stress_floor_kPa":10,"traction_relative":0.05,"traction_pair_relative":0.05,"quadrature_relative":0.000001,"force_floor_kN":0.1,"moment_floor_kNm":0.1,"scope":"Coupon-only accuracy, not code strength or whole-module convergence; retain all failures."},
+  "limits":["Straight plane-strain coupon only","Prescribed analytic end tractions are not an actual bearing detail","Gravity only, no roof live load","No curved shoulder, free Y edge, actual joint, cracking or design release","No removal of failed S2I results or relaxation of their criteria"],
+  "sources":[{"title":"OpenSees eleForce: elemental resisting force","url":"https://openseespydoc.readthedocs.io/en/latest/src/eleForce.html"},{"title":"OpenSees nodeReaction and reactions prerequisite","url":"https://openseespydoc.readthedocs.io/en/latest/src/nodeReaction.html"},{"title":"OpenSees Twenty_Node_Brick runtime source v3.8.0","url":"https://github.com/OpenSees/OpenSees/blob/v3.8.0/SRC/element/brick/Twenty_Node_Brick.cpp"}],
+  "engineering_approval":false,"manufacturing_release":false
+}

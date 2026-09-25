@@ -1,0 +1,20 @@
+{
+  "id": "P103",
+  "date": "2026-09-18",
+  "authority": "USER_ACCEPTED_STAGE6_AND_CONFIRMED_ONE_ARC_PILOT",
+  "stage6_user_accepted": true,
+  "substage": "6.1",
+  "pilot": "PM-I-B3",
+  "authorized_product_count": 1,
+  "target_future_product_count": 48,
+  "remaining47_authorized": false,
+  "architecture": "SEPARATE_ARC_RVT_WITH_LINKED_STAGE6_STRUCTURE_AND_PACKAGED_REFERENCES",
+  "mep": "PRELIMINARY_HVAC_ELECTRICAL_PLUMBING_POSITIONS_ONLY",
+  "materials": "UNBRANDED_PROPOSED_OUTLINE_SPECIFICATIONS",
+  "preserve_structural_geometry": true,
+  "preserve_baseline_original": true,
+  "next_gate": "REVIEW_ONE_SAMPLE_BEFORE_EXPANSION",
+  "stage7_authorized": false,
+  "engineering_approved": false,
+  "production_released": false
+}

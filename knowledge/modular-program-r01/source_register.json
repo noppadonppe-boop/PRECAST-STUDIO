@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "revision": "R01",
+  "sources": [
+    {
+      "source_id": "EIT-011008-21-LOCAL-001",
+      "path": "../../วสท อนุญาติแล้ว.pdf",
+      "file_name": "วสท อนุญาติแล้ว.pdf",
+      "sha256": "08CBBBCE6FF0FB6E0FC457628C5A7ACDF51D37A7F9EA044A5BA41463E2648C36",
+      "bytes": 3518123,
+      "pdf_pages": 210,
+      "title": "มาตรฐานสำหรับอาคารคอนกรีตเสริมเหล็ก โดยวิธีกำลัง",
+      "standard_number": "011008-21",
+      "publisher": "วิศวกรรมสถานแห่งประเทศไทย ในพระบรมราชูปถัมภ์",
+      "edition": "แก้ไขปรับปรุงครั้งที่ 1",
+      "publication": "พฤศจิกายน 2564",
+      "year_BE": 2564,
+      "year_CE": 2021,
+      "ISBN": "978-616-396-054-2",
+      "checked_pdf_pages_1based": [
+        1,
+        2,
+        3
+      ],
+      "visual_review_pages_1based": [
+        1,
+        2
+      ],
+      "verified_scope": "BIBLIOGRAPHIC_IDENTITY_ONLY_NOT_TECHNICAL_CLAUSES",
+      "checked_date": "2026-09-16",
+      "user_authorized_project_reference": true,
+      "redistribution_rights_verified": false,
+      "public_web_allowed": false,
+      "clause_register_status": "NOT_STARTED",
+      "privacy_note": "Do not copy personal watermarks or contact data into catalogue metadata."
+    }
+  ]
+}

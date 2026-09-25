@@ -1,0 +1,665 @@
+{
+  "I": {
+    "polygon": [
+      [
+        0,
+        0
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        0,
+        6
+      ]
+    ],
+    "cells": [
+      {
+        "id": "C01",
+        "origin": [
+          0,
+          0
+        ],
+        "kind": "straight",
+        "axis": "Y"
+      },
+      {
+        "id": "C02",
+        "origin": [
+          0,
+          3
+        ],
+        "kind": "straight",
+        "axis": "Y"
+      }
+    ],
+    "unit": "m",
+    "area_basis": "nominal_external_coordination_grid_not_net_internal_area",
+    "bays": [
+      {
+        "instance": "I-S01",
+        "cell": "C01",
+        "origin": [
+          0,
+          0
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      },
+      {
+        "instance": "I-S02",
+        "cell": "C01",
+        "origin": [
+          0,
+          1.5
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      },
+      {
+        "instance": "I-S03",
+        "cell": "C02",
+        "origin": [
+          0,
+          3
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      },
+      {
+        "instance": "I-S04",
+        "cell": "C02",
+        "origin": [
+          0,
+          4.5
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      }
+    ],
+    "floors": [
+      {
+        "instance": "I-F01",
+        "cell": "C01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          0
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "I-F02",
+        "cell": "C01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          1.5
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "I-F03",
+        "cell": "C02",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          3
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "I-F04",
+        "cell": "C02",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          4.5
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      }
+    ]
+  },
+  "L": {
+    "polygon": [
+      [
+        0,
+        0
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        0,
+        6
+      ]
+    ],
+    "cells": [
+      {
+        "id": "C01",
+        "origin": [
+          0,
+          0
+        ],
+        "kind": "straight",
+        "axis": "Y"
+      },
+      {
+        "id": "N01",
+        "origin": [
+          0,
+          3
+        ],
+        "kind": "node",
+        "open_faces": [
+          "S",
+          "E"
+        ]
+      },
+      {
+        "id": "C02",
+        "origin": [
+          3,
+          3
+        ],
+        "kind": "straight",
+        "axis": "X"
+      }
+    ],
+    "unit": "m",
+    "area_basis": "nominal_external_coordination_grid_not_net_internal_area",
+    "bays": [
+      {
+        "instance": "L-S01",
+        "cell": "C01",
+        "origin": [
+          0,
+          0
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      },
+      {
+        "instance": "L-S02",
+        "cell": "C01",
+        "origin": [
+          0,
+          1.5
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      },
+      {
+        "instance": "L-S03",
+        "cell": "C02",
+        "origin": [
+          3,
+          3
+        ],
+        "size": [
+          1.5,
+          3
+        ],
+        "axis": "X",
+        "half_shells": 2
+      },
+      {
+        "instance": "L-S04",
+        "cell": "C02",
+        "origin": [
+          4.5,
+          3
+        ],
+        "size": [
+          1.5,
+          3
+        ],
+        "axis": "X",
+        "half_shells": 2
+      }
+    ],
+    "floors": [
+      {
+        "instance": "L-F01",
+        "cell": "C01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          0
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "L-F02",
+        "cell": "C01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          1.5
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "L-F03",
+        "cell": "N01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          3
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "L-F04",
+        "cell": "N01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          4.5
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "L-F05",
+        "cell": "C02",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          3,
+          3
+        ],
+        "size": [
+          1.5,
+          3
+        ]
+      },
+      {
+        "instance": "L-F06",
+        "cell": "C02",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          4.5,
+          3
+        ],
+        "size": [
+          1.5,
+          3
+        ]
+      }
+    ]
+  },
+  "U": {
+    "polygon": [
+      [
+        0,
+        0
+      ],
+      [
+        3,
+        0
+      ],
+      [
+        3,
+        3
+      ],
+      [
+        6,
+        3
+      ],
+      [
+        6,
+        0
+      ],
+      [
+        9,
+        0
+      ],
+      [
+        9,
+        6
+      ],
+      [
+        0,
+        6
+      ]
+    ],
+    "cells": [
+      {
+        "id": "C01",
+        "origin": [
+          0,
+          0
+        ],
+        "kind": "straight",
+        "axis": "Y"
+      },
+      {
+        "id": "N01",
+        "origin": [
+          0,
+          3
+        ],
+        "kind": "node",
+        "open_faces": [
+          "S",
+          "E"
+        ]
+      },
+      {
+        "id": "C02",
+        "origin": [
+          3,
+          3
+        ],
+        "kind": "straight",
+        "axis": "X"
+      },
+      {
+        "id": "N02",
+        "origin": [
+          6,
+          3
+        ],
+        "kind": "node",
+        "open_faces": [
+          "W",
+          "S"
+        ]
+      },
+      {
+        "id": "C03",
+        "origin": [
+          6,
+          0
+        ],
+        "kind": "straight",
+        "axis": "Y"
+      }
+    ],
+    "unit": "m",
+    "area_basis": "nominal_external_coordination_grid_not_net_internal_area",
+    "bays": [
+      {
+        "instance": "U-S01",
+        "cell": "C01",
+        "origin": [
+          0,
+          0
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      },
+      {
+        "instance": "U-S02",
+        "cell": "C01",
+        "origin": [
+          0,
+          1.5
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      },
+      {
+        "instance": "U-S03",
+        "cell": "C02",
+        "origin": [
+          3,
+          3
+        ],
+        "size": [
+          1.5,
+          3
+        ],
+        "axis": "X",
+        "half_shells": 2
+      },
+      {
+        "instance": "U-S04",
+        "cell": "C02",
+        "origin": [
+          4.5,
+          3
+        ],
+        "size": [
+          1.5,
+          3
+        ],
+        "axis": "X",
+        "half_shells": 2
+      },
+      {
+        "instance": "U-S05",
+        "cell": "C03",
+        "origin": [
+          6,
+          0
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      },
+      {
+        "instance": "U-S06",
+        "cell": "C03",
+        "origin": [
+          6,
+          1.5
+        ],
+        "size": [
+          3,
+          1.5
+        ],
+        "axis": "Y",
+        "half_shells": 2
+      }
+    ],
+    "floors": [
+      {
+        "instance": "U-F01",
+        "cell": "C01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          0
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "U-F02",
+        "cell": "C01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          1.5
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "U-F03",
+        "cell": "N01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          3
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "U-F04",
+        "cell": "N01",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          0,
+          4.5
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "U-F05",
+        "cell": "C02",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          3,
+          3
+        ],
+        "size": [
+          1.5,
+          3
+        ]
+      },
+      {
+        "instance": "U-F06",
+        "cell": "C02",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          4.5,
+          3
+        ],
+        "size": [
+          1.5,
+          3
+        ]
+      },
+      {
+        "instance": "U-F07",
+        "cell": "N02",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          6,
+          3
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "U-F08",
+        "cell": "N02",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          6,
+          4.5
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "U-F09",
+        "cell": "C03",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          6,
+          0
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      },
+      {
+        "instance": "U-F10",
+        "cell": "C03",
+        "tag": "PC-X-F15-3000x1500-R00",
+        "origin": [
+          6,
+          1.5
+        ],
+        "size": [
+          3,
+          1.5
+        ]
+      }
+    ]
+  }
+}

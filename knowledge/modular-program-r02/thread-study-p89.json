@@ -1,0 +1,56 @@
+{
+  "revision": "P89",
+  "date": "2026-09-18",
+  "purpose": "Candidate base screw / washer / tapped-bed geometry; not a verified connection capacity",
+  "calculator": {
+    "publisher": "Bossard",
+    "url": "https://website-assets.bossard.com/Thread-engagement-length-calculator/thread-engagement-length-calculator-en.html",
+    "evidenceMethod": "Manually transcribed visible live calculator inputs and outputs via browser; not a downloaded native calculation file or an independently implemented VDI solver",
+    "basisAdvertisedByPublisher": "VDI 2230:2014",
+    "inputs": { "thread": "M20", "pitchMm": 2.5, "boltClass": "8.8", "internalMaterialDatabaseEntry": "S235 JRG1", "holeCase": "Blind Hole" },
+    "commonOutputs": { "screwRmMPa": 830, "internalRmMPa": 340, "screwShearMPa": 547.8, "internalShearMPa": 200.6, "boltBreakingForceN": 203179, "minimumTotalEngagementMm": 25.22 },
+    "observedCases": [
+      { "totalEngagementMm": 20, "effectiveEngagementMm": 12.5, "strippingForceN": 143358.29, "fullBoltStrengthCriterionSatisfied": false },
+      { "totalEngagementMm": 26, "effectiveEngagementMm": 18.5, "strippingForceN": 212170.27, "fullBoltStrengthCriterionSatisfied": true },
+      { "totalEngagementMm": 27, "effectiveEngagementMm": 19.5, "strippingForceN": 223638.93, "fullBoltStrengthCriterionSatisfied": true }
+    ],
+    "conditions": [
+      "The publisher's through-hole option requires at least 2 pitches of screw protrusion. The proposed physically through-tapped bed has a recessed screw tip; use the Blind Hole calculation option.",
+      "Theoretical material-database comparison for developing full bolt strength, not an allowable working load or project material certificate.",
+      "Run-in, run-out, chamfers and imperfect threads reduce engagement. The observed Blind Hole cases deduct 3 pitches (7.5 mm). Confirm actual effective full threads by drawing and inspection.",
+      "No preload, tightening torque, wear, repeated use, fatigue or whole-bed resistance is established. Manufacturer testing/verification remains necessary."
+    ]
+  },
+  "washerSource": {
+    "publisher": "Wurth",
+    "url": "https://www.wurth.es/ddu-arandela-plana-m20-d-21mm-d-ext-37mm-h-3mm",
+    "reference": "0407009120",
+    "standard": "ISO 7089",
+    "nominalDimensionsMm": { "id": 21, "od": 37, "thickness": 3 },
+    "material": "steel",
+    "hardnessClass": "200HV",
+    "compatibility": "Publisher states suitable with screw property classes <=8.8; this does not prove the project washer bending/contact resistance.",
+    "procurementStatus": "REFERENCE_ONLY_NOT_ORDERED; coating and tolerances to be confirmed for the selected supply"
+  },
+  "boltSource": {
+    "publisher": "Bossard",
+    "url": "https://www.bossard.com/us-en/eshop/screws-and-bolts-with-external-drive/hex-head-screws-fully-threaded/p/56/",
+    "family": "BN 56",
+    "standard": "ISO 4017",
+    "material": "steel",
+    "propertyClass": "8.8",
+    "thread": "fully threaded",
+    "proposedNominalSize": "M20 x 2.5 x 60",
+    "nominalHeadEnvelopeMm": { "acrossFlats": 30, "height": 12.5 },
+    "procurementStatus": "DESIGN_PROPOSAL; exact product drawing, dimensions, tolerance and certification required before purchase/fabrication release"
+  },
+  "incomingInspectionEnvelopeMm": {
+    "basis": "Proposed project acceptance limits for this fit study, NOT quoted ISO manufacturing tolerances and NOT a guarantee of standard stock acceptance",
+    "underheadLength": [59.5, 60.5], "footThickness": [29.8, 30.2], "washerThickness": [2.7, 3.3], "bedThickness": [29.8, 30.2]
+  },
+  "methodSeparation": "NASA RP1228 was inspected as a separate historical empirical tapped-hole screen. Its area/shear method and the VDI-based manufacturer calculation are not interchangeable; no NASA/VDI/Eurocode hybrid capacity is issued here.",
+  "verifiedThreadCapacityN": null,
+  "verifiedWasherCapacityN": null,
+  "engineeringApproved": false,
+  "productionReleased": false
+}

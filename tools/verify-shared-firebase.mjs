@@ -10,13 +10,13 @@ const apps = [initializeApp(config, 'verify-writer'), initializeApp(config, 'ver
 const databases = apps.map((app) => getFirestore(app));
 const users = [];
 const id = `connection-${Date.now()}`;
-const path = `precast-studio/root/settings/${id}`;
+const path = `PRECAST MODULE/root/settings/${id}`;
 let probeCreated = false;
 try {
   for (const app of apps) users.push((await signInAnonymously(getAuth(app))).user);
-  const root = doc(databases[0], 'precast-studio/root');
+  const root = doc(databases[0], 'PRECAST MODULE/root');
   await runTransaction(databases[0], async (tx) => {
-    if (!(await tx.get(root)).exists()) tx.set(root, { name: 'Precast Studio', schemaVersion: 1, categories: ['projects', 'intake', 'criteria', 'panel', 'loads', 'analysis', 'design', 'cost', 'report', 'shop', 'release', 'review', 'team', 'audit', 'libraries', 'settings'], createdAt: new Date().toISOString() });
+    if (!(await tx.get(root)).exists()) tx.set(root, { name: 'PRECAST MODULE', schemaVersion: 1, categories: ['projects', 'intake', 'criteria', 'panel', 'loads', 'analysis', 'design', 'cost', 'report', 'shop', 'release', 'review', 'team', 'audit', 'libraries', 'settings'], createdAt: new Date().toISOString() });
   });
   const ref = doc(databases[0], path);
   await setDoc(ref, { data: { purpose: 'Firebase connection verification', value: id }, revision: 1, updatedAt: new Date().toISOString(), updatedBy: users[0].uid }); probeCreated = true;
@@ -27,7 +27,10 @@ try {
   if (reread.data()?.data.value !== `${id}-updated`) throw new Error('First user did not read the second user update.');
   console.log(JSON.stringify({ project: config.projectId, root: (await getDocFromServer(root)).ref.path, anonymousUsers: 2, crossUserReadWrite: 'passed', category: 'settings' }));
 } finally {
-  if (probeCreated) await deleteDoc(doc(databases[0], path));
+  if (probeCreated) {
+    try { await deleteDoc(doc(databases[0], path)); }
+    catch (reason) { console.warn(`Cleanup skipped by deployed no-delete rules: ${reason instanceof Error ? reason.message : String(reason)}`); }
+  }
   for (const user of users) await deleteUser(user);
   for (const db of databases) await terminate(db);
   for (const app of apps) await deleteApp(app);

@@ -1,0 +1,25 @@
+{
+  "id":"STUDY-TS-C-S2F-R00",
+  "revision":"S2F-R00",
+  "date":"2026-09-16",
+  "scope":"STRAIGHT_PLANE_STRAIN_ELASTICITY_BENCHMARK_NOT_MODULE_DESIGN",
+  "context":"output/tsc-step2e-r00/stress_results.json",
+  "geometry":{"length_m":1.5,"width_m":0.25,"thickness_m":0.175,"z_origin":"mid-depth"},
+  "material":{"E_MPa":28321.786532937494,"nu":0.2,"source":"Same trial elastic modulus as Step 2B; not material selection"},
+  "formulations":["stdBrick","20NodeBrick"],
+  "cases":["M","V"],
+  "loads":{"M_kNm":1,"V_kN":1,"self_weight":false},
+  "meshes":[{"id":"Q1","nx":6,"ny":1,"nz":2},{"id":"Q2","nx":12,"ny":1,"nz":2},{"id":"Q3","nx":24,"ny":1,"nz":2},{"id":"Q4","nx":24,"ny":1,"nz":4},{"id":"Q5","nx":48,"ny":1,"nz":4},{"id":"Q6","nx":48,"ny":1,"nz":8}],
+  "boundary":"Uy=0 everywhere (plane strain). At x=0 prescribe exact ux and uz including cross-section warping; NOT a rigid clamp. Top/bottom free. End x=L has consistent traction integrated with 3x3 surface Gauss rule. No body force. This is not the free-sided curved TS-C bay.",
+  "load_sensitivity":{"meshes":["Q2","Q6"],"case":"V","mapping":"Equal force at every x=L node; same resultant and first moment, different traction distribution; never score as exact-solution error","comparison_regions":{"near":"x/L >= 0.9","far":"0.25 <= x/L <= 0.75"}},
+  "stress_order":["xx","yy","zz","xy","yz","zx"],
+  "units":"m, kN, kPa; tension positive; physical shear stress",
+  "qa_declared_before_solving":{"equilibrium_relative":0.000001,"gauss_reproduction_kPa":0.000001,"affine_patch_relative":0.00000001,"tip_displacement_relative":0.02,"energy_relative":0.02,"component_rms_relative":0.05,"stress_floor_kPa":10,"scope":"Accuracy targets against independent exact field for consistent-traction coupons only; all six stress RMS targets plus tip/energy. Not code capacity or module convergence."},
+  "sources":[
+    {"title":"OpenSees standard 8-node formulation","url":"https://opensees.github.io/OpenSeesDocumentation/user/manual/model/elements/stdBrick.html"},
+    {"title":"OpenSees v3.8.0 Twenty_Node_Brick implementation (actual runtime command)","url":"https://github.com/OpenSees/OpenSees/blob/v3.8.0/SRC/element/brick/Twenty_Node_Brick.cpp"},
+    {"title":"OpenSees v3.8.0 shape and 27-point ordering","url":"https://github.com/OpenSees/OpenSees/blob/v3.8.0/SRC/element/UP-ucsd/shp3dv.cpp"}
+  ],
+  "engineering_approval":false,
+  "manufacturing_release":false
+}

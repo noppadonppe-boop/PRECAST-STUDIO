@@ -4,6 +4,7 @@ import { can, revitDrafting01Fixture, validateRevitDraftingProfile, type Documen
 import { documentationSetPayloadSchema, exportJobResultSchema, releasePackagePayloadSchema, type CreateReleasePackageRevisionCommand, type ExportJobResult, type ReleaseProductionPackageCommand } from '@precast/schemas';
 import { AuthorizationError } from './authorization';
 import { computeArtifactSnapshotHash, type CommandResult } from './workflowCommands';
+import { assertDesignBasisCriteriaReady } from './designBasisReadiness';
 
 type RecordValue = Record<string, unknown>;
 const rootPath = (orgId: string, projectId: string) => `organizations/${orgId}/projects/${projectId}`;
@@ -125,6 +126,7 @@ export async function createReleasePackageRevision(db: Firestore, uid: string, c
     const basisData = record(basis.data()); const modelData = record(model.data()); const calculationData = record(calculation.data()); const drawingData = record(drawingSet.data()); const parsedDrawing = documentationSetPayloadSchema.safeParse(drawingData.payload); const parsedExport = exportJobResultSchema.safeParse(exportJob.data());
     for (const [name, snapshot, data] of [['Design Basis', basis, basisData], ['Product Model', model, modelData], ['Calculation Report', calculation, calculationData], ['Documentation Set', drawingSet, drawingData]] as const) if (!snapshot.exists || data.status !== 'approved' || data.locked !== true || typeof data.snapshotHash !== 'string') throw new AuthorizationError(`${name} must be approved, locked and hashed.`, 'failed-precondition');
     assertUpstreamRefs(basisData, { sourceRevisionId }, 'Design Basis');
+    assertDesignBasisCriteriaReady(basisData.payload);
     assertUpstreamRefs(modelData, { sourceRevisionId, designBasisVersionId }, 'Product Model');
     assertUpstreamRefs(calculationData, { sourceRevisionId, designBasisVersionId, modelVersionId, analysisRunId }, 'Calculation Report');
     assertUpstreamRefs(drawingData, { sourceRevisionId, designBasisVersionId, modelVersionId, analysisRunId, calculationReportId }, 'Documentation Set');
@@ -155,6 +157,10 @@ export async function releaseProductionPackage(db: Firestore, uid: string, comma
     const parsed = releasePackagePayloadSchema.safeParse(data.payload); if (!parsed.success || parsed.data.preflight.overallStatus !== 'PASS' || parsed.data.revitVerification.status !== 'PASS' || strings(data.blockingConditions).length > 0) throw new AuthorizationError('Release preflight or Revit verification is incomplete.', 'failed-precondition');
     const refs = record(data.upstreamRefs);
     for (const [refKey, projectKey] of Object.entries({ sourceRevisionId: 'currentSourceRevisionId', designBasisVersionId: 'currentDesignBasisVersionId', modelVersionId: 'currentModelVersionId', analysisRunId: 'currentApprovedAnalysisRunId', calculationReportId: 'currentCalculationReportId', drawingSetId: 'currentDrawingSetId' })) if (refs[refKey] !== projectData[projectKey]) throw new AuthorizationError(`Release Package is stale because ${projectKey} changed.`, 'failed-precondition');
+    const currentBasis = await tx.get(db.doc(`${root}/designBasisVersions/${required(projectData, 'currentDesignBasisVersionId')}`));
+    const basisData = record(currentBasis.data());
+    if (basisData.status !== 'approved' || basisData.locked !== true || basisData.snapshotHash !== parsed.data.upstream.designBasisSnapshotHash) throw new AuthorizationError('Current Design Basis approval no longer matches the release package.', 'failed-precondition');
+    assertDesignBasisCriteriaReady(basisData.payload);
     tx.update(packageRef, { status: 'released', releaseState: 'released', locked: true, releasedBy: uid, releasedAt: now, recipient: command.recipient, productionQueue: command.productionQueue });
     tx.update(projectRef, { currentStage: 'productionRelease', 'gateStates.G7': 'approved', updatedAt: now, updatedBy: uid });
     tx.create(db.doc(`${root}/auditEvents/${command.idempotencyKey}`), { id: command.idempotencyKey, orgId: command.orgId, projectId: command.projectId, artifactType: 'releasePackage', artifactId: command.releasePackageId, artifactRevision: required(data, 'revision'), action: 'release', stateBefore: 'approved', stateAfter: 'released', actorUid: uid, effectiveRoles: context.roles, delegatedCapabilities: context.capabilities, occurredAt: now, requestId: command.idempotencyKey, idempotencyKey: command.idempotencyKey, snapshotHash: command.expectedSnapshotHash, comment: `Released to ${command.recipient} / ${command.productionQueue}.` });

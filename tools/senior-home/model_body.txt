@@ -1,0 +1,220 @@
+    asset=DB.StructuralAsset('PPE LC35 - PROPOSED',DB.StructuralAssetClass.Concrete)
+    asset.Density=DB.UnitUtils.ConvertToInternalUnits(1800,DB.UnitTypeId.KilogramsPerCubicMeter)
+    asset.ConcreteCompression=DB.UnitUtils.ConvertToInternalUnits(35,DB.UnitTypeId.Megapascals)
+    concrete.StructuralAssetId=DB.PropertySetElement.Create(doc,asset).Id
+    setp(info,DB.BuiltInParameter.ALL_MODEL_INSTANCE_COMMENTS,'Image-based architectural concept. 9600 x 5600 envelope. Site not supplied. LC35 / 1800 kg/m3 proposed. Structural design, connections, lifting and MEP pending.')
+    levs=list(DB.FilteredElementCollector(doc).OfClass(DB.Level))
+    ffl=min(levs,key=lambda e:abs(e.Elevation)); ffl.Name='01 FFL +450'; ffl.Elevation=m(.45)
+    ground=DB.Level.Create(doc,0); ground.Name='00 GROUND +000'
+    spring=DB.Level.Create(doc,m(3.2)); spring.Name='02 VAULT SPRING +3200'
+    crown=DB.Level.Create(doc,m(4.5)); crown.Name='03 VAULT CROWN +4500'
+    vf=list(DB.FilteredElementCollector(doc).OfClass(DB.ViewFamilyType))
+    vft=lambda f: next(e for e in vf if e.ViewFamily==f)
+    plan=DB.ViewPlan.Create(doc,vft(DB.ViewFamily.FloorPlan).Id,ffl.Id); plan.Name='A101 - Floor plan and accessible route'
+    bath=DB.ViewPlan.Create(doc,vft(DB.ViewFamily.FloorPlan).Id,ffl.Id); bath.Name='A401 - Bathroom and bedroom clearance plan'
+    roofplan=DB.ViewPlan.Create(doc,vft(DB.ViewFamily.FloorPlan).Id,crown.Id); roofplan.Name='A102 - Roof panel layout'
+    vr=roofplan.GetViewRange()
+    for key,off in [(DB.PlanViewPlane.TopClipPlane,1.0),(DB.PlanViewPlane.CutPlane,.8),(DB.PlanViewPlane.BottomClipPlane,-2.0),(DB.PlanViewPlane.ViewDepthPlane,-2.0)]:
+        vr.SetLevelId(key,crown.Id); vr.SetOffset(key,m(off))
+    roofplan.SetViewRange(vr)
+    def wall(x0,y0,x1,y1,t,h,mark,z=.45):
+        e=DB.Wall.Create(doc,li(p(x0,y0),p(x1,y1)),t.Id,ffl.Id,m(h),m(z-.45),False,False)
+        DB.WallUtils.DisallowWallJoinAtEnd(e,0); DB.WallUtils.DisallowWallJoinAtEnd(e,1)
+        return meta(e,mark,'Concept panel or partition; dimensions / reinforcement / connections require detailed design')
+    walls=[]; west=[]; north=[]
+    for i in range(4):
+        e=wall(.075,i*1.4+.0075,.075,(i+1)*1.4-.0075,wt,2.75,'PC-WW%02d'%(i+1)); walls.append(e); west.append(e)
+        if i==1: doc.Create.NewOpening(e,p(0,1.62,2.25),p(0,2.48,2.8))
+        e=wall(9.525,i*1.4+.0075,9.525,(i+1)*1.4-.0075,wt,2.8,'PC-WE%02d'%(i+1));walls.append(e)
+        if i in [1,2]:doc.Create.NewOpening(e,p(9.5,i*1.4+.2,1.35),p(9.5,(i+1)*1.4-.2,2.6))
+    for i in range(8):
+        e=wall(i*1.2+.0075,5.525,(i+1)*1.2-.0075,5.525,wt,2.8 if i>=5 else 4.05,'PC-WN%02d'%(i+1)); walls.append(e);north.append(e)
+        if i in [2,3,5,6]:doc.Create.NewOpening(e,p(i*1.2+.18,5.5,1.55),p((i+1)*1.2-.18,5.5,2.6))
+    for i in range(2):walls.append(wall(i*1.2+.0075,.075,(i+1)*1.2-.0075,.075,wt,2.75,'PC-WS%02d'%(i+1)))
+    # Native continuous room boundary walls; panel seams are sealed above finish level.
+    part=wall(2.4,.15,2.4,5.45,it,2.7,'PT-01')
+    cross=wall(.15,3.2,2.35,3.2,it,2.7,'PT-02')
+    bedpart=wall(5.8,.15,5.8,5.45,it,2.7,'PT-03')
+    floors=[]
+    for i in range(4):
+        for j in range(2):
+            e=DB.Floor.Create(doc,List[DB.CurveLoop]([rect(i*2.4,j*2.8,(i+1)*2.4,(j+1)*2.8)]),ft.Id,ffl.Id)
+            meta(e,'PC-F%d%d'%(i+1,j+1),'2400 x 2800 nominal bay; 180 PC + 30 screed + 10 finish. Structural panel joint below continuous topping.');floors.append(e)
+    # Timber visual finish only outside the wet room, flush with the floor finish.
+    for j,(a,b,c,d) in enumerate([(2.45,.15,5.75,5.45),(5.85,.15,9.45,5.45),(.15,3.25,2.35,5.45)]):
+        box('FL-01 warm timber-look slip-resistant finish',a,b,.446,c-a,d-b,.004,timber,DB.BuiltInCategory.OST_Floors,'FIN-%d'%j)
+    roofs=[]
+    for j in range(4):
+        y=j*1.4+.0075
+        rp=doc.Create.NewReferencePlane(p(0,y,0),p(5.8,y,0),DB.XYZ.BasisZ,plan);rp.Name='Vault casting plane %d'%(j+1)
+        ca=DB.CurveArray();ca.Append(DB.Arc.Create(p(0,y,3.2),p(5.8,y,3.2),p(2.9,y,4.5)))
+        sign=1 if rp.Normal.Y>0 else -1
+        r=doc.Create.NewExtrusionRoof(ca,rp,ground,rt,min(0,sign*m(1.385)),max(0,sign*m(1.385)))
+        meta(r,'PC-R%02d'%(j+1),'Full 5.8 m vault concept / 1.4 m casting bay. Transport segmentation and lifting design unresolved. 15 mm joints; waterproof cover continuous.');roofs.append(r)
+    flat=typ(DB.RoofType,'PPE - Flat warm roof 240 mm',[(.005,finish,membrane),(.03,finish,normal),(.12,structure,concrete),(.07,DB.MaterialFunctionAssignment.Insulation,insul),(.015,DB.MaterialFunctionAssignment.Finish2,timber)])
+    ca=DB.CurveArray()
+    for c in rect(5.72,-.55,9.9,5.75):ca.Append(c)
+    mapping=clr.Reference[DB.ModelCurveArray](DB.ModelCurveArray())
+    r=doc.Create.NewFootPrintRoof(ca,spring,flat,mapping);setp(r,DB.BuiltInParameter.ROOF_LEVEL_OFFSET_PARAM,m(.3));meta(r,'RF-05','Flat roof nominal top +3500; tapered screed/drainage design pending');roofs.append(r)
+    doc.Regenerate()
+    for j,e in enumerate(west):
+        try:e.AddAttachment(roofs[j].Id,DB.AttachmentLocation.Top)
+        except:pass
+    for e in north:
+        try:e.AddAttachment(roofs[3].Id if e.Location.Curve.GetEndPoint(0).X<m(5.8) else roofs[4].Id,DB.AttachmentLocation.Top)
+        except:pass
+    radius=(2.9**2+1.3**2)/(2*1.3);zc=4.5-radius
+    def arc_z(x):return zc+math.sqrt(max(0,radius**2-(x-2.9)**2))
+    def front_arch(n,y,thick,mat,x0,x1,zbot,cat):
+        zm=lambda x:arc_z(x)-.20
+        loop=DB.CurveLoop();loop.Append(li(p(x0,y,zbot),p(x1,y,zbot)));loop.Append(li(p(x1,y,zbot),p(x1,y,zm(x1))))
+        loop.Append(DB.Arc.Create(p(x1,y,zm(x1)),p(x0,y,zm(x0)),p((x0+x1)/2,y,zm((x0+x1)/2))))
+        loop.Append(li(p(x0,y,zm(x0)),p(x0,y,zbot)))
+        s=DB.GeometryCreationUtilities.CreateExtrusionGeometry(List[DB.CurveLoop]([loop]),DB.XYZ.BasisY,m(thick),DB.SolidOptions(mat.Id,DB.ElementId.InvalidElementId))
+        return shape(n,[s],mat,cat)
+    front_arch('PC-South upper privacy infill',.025,.10,concrete,.15,2.4,2.93,DB.BuiltInCategory.OST_Walls)
+    front_arch('GL-02 bedroom arched transom',.055,.012,glass,2.45,5.65,2.93,DB.BuiltInCategory.OST_Windows)
+    # Glazing and frames; front living entrance uses a native wall-hosted door.
+    box('GL-01 bedroom fixed glazing',2.45,.055,.5,3.2,.012,2.43,glass,DB.BuiltInCategory.OST_Windows,'W01')
+    for x in [2.43,3.5,4.57,5.63]:box('Bedroom black aluminium mullion',x,.01,.45,.045,.10,arc_z(x)-.65,metal)
+    for z in [.45,2.93]:box('Bedroom aluminium transom',2.43,.01,z,3.25,.10,.045,metal)
+    for i in range(48):
+        xa=.10+i*5.6/48;xb=.10+(i+1)*5.6/48;za=arc_z(xa)-.195;zb=arc_z(xb)-.195
+        pts=[p(xa,0,za),p(xb,0,zb),p(xb,0,zb-.045),p(xa,0,za-.045)];loop=DB.CurveLoop()
+        for k in range(4):loop.Append(li(pts[k],pts[(k+1)%4]))
+        shape('Curved facade trim',[DB.GeometryCreationUtilities.CreateExtrusionGeometry(List[DB.CurveLoop]([loop]),DB.XYZ.BasisY,m(.1),DB.SolidOptions(metal.Id,DB.ElementId.InvalidElementId))],metal)
+    entrancewall=wall(5.85,.075,9.45,.075,wt,2.8,'PC-S entrance host')
+    # Cut fixed glazed sidelights in solid wall, leaving real piers and door host.
+    for xa,xb in [(5.97,6.42),(8.93,9.32)]:
+        doc.Create.NewOpening(entrancewall,p(xa,0,.52),p(xb,0,2.8));box('Living fixed sidelight',xa,.055,.52,xb-xa,.012,2.28,glass,DB.BuiltInCategory.OST_Windows)
+    def load_door(file,nm,w,h):
+        fr=clr.Reference[DB.Family]();doc.LoadFamily(os.path.join(r'C:\ProgramData\Autodesk\RVT 2026\Libraries\English\US\Doors',file),fr)
+        s=doc.GetElement(list(fr.Value.GetFamilySymbolIds())[0]).Duplicate(nm)
+        setp(s,DB.BuiltInParameter.DOOR_WIDTH,m(w));setp(s,DB.BuiltInParameter.DOOR_HEIGHT,m(h));s.Activate();doc.Regenerate();return s
+    ent=load_door('M_Door-Double-Sliding.rfa','PPE D01 sliding entrance - nominal 2400 x 2400',2.4,2.4)
+    d=doc.Create.NewFamilyInstance(p(7.7,.075,.45),ent,entrancewall,ffl,DB.Structure.StructuralType.NonStructural);meta(d,'D01','2400 nominal opening; target >=1100 clear with one leaf open; flush track. Supplier verify clear width.')
+    internal=load_door('M_Door-Opening.rfa','PPE D02 D03 sliding clear opening 1100 x 2200',1.1,2.2)
+    for host,x,y,mk in [(part,2.4,1.15,'D02'),(bedpart,5.8,1.15,'D03')]:
+        d=doc.Create.NewFamilyInstance(p(x,y,.45),internal,host,ffl,DB.Structure.StructuralType.NonStructural);meta(d,mk,'1100 clear opening with surface sliding panel shown fully open; lever/pull and soft close specified')
+        box(mk+' surface sliding oak leaf - shown open',x+.06,1.73,.46,.04,1.15,2.19,timber,DB.BuiltInCategory.OST_Doors,mk+'-LEAF')
+        box(mk+' sliding track',x+.05,.56,2.68,.05,2.36,.045,metal)
+    util=load_door('M_Door-Single-Panel.rfa','PPE D04 utility - nominal 1000 x 2100',1.0,2.1)
+    d=doc.Create.NewFamilyInstance(p(2.4,4.1,.45),util,part,ffl,DB.Structure.StructuralType.NonStructural);meta(d,'D04','Utility door nominal 1000; clear width supplier dependent')
+    for i in [2,3,5,6]:
+        xa=i*1.2+.18;xb=(i+1)*1.2-.18
+        box('North window glass',xa,5.515,1.55,xb-xa,.012,1.05,glass,DB.BuiltInCategory.OST_Windows,'WN%d'%i)
+        for z in [1.52,2.6]:box('North window horizontal frame',xa-.03,5.47,z,xb-xa+.06,.1,.04,metal)
+        for x in [xa-.03,xb]:box('North window jamb',x,5.47,1.52,.03,.1,1.12,metal)
+    for i in [1,2]:
+        ya=i*1.4+.2
+        box('East living window',9.52,ya,1.35,.012,1.,1.25,glass,DB.BuiltInCategory.OST_Windows,'WE%d'%i)
+        for z in [1.32,2.6]:box('East window transom',9.47,ya-.03,z,.1,1.06,.04,metal)
+        for y in [ya-.03,ya+1.]:box('East window jamb',9.47,y,1.32,.1,.03,1.32,metal)
+    box('Bathroom high-level obscured glazing',.055,1.62,2.25,.012,.86,.55,glass,DB.BuiltInCategory.OST_Windows,'W05')
+    # Foundation and supports are explicit schematic placeholders.
+    for x in [.3,2.4,5.8,9.3]:
+        for y in [.3,2.8,5.3]:
+            box('RC pad - provisional',x-.4,y-.4,-.55,.8,.8,.3,normal,DB.BuiltInCategory.OST_StructuralFoundation)
+            box('RC pedestal - provisional',x-.15,y-.15,-.25,.3,.3,.43,normal,DB.BuiltInCategory.OST_StructuralFoundation)
+    for y in [.2,2.75,5.25]:box('Floor bearer - provisional',.05,y,.13,9.5,.15,.1,steel,DB.BuiltInCategory.OST_StructuralFraming)
+    # Flush front veranda 9600 x 1800 and 1:12 straight approach along its outer edge.
+    for i in range(12):box('Veranda composite non-slip deck board',0,-1.8+i*.15,.42,9.6,.145,.03,deckmat,DB.BuiltInCategory.OST_Floors,'DK')
+    for x in [.15,2.4,4.8,7.2,9.35]:box('Veranda joist',x,-1.8,.27,.1,1.8,.15,steel,DB.BuiltInCategory.OST_StructuralFraming)
+    box('Top ramp landing 1800 square',7.5,-3.6,.3,1.8,1.8,.15,deckmat,DB.BuiltInCategory.OST_Floors,'LAND-T')
+    box('Bottom ramp landing 1800 square',.3,-3.6,-.15,1.8,1.8,.15,tile,DB.BuiltInCategory.OST_Floors,'LAND-B')
+    # Ramp from x2.1,z0 to x7.5,z450, transverse width1800.
+    pts=[p(2.1,-3.6,-.15),p(7.5,-3.6,.30),p(7.5,-3.6,.45),p(2.1,-3.6,0)];loop=DB.CurveLoop()
+    for i in range(4):loop.Append(li(pts[i],pts[(i+1)%4]))
+    shape('RA-01 accessible ramp 1:12',[DB.GeometryCreationUtilities.CreateExtrusionGeometry(List[DB.CurveLoop]([loop]),DB.XYZ.BasisY,m(1.8),DB.SolidOptions(tile.Id,DB.ElementId.InvalidElementId))],tile,DB.BuiltInCategory.OST_Ramps,'RA-01')
+    def rod(n,a,b,r,mat,cat=DB.BuiltInCategory.OST_GenericModel):
+        a=p(*a);b=p(*b);d=(b-a).Normalize();u=d.CrossProduct(DB.XYZ.BasisZ)
+        if u.GetLength()<.01:u=DB.XYZ.BasisX
+        u=u.Normalize().Multiply(m(r));v=d.CrossProduct(u.Normalize()).Multiply(m(r))
+        c=DB.CurveLoop();c.Append(DB.Arc.Create(a+u,a-u,a+v));c.Append(DB.Arc.Create(a-u,a+u,a-v))
+        return shape(n,[DB.GeometryCreationUtilities.CreateExtrusionGeometry(List[DB.CurveLoop]([c]),d,a.DistanceTo(b),DB.SolidOptions(mat.Id,DB.ElementId.InvalidElementId))],mat,cat)
+    for y in [-3.5,-1.9]:
+        for h in [.7,.9]:
+            rod('Ramp handrail 38 dia',(2.1,y,h),(7.5,y,.45+h),.019,metal)
+            rod('Handrail lower extension',(.3,y,h),(2.1,y,h),.019,metal)
+            rod('Handrail top extension',(7.5,y,.45+h),(9.25 if y<-3 else 7.8,y,.45+h),.019,metal)
+        for x in [.35,1.4,2.1,3.45,4.8,6.15,7.5,8.6,9.2]:
+            if y>-3 and x>7.8:continue
+            z=max(0,min(.45,(x-2.1)/12));rod('Ramp handrail post',(x,y,z),(x,y,z+.91),.022,metal)
+        # edge protection at each open ramp side follows the ramp pitch
+        rod('Ramp 100 high wheel edge rail',(2.1,y,.06),(7.5,y,.51),.05,metal)
+    # Front guardrail leaves the top landing route open at x7.5..9.3.
+    for x in [.1,1.3,2.5,3.7,4.9,6.1,7.3]:rod('Veranda guard post',(x,-1.72,.45),(x,-1.72,1.55),.025,metal)
+    for h in [.8,1.1]:rod('Veranda guard rail',(.1,-1.72,.45+h),(7.3,-1.72,.45+h),.02,metal)
+    for x in [.1,9.5]:
+        rod('Veranda side guard',(x,-1.72,1.55),(x,-.1,1.55),.02,metal)
+    # Warm, uncluttered home interior.
+    furn=DB.BuiltInCategory.OST_Furniture;cw=DB.BuiltInCategory.OST_Casework;plumb=DB.BuiltInCategory.OST_PlumbingFixtures
+    box('Bed frame 1500 x 2000',3.35,2.75,.45,1.5,2.,.24,timber,furn,'F01')
+    box('Mattress - top 500 above FFL',3.35,2.75,.69,1.5,2.,.26,white,furn)
+    box('Bed headboard',3.30,4.76,.45,1.6,.07,1.0,timber,furn)
+    for x in [3.48,4.18]:box('Pillow',x,4.2,1.0,.54,.4,.1,white,furn)
+    box('Bedside shelf left',2.55,4.18,.85,.55,.42,.05,timber,cw)
+    box('Bedside shelf right',5.12,4.18,.85,.45,.42,.05,timber,cw)
+    box('Utility linen storage',.18,4.83,.45,2.1,.55,2.1,timber,cw,'CW01')
+    box('Washing machine placeholder',.2,3.4,.45,.65,.65,.85,white,DB.BuiltInCategory.OST_SpecialityEquipment)
+    box('Living sofa base',8.48,1.3,.45,.85,2.0,.42,timber,furn,'F02')
+    box('Living sofa cushion',8.45,1.35,.87,.7,1.9,.12,white,furn)
+    box('Living sofa back',9.13,1.3,.9,.16,2.0,.5,white,furn)
+    for y in [1.3,3.15]:box('Sofa armrest',8.45,y,.86,.85,.15,.35,white,furn)
+    box('Dining table - knee clear below',6.45,3.30,1.18,1.25,.75,.045,timber,furn,'F03')
+    for x in [6.5,7.60]:
+        for y in [3.35,3.95]:box('Table leg',x,y,.45,.04,.04,.73,metal,furn)
+    for x,y in [(6.7,4.22),(7.34,4.22)]:
+        box('Dining chair seat',x-.2,y-.2,.9,.4,.4,.04,timber,furn)
+        box('Dining chair back',x-.2,y+.17,.94,.4,.04,.38,timber,furn)
+        for dx in [-.17,.14]:
+            for dy in [-.17,.14]:box('Chair leg',x+dx,y+dy,.45,.035,.035,.45,metal,furn)
+    box('Kitchen cabinet run',6.0,4.85,.45,2.5,.6,.77,timber,cw,'CW02')
+    box('Kitchen worktop 800 above FFL',5.98,4.83,1.22,2.54,.64,.03,white,cw)
+    box('Kitchen hob',7.7,4.94,1.25,.55,.42,.025,metal,DB.BuiltInCategory.OST_SpecialityEquipment)
+    box('Kitchen sink',6.18,4.91,1.25,.55,.44,.05,steel,plumb,'FX05')
+    rod('Kitchen mixer',(6.45,5.32,1.27),(6.45,5.32,1.52),.016,steel,plumb)
+    box('Fridge',8.65,4.73,.45,.7,.7,1.6,white,DB.BuiltInCategory.OST_SpecialityEquipment,'EQ01')
+    box('Kitchen accessible open prep shelf',5.95,3.05,1.22,.45,.85,.03,timber,cw,'CW03')
+    # Bathroom wet-room: shower west/north, toilet east/north, clear central approach.
+    wcpath=r'C:\ProgramData\Autodesk\RVT 2026\Libraries\English\US\Plumbing\Architectural\Fixtures\Water Closets\M_Toilet-Domestic-3D.rfa'
+    fr=clr.Reference[DB.Family]();doc.LoadFamily(wcpath,fr);ws=doc.GetElement(list(fr.Value.GetFamilySymbolIds())[0]);ws.Activate();doc.Regenerate()
+    wcinst=doc.Create.NewFamilyInstance(p(1.86,2.58,.45),ws,ffl,DB.Structure.StructuralType.NonStructural);meta(wcinst,'FX01','WC target seat height 450-480 above FFL; fixture family is indicative, verify selection')
+    box('Wall hung basin - knee space below',1.72,.23,1.2,.5,.50,.09,white,plumb,'FX02')
+    box('Basin mirror',1.71,.165,1.48,.52,.025,.70,glass,DB.BuiltInCategory.OST_SpecialityEquipment)
+    box('Shower zone - flush slip-resistant tile',.16,1.88,.448,1.18,1.25,.002,tile,DB.BuiltInCategory.OST_Floors,'SH01')
+    box('Linear shower drain',.18,3.05,.448,1.1,.06,.006,metal,plumb,'DR01')
+    box('Folding shower seat - open',.18,2.48,.88,.45,.45,.04,timber,plumb,'FX03')
+    rod('Shower grab bar vertical',(.22,2.28,1.15),(.22,2.28,1.95),.0175,metal,plumb)
+    rod('Shower grab bar horizontal',(.22,2.25,1.15),(.22,3.0,1.15),.0175,metal,plumb)
+    rod('WC support rail', (2.22,2.02,1.20),(2.22,2.96,1.20),.0175,metal,plumb)
+    rod('WC rear grab bar',(1.35,3.07,1.20),(2.22,3.07,1.20),.0175,metal,plumb)
+    rod('Hand shower riser',(.23,3.03,1.55),(.23,3.03,2.25),.015,metal,plumb)
+    rod('Emergency pull cord',(.4,2.9,.62),(.4,2.9,2.8),.006,metal,DB.BuiltInCategory.OST_ElectricalFixtures)
+    # Lights, switches and outlets are coordinated positions, no circuits/connectors.
+    for x,y in [(1.2,1.4),(4.1,1.6),(4.1,4.4),(6.7,1.5),(8.4,3.8),(7.4,5.0)]:
+        cylinder('Warm 3000K ceiling light - schematic',x,y,3.04,.13,.035,white,DB.BuiltInCategory.OST_LightingFixtures)
+    for x,y in [(2.46,1.75),(5.87,1.76),(8.98,.19)]:box('Switch 1000 above FFL',x,y,1.45,.075,.025,.12,white,DB.BuiltInCategory.OST_ElectricalFixtures)
+    for x in [3.0,5.25]:box('Bedside outlet 600 above FFL',x,5.42,1.05,.10,.025,.075,white,DB.BuiltInCategory.OST_ElectricalFixtures)
+    for y in [1.4,2.8,4.2]:box('Bedroom wardrobe/sliding screen head track',2.53,y,3.08,.04,.7,.04,timber)
+    # Curved-panel joints with outer waterproof cap, and schematic rainwater pipes.
+    for j in range(1,4):
+        y=j*1.4
+        for i in range(40):
+            xa=i*5.8/40;xb=(i+1)*5.8/40
+            rod('Vault joint weather cap',(xa,y,arc_z(xa)+.012),(xb,y,arc_z(xb)+.012),.018,membrane)
+    for x in [5.92,9.75]:rod('Rainwater downpipe 75 mm - routing concept',(x,5.60,.05),(x,5.60,3.43),.0375,metal,DB.BuiltInCategory.OST_PlumbingFixtures)
+    for x,y in [(.5,-.7),(9.05,-.7),(9.9,4.7)]:
+        cylinder('Planter',x,y,.45,.22,.35,timber,furn)
+        for j in range(5):cylinder('Landscape foliage',x+.06*(j%2),y+.06*(j//2),.8,.08,.35+.1*(j%3),green)
+    paving=box('Conceptual ground - no survey',-1,-4.3,-.07,12,11,.07,earth)
+    # Room separators inside panelized exterior envelope avoid gaps leaking room area.
+    rb=DB.CurveArray()
+    for c in rect(.151,.151,9.449,5.449,.45):rb.Append(c)
+    sp=DB.SketchPlane.Create(doc,DB.Plane.CreateByNormalAndOrigin(DB.XYZ.BasisZ,p(0,0,.45)))
+    doc.Create.NewRoomBoundaryLines(sp,rb,plan);doc.Regenerate()
+    rooms=[]
+    for x,y,n,num in [(1.0,1.0,'ACCESSIBLE BATH','01'),(1,4.1,'UTILITY / LINEN','02'),(4,1.8,'BEDROOM','03'),(7.3,2.4,'LIVING / KITCHEN','04')]:
+        room=doc.Create.NewRoom(ffl,DB.UV(m(x),m(y)));room.Name=n;room.Number=num;rooms.append(room)
+    if tr.Commit()!=DB.TransactionStatus.Committed:raise Exception('Model transaction failed')
+    log('Native senior-home model committed')

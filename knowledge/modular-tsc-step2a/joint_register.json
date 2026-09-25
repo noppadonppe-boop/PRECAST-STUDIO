@@ -1,0 +1,24 @@
+{
+  "id": "JR-TS-C-S2A-R00",
+  "status": "CONNECTION_CONCEPT_NOT_CAPACITY_DESIGN",
+  "units": "m,kN,kNm; distributed shell forces require integration before connector design",
+  "unknown_DOF_rule": "null is unknown, not free or fixed; no physical bolt count selected",
+  "interfaces": [
+    { "id": "JO-CR-C", "parts": ["H15-LH-S00", "H15-RH-S00"], "location": "X=B/2, Y=0..L, Z=H-t/2 midsurface", "resultants": ["Fx","Fy","Fz","Mx","My","Mz"], "DOF": {"Ux":null,"Uy":null,"Uz":null,"Rx":null,"Ry":null,"Rz":null}, "concept": "compression bearing/grouted shear key plus designed tension tie or coupler zone; weather seal separate from structural path", "must_check": ["asymmetric vertical shear", "horizontal thrust and uplift", "moment transfer if required by chosen model", "cover, anchorage and access within thickness", "waterproofing and tolerance"], "benchmark_override": "P3 trial only: translations compatible in X/Z, relative rotation about Y released; not a permanent specification" },
+    { "id": "JO-BS-L", "parts": ["H15-LH-S00", "SUPPORT_OR_F15_TBD"], "location": "X=t/2, Y=0..L, Z=t_floor", "DOF": {"Ux":null,"Uy":null,"Uz":null,"Rx":null,"Ry":null,"Rz":null}, "concept": "defined bearing seat + horizontal restraint + hold-down if demanded; choose load path before detailing", "must_check": ["bearing/local splitting", "anchor tension/shear", "eccentricity", "floor edge or direct foundation capacity", "movement and erection stability"] },
+    { "id": "JO-BS-R", "parts": ["H15-RH-S00", "SUPPORT_OR_F15_TBD"], "location": "X=B-t/2, Y=0..L, Z=t_floor", "DOF": {"Ux":null,"Uy":null,"Uz":null,"Rx":null,"Ry":null,"Rz":null}, "concept": "mirror location, not automatic capacity approval", "must_check": ["same checks as JO-BS-L", "opposite horizontal interface force"] },
+    { "id": "JO-BY-0/1", "parts": ["THIS_BAY", "ADJACENT_BAY_OR_END_TBD"], "location": "Y=0 or L along LH/RH rim", "DOF": {"Ux":null,"Uy":null,"Uz":null,"Rx":null,"Ry":null,"Rz":null}, "concept": "keyed/grouted or mechanical joint candidate; designate collectors/ties and allowed longitudinal movement", "must_check": ["longitudinal shear", "diaphragm and torsion", "out-of-plane stability", "creep/shrinkage/temperature", "joint waterproofing"] },
+    { "id": "JO-FF-0/1", "parts": ["F15", "ADJACENT_F15"], "location": "Y=0 or L, X=0..B, Z=t_floor/2", "DOF": {"Ux":null,"Uy":null,"Uz":null,"Rx":null,"Ry":null,"Rz":null}, "concept": "shear/alignment connection plus designed diaphragm tie only if assigned that role", "must_check": ["differential deflection", "shear transfer", "collector/tie force", "continuity assumptions"] },
+    { "id": "JO-ND/NI", "parts": ["TS-C_ARM", "TR_AND_N90_TBD"], "location": null, "DOF": {"Ux":null,"Uy":null,"Uz":null,"Rx":null,"Ry":null,"Rz":null}, "concept": "reserved for later L/U node study; not present in single straight bay", "must_check": ["node load path", "all six resultants", "support frames and corner torsion"] },
+    { "id": "JO-LF", "parts": ["EACH_CAST_PART", "LIFTING_SYSTEM_TBD"], "location": null, "DOF": null, "concept": "lifting insert layout must follow mass/centre of gravity, concrete age and certified system design", "must_check": ["lifting stages", "sling angle", "dynamic effects", "local breakout", "temporary load reversals"] },
+    { "id": "JO-TB", "parts": ["HALF_SHELL", "TEMPORARY_BRACING_TBD"], "location": null, "DOF": null, "concept": "brace each half before release from lifting equipment; final quantities/sequence require erection design", "must_check": ["single-half overturning", "out-of-plane stability", "base and brace anchor capacity", "verified removal sequence"] }
+  ],
+  "load_path_options": [
+    {"id":"LP-A","meaning":"wall/roof forces to independently designed edge support/foundation; floor has its own checked bearing path","selected":false},
+    {"id":"LP-B","meaning":"wall/roof forces into F15 and then foundation; include full shell actions in floor analysis and check edge/tie/local effects","selected":false}
+  ],
+  "hardware_sizes": null,
+  "hardware_count": null,
+  "connection_capacity": null,
+  "approved": false
+}

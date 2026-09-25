@@ -6,13 +6,14 @@ Run `pnpm dev` and open `http://127.0.0.1:5173`. The application restores an exi
 
 ## Firestore layout
 
-The Firebase project is `precast-studio`, using the default Firestore database. The collection is also named `precast-studio`, and its document is `root`:
+The Firebase project is `precast-studio`, using the default Firestore database. The shared workspace collection is `PRECAST MODULE`, and its document is `root`:
 
 ```text
-precast-studio/root
+PRECAST MODULE/root
   projects/{projectId}          Project directory
   intake/{projectId}-notes      BIM intake notes/references
   criteria/{projectId}-notes    Design criteria notes/references
+  criteria/{projectId}-design-basis  Structured Design Criteria draft and sources
   panel/{projectId}             Draft panel geometry
   panel/{projectId}-notes       Panel menu notes
   loads/{projectId}-notes       Load notes/references
@@ -40,10 +41,10 @@ The environment resolver now accepts the explicit shared project. Local modes re
 
 ## Verification on 2026-09-05
 
-- Created/read the real `precast-studio/root` document.
+- Created/read the real `PRECAST MODULE/root` document.
 - Two distinct anonymous users wrote, read, updated, and reread one shared Firestore document.
 - Two separate Chrome contexts verified project creation, live shared panel and note edits, persistence after reload, unit-rate saving, stale-write rejection, and audit events. No browser page errors occurred.
-- Temporary verification documents/projects were deleted. Audit entries are retained as records of the test actions.
+- The live rules intentionally deny client deletes, so a connection-verification setting record may remain as a harmless audit probe after the smoke test. Audit entries are retained as records of the test actions.
 - Browser screenshot: `tmp/firebase-verification/shared-cost.png`.
 
 To repeat the live checks (they create temporary test data and require cleanup permissions):

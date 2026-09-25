@@ -1,0 +1,17 @@
+{
+  "revision":"WEB-15","date":"2026-09-16","previous_status":"status-web14.json",
+  "status":"LOCAL_REVIEW_READY","product_slots":48,
+  "protected_image_artifacts":79,"concept_images":52,"engineering_images":27,
+  "step2n":"DIRECTIONAL_STRESS_DIAGNOSTIC_NOT_FOR_DESIGN",
+  "new_FEM_solves":0,"physical_sample_points":490,
+  "group_component_records":24,"failed_group_component_records":4,
+  "pair_specific_local_groups_met":1,"pair_specific_local_groups_total":4,
+  "whole_model_local_stress_convergence":"NOT_ESTABLISHED",
+  "build":"PASS","web_typescript":"PASS",
+  "build_warning":"Existing lazy Joint3DViewer chunk exceeds 500 kB; build succeeds.",
+  "numerical_evidence_tests_passed":74,"ui_tests_passed":39,"http_security_tests_passed":13,"total_tests_passed":126,
+  "r01_snapshot_checks_passed":162,"new_pngs_visually_checked":1,
+  "browser_visual_qa":"NOT_RUN","firebase_real_identity_integration_verified":false,
+  "team_service_deployed":false,"public_catalog_enabled":false,
+  "engineering_approval":false,"manufacturing_release":false
+}

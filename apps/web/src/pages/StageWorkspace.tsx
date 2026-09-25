@@ -5,10 +5,12 @@ import { gateLabels, gates, type Gate, type PermissionContext } from '@precast/d
 import { useProjectDirectory } from '../data/useProjectDirectory';
 import { useAuth } from '../auth/AuthContext';
 import {
-  cancelAnalysisRun, createDesignCheckRevision, createDocumentationSetRevision, createEstimateRevision, createReleasePackageRevision, freezeSourceRevision, queueAnalysisRun, releaseProductionPackage, saveLoadModelDraft, saveProductModelDraft, submitAnalysis, submitCalculation, submitDesignBasis, submitDocumentationSet, submitEstimate, submitProductModel, submitReleasePackage, submitSourceRevision, uploadSourceFile, validateSourceFile,
+  cancelAnalysisRun, createDesignCheckRevision, createDocumentationSetRevision, createEstimateRevision, createReleasePackageRevision, freezeSourceRevision, queueAnalysisRun, releaseProductionPackage, saveLoadModelDraft, saveProductModelDraft, submitAnalysis, submitCalculation, submitDocumentationSet, submitEstimate, submitProductModel, submitReleasePackage, submitSourceRevision, uploadSourceFile, validateSourceFile,
   watchAnalysisRun, watchCalculation, watchDesignBasis, watchDocumentationSet, watchEstimate, watchLoadModel, watchProductModel, watchReleasePackage, watchSourceRevision, type AnalysisRunState, type CalculationState, type DesignBasisState, type DocumentationSetState, type EstimateState, type LoadModelState, type ProductModelState, type ReleasePackageState, type SourceRevisionState,
 } from '../data/workflowRepository';
 import { Can } from '../permissions/guards';
+import { ControlledDesignCriteria } from '../components/ControlledDesignCriteria';
+import { PrestressCalculator } from '../components/PrestressCalculator';
 import { ProductModelWorkspace } from '../components/ProductModelWorkspace';
 import { confirmModelLoadPaths, mergePanels, splitPanel } from '../data/panelization';
 
@@ -63,7 +65,7 @@ export function StageWorkspace() {
     setNotice('');
     if (mode !== 'emulator' || projectId === undefined) return;
     if (gate === 'G0') return watchSourceRevision(organizationMembership.orgId, projectId, sourceRevisionId, setSource, showError);
-    if (gate === 'G1') return watchDesignBasis(organizationMembership.orgId, projectId, 'db-r02', setDesignBasis, showError);
+    if (gate === 'G1' && project?.designBasisRevision && project.designBasisRevision !== '—') return watchDesignBasis(organizationMembership.orgId, projectId, project.designBasisRevision, setDesignBasis, showError);
     if (gate === 'G2') return watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError);
     if (gate === 'G3') {
       const unsubscribes = [watchProductModel(organizationMembership.orgId, projectId, 'pm-r01', setProductModel, showError), watchLoadModel(organizationMembership.orgId, projectId, 'load-r01', setLoadModel, showError), watchAnalysisRun(organizationMembership.orgId, projectId, 'an-r01', setAnalysisRun, showError)];
@@ -85,7 +87,14 @@ export function StageWorkspace() {
       const unsubscribes = [watchDocumentationSet(organizationMembership.orgId, projectId, 'ds-r01', setDocumentationSet, showError), watchReleasePackage(organizationMembership.orgId, projectId, 'rel-r01', setReleasePackage, showError)];
       return () => { for (const unsubscribe of unsubscribes) unsubscribe(); };
     }
-  }, [gate, mode, organizationMembership.orgId, projectId, sourceRevisionId]);
+  }, [gate, mode, organizationMembership.orgId, projectId, sourceRevisionId, project?.designBasisRevision]);
+
+  useEffect(() => {
+    if (mode !== 'emulator' || !projectId || !gate || !['G3', 'G4', 'G6'].includes(gate)) return;
+    setDesignBasis(null);
+    if (!project?.designBasisRevision || project.designBasisRevision === '—') return;
+    return watchDesignBasis(organizationMembership.orgId, projectId, project.designBasisRevision, setDesignBasis, showError);
+  }, [gate, mode, organizationMembership.orgId, projectId, project?.designBasisRevision]);
 
   function showError(reason: Error) { setError(true); setNotice(reason.message); }
   async function run(action: () => Promise<unknown>, success: string) {
@@ -175,6 +184,7 @@ export function StageWorkspace() {
     <div className="project-heading"><div><Link to={`/org/${organizationMembership.orgId}/projects/${project.id}/overview`}>← Project overview</Link><p className="eyebrow">{project.code} · {gate}</p><h1>{gate === 'G0' ? 'BIM source intake' : gateLabels[gate]}</h1></div><StatusBadge tone={project.gate === gate ? 'info' : 'neutral'}>ขั้นตอน {gate} · Local Emulator</StatusBadge></div>
     <Surface className="revision-context" ariaLabel="Current revision context"><div><small>SOURCE</small><strong>{source?.revision ?? project.sourceRevision}</strong><span>{source?.locked ? 'Accepted & locked' : 'Controlled reference'}</span></div><i>→</i><div><small>DESIGN BASIS</small><strong>{designBasis?.revision ?? project.designBasisRevision}</strong><span>{designBasis?.locked ? 'Approved & locked' : 'Project context'}</span></div><i>→</i><div><small>MODEL</small><strong>{productModel?.revision ?? project.modelRevision}</strong><span>{productModel?.locked ? 'Approved & locked' : 'Version reference'}</span></div><i>→</i><div><small>ANALYSIS / CALC</small><strong>{analysisRun?.revision ?? project.analysisRevision} / {calculation?.revision ?? '—'}</strong><span>{calculation?.payload.overallStatus ?? analysisRun?.status ?? 'NOT CHECKED'}</span></div>{(gate === 'G6' || gate === 'G7') && <><i>→</i><div><small>DRAWING SET</small><strong>{documentationSet?.revision ?? '—'}</strong><span>{documentationSet?.documentationState ?? 'Not generated'}</span></div></>}{gate === 'G7' && <><i>→</i><div><small>RELEASE</small><strong>{releasePackage?.revision ?? '—'}</strong><span>{releasePackage?.releaseState ?? 'Not composed'}</span></div></>}</Surface>
     {notice !== '' && <div className={`toast ${error ? 'toast--error' : ''}`} role="status">{notice}</div>}
+    {['G3', 'G4', 'G6'].includes(gate) && designBasis?.payload?.criteria && <Surface><p>Prestress จาก Design Basis {designBasis.revision} · ผลคำนวณเสริม ไม่รวมในผล controlled benchmark หรือชุดเอกสารอนุมัติเดิม</p><PrestressCalculator value={designBasis.payload.criteria} /></Surface>}
 
     {gate === 'G0' && mode === 'emulator' && source !== null && permissionContext !== null && <Surface className="m2-workspace">
       <div className="section-heading"><div><p className="eyebrow">CONTROLLED BIM INTAKE</p><h2>{source.revision}</h2><p>{source.scanState === 'clean' ? 'Seeded reference: deterministic scan/validation fixture, not results from an uploaded file.' : 'Malware scan and BIM validation pending. Uploaded geometry has not been parsed or verified.'}</p></div><StatusBadge tone={tone(source.status)}>{source.status} · {source.scanState}</StatusBadge></div>
@@ -191,11 +201,7 @@ export function StageWorkspace() {
       </div>
     </Surface>}
 
-    {gate === 'G1' && mode === 'emulator' && designBasis !== null && permissionContext !== null && <Surface className="m2-workspace">
-      <div className="section-heading"><div><p className="eyebrow">VERSIONED DESIGN BASIS</p><h2>{designBasis.revision}</h2><p>Code editions, materials, durability, lifting and transport factors are captured in the immutable approval snapshot.</p></div><StatusBadge tone={tone(designBasis.status)}>{designBasis.status}{designBasis.locked ? ' · locked' : ''}</StatusBadge></div>
-      {designBasis.payload !== undefined && <dl className="basis-grid"><div><dt>Design code</dt><dd>{designBasis.payload.designCode} · {designBasis.payload.designCodeEdition}</dd></div><div><dt>Loading code</dt><dd>{designBasis.payload.loadingCode} · {designBasis.payload.loadingCodeEdition}</dd></div><div><dt>Concrete / rebar</dt><dd>{designBasis.payload.concrete.fc28Mpa} / {designBasis.payload.reinforcement.fyMpa} MPa</dd></div><div><dt>Handling factors</dt><dd>{designBasis.payload.handling.liftingDynamicFactor} lift · {designBasis.payload.handling.transportDynamicFactor} transport</dd></div><div><dt>Durability</dt><dd>{designBasis.payload.concrete.durabilityClass}</dd></div><div><dt>Inherited from</dt><dd>{designBasis.payload.inheritedFrom}</dd></div></dl>}
-      <div className="m2-actions"><Can action="submit" resource="designBasis" context={permissionContext}><Button type="button" disabled={saving || designBasis.status !== 'draft'} onClick={() => void run(() => submitDesignBasis({ orgId: organizationMembership.orgId, projectId: project.id, artifact: designBasis, assignedTo: 'checker-narin' }), `${designBasis.revision} submitted to an independent checker.`)}>Submit Design Basis for approval</Button></Can></div>
-    </Surface>}
+    {gate === 'G1' && mode === 'emulator' && designBasis?.payload !== undefined && permissionContext !== null && <ControlledDesignCriteria key={designBasis.id} orgId={organizationMembership.orgId} projectId={project.id} artifact={{ ...designBasis, payload: designBasis.payload }} context={permissionContext} />}
 
     {gate === 'G2' && mode === 'emulator' && productModel !== null && permissionContext !== null && <Surface className="m2-workspace m3-workspace">
       <div className="section-heading"><div><p className="eyebrow">DETERMINISTIC PRODUCT / ANALYTICAL MODEL</p><h2>{productModel.revision}</h2><p>Engineer-controlled segmentation with traceable openings, joints, lifting anchors, scenario supports and load paths. This is model preparation only—no solver result is claimed.</p></div><StatusBadge tone={tone(productModel.status)}>{productModel.status}{productModel.locked ? ' · locked' : ''}</StatusBadge></div>

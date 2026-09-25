@@ -1,0 +1,47 @@
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+import {families,out,build,box,seam,ring} from './table-channel-p94.mjs';
+import {read,sha} from './table-weld-p93.mjs';
+import {render,rect,drilled} from './prism-tools-p54.mjs';
+const sharp=createRequire(import.meta.url)('C:/Users/Administrator/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/sharp');
+const text=(x,y,s,size=21,fill='#123456')=>`<text x="${x}" y="${y}" font-size="${size}" fill="${fill}">${s}</text>`;
+const img=(data,x,y,w,h)=>`<image href="${data}" x="${x}" y="${y}" width="${w}" height="${h}"/>`;
+const color={steel:'#244f76',silver:'#b7c5cf',weld:'#e4a534'};
+const localBase=[{faces:box(-80,80,6,56,60,66),color:color.steel},{faces:box(-80,80,6,56,104,110),color:color.steel},{faces:box(-80,80,50,56,66,104),color:color.steel}];
+// Rigid180deg viewing rotation exposes open side. The solid geometry is unchanged.
+const openSide=p=>({...p,faces:p.faces.map(f=>f.map(([t,u,z])=>[-t,-u,z]))});
+const openView=render([...localBase,...[[50,66,-1,1],[50,104,-1,-1]].map(([u,z,du,dz])=>({faces:seam([-80,u,z],[80,u,z],du,dz),color:color.weld}))].map(openSide),720,260);
+const exploded=render(localBase.map((p,i)=>({...p,faces:p.faces.map(f=>f.map(v=>v.map((x,j)=>x+([0,0,-30,0,0,30,0,30,0][i*3+j]))))})).map(openSide),720,270);
+const detail=render([{cells:[rect(-80,80,0,6,0,175)],color:color.silver},...localBase,{cells:drilled(rect(-40,40,6,110,0,12),0,80),color:color.steel},{faces:box(-3,3,17.5,49.5,12,60),color:color.steel},...ring(12).solids.map(faces=>({faces,color:color.weld})),...ring(60,true).solids.map(faces=>({faces,color:color.weld})),...[[6,60,1,-1],[6,110,1,1]].map(([u,z,du,dz])=>({faces:seam([-80,u,z],[80,u,z],du,dz),color:color.weld}))],650,540);
+const assets=[];
+for(const family of families){
+ const r=read(`${out}/${family}.json`),c=build(family),[L,W,H]=r.cavityMm;
+ const overview=render([...c.parts.filter(p=>/^M0/.test(p.id)).map(p=>({faces:p.solids.flat(),color:p.id==='M00'?color.silver:color.steel})),...c.welds.map(w=>({faces:w.nominalSolids.flat(),color:color.weld}))],870,510);
+ let s=`<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1900"><rect width="1800" height="1900" fill="#fff"/><g font-family="Arial">`;
+ s+=text(30,53,`P94 | BUILT-UP TABLE SHUTTERS — ${family}`,36)+text(30,94,`Cavity ${L} x ${W} x ${H} mm | 3-plate channel replaces square-corner RHS assumption`,23);
+ for(const [x,y,w,h]of [[24,120,875,630],[920,120,855,630],[24,775,675,650],[720,775,1055,650]])s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#f7f9fc" stroke="#b5c4d2" rx="8"/>`;
+ s+=text(42,160,'A | SOURCE-COORDINATE ASSEMBLY',26)+img(overview,32,175,860,510)+text(42,720,'Fasteners hidden only in this view; included in motion audit.',19);
+ s+=text(937,160,'B | THREE REAL CUT PLATES PER CHANNEL',25)+img(exploded,946,175,800,270)+text(1480,240,'CH-FL-UP',19)+text(1480,310,'CH-BACK',19)+text(1480,400,'CH-FL-LOW',19)+text(946,470,'FL-LOW / FL-UP:50 x 6; BACK:38 x 6 mm',22)+img(openView,946,483,800,220)+text(946,730,'Open-side view: weld WC before attaching skin.',20);
+ s+=text(40,815,'C | EXTERNAL WELDS / LOCK WEB',24)+img(detail,38,840,646,515)+text(40,1398,'Local160mm view only; not a cut instruction.',18);
+ s+=text(740,815,'D | FINISHED SECTION / WELD ROOTS',25);
+ const X=u=>790+u*3.0,Y=z=>1280-z*2.15,box2=(u,z,w,h,fill)=>`<rect x="${X(u)}" y="${Y(z+h)}" width="${w*3}" height="${h*2.15}" fill="${fill}" stroke="#163c5c"/>`;
+ s+=box2(0,0,6,175,color.silver)+box2(6,60,50,6,color.steel)+box2(6,104,50,6,color.steel)+box2(50,66,6,38,color.steel)+box2(17.5,12,32,48,'#7394b0')+box2(6,0,104,12,'#7394b0');
+ for(const [u,z]of [[6,60],[6,110],[50,66],[50,104],[17.5,12],[49.5,12],[17.5,60],[49.5,60]])s+=`<circle cx="${X(u)}" cy="${Y(z)}" r="5" fill="${color.weld}"/>`;
+ s+=text(1150,886,'Skin175 x 6; concrete is u &lt; 0',21)+text(1150,924,'Channel envelope:50 x 50 mm',21)+text(1150,962,'Flanges z60–66 /104–110',21)+text(1150,1000,'Back plate u50–56 / z66–104',21)+text(1150,1038,'Web32 x 48 x 6 at u17.5–49.5',21)+text(1150,1076,'WR / WF root6 x32; length76',21)+text(1150,1114,'All effective throats: a >=3 mm',21)+text(1150,1152,'Proposed weld leg max4.75 mm',21)+text(1150,1190,'Position envelope: +/-0.25 mm',21)+text(1150,1228,'Minimum gap1.50 / landing1.25',21)+text(740,1350,'Cut-piece delta:12 channel plates +12 webs / size. Not complete tool BOM.',20)+text(740,1390,'Recalculate beam stiffness; do not carry over RHS reactions unchanged.',20);
+ s+=text(35,1472,'E | RECALCULATED PRESSURE CASES / FABRICATION ORDER',26);
+ s+=text(44,1516,`Conditional weld ratios: WR/WF ${r.summary.maxStationRatio.toFixed(4)} | WS ${r.summary.maxWsRatio.toFixed(4)} | WC ${r.summary.maxWcRatio.toFixed(4)}`,23);
+ s+=text(44,1556,`Max lateral deflection at1.5 pressure: ${r.summary.maxDeflectionAt1_5Mm.toFixed(3)}mm across trial supports; not an accepted casting tolerance.`,21);
+ s+=text(44,1596,'1  Cut three straight plates. Fixture and weld internal WC seams while the U remains open.',21);
+ s+=text(44,1636,'2  Inspect WC; attach U to skin. Weld external WS without rounding or changing the cavity face.',21);
+ s+=text(44,1676,'3  Fit station webs/feet. Inspect WR/WF all round before obstructing gauge access.',21);
+ s+=text(44,1716,'4  Check as-welded positions and flatness; trial-fit retained holes. WPS and prototype checks required.',21);
+ s+=text(44,1756,'No whole-lock, local plate, torsion, fatigue, handling or factory-floor release is inferred from weld ratios.',21);
+ s+=`<line x1="30" y1="1790" x2="1770" y2="1790" stroke="#173458"/>`+text(35,1830,'NAVY: steel | SILVER: contact skin | AMBER: weld envelope | all dimensions mm',23)+text(35,1870,'STAGE 5 / 8 — DEVELOPMENT. NOT RELEASED FOR FABRICATION, CASTING OR LIFTING.',23)+'</g></svg>';
+ fs.writeFileSync(`${out}/${family}-board.svg`,s);await sharp(Buffer.from(s)).png().toFile(`${out}/${family}-board.png`);
+ const header='tag,parent,quantity,material,length_mm,width_mm,thickness_mm,nominal_mass_kg';
+ fs.writeFileSync(`${out}/${family}-parts.csv`,[header,...r.parts.map(p=>[p.tag,p.parent,p.quantity,'S235JR_PROPOSED',...p.finishedDimensionsMm,p.properties.volumeMm3*7850/1e9].join(','))].join('\n')+'\n');
+ assets.push({family,files:['json','svg','png','csv'].map(ext=>{const path=`${out}/${family}${ext==='json'?'':ext==='csv'?'-parts':'-board'}.${ext}`;return {path,sha256:sha(path)};})});
+}
+fs.writeFileSync(`${out}/assets.json`,JSON.stringify({revision:'P94',records:assets,commonFiles:[{path:`${out}/DETAIL_TH.md`,sha256:sha(`${out}/DETAIL_TH.md`)}],pins:['tools/modular-program/table-channel-p94.mjs','tools/modular-program/table-channel-boards-p94.mjs','tools/modular-program/weld-group-p93.mjs','tools/modular-program/continuous-beam-p49.mjs',`${out}/register.json`].map(path=>({path,sha256:sha(path)})),stageComplete:false,engineeringApproved:false,productionReleased:false},null,2));
+fs.writeFileSync(`${out}/index.html`,`<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>P94 รางหลังแบบโต๊ะ</title><style>body{max-width:1200px;margin:32px auto;padding:0 24px;font:18px system-ui;color:#123456;background:#f4f7fa}img{width:100%}p{line-height:1.65}section{margin:40px 0}a{color:#174f80}</style><h1>P94 — รางประกอบหลังแบบโต๊ะ</h1><p>6ขนาด/9setup. แยกแผ่นจริงและลำดับเชื่อม ไม่ใช้มุมRHSฉากแทนมุมเหล็กกล่องจริง. ไม่เปลี่ยนTypicalต้นทาง. งานย่อยนี้ไม่ใช่ขั้น5ครบ100%</p><p><a href="DETAIL_TH.md">รายละเอียดภาษาไทย</a></p>${families.map(f=>`<section><h2>${f}</h2><a href="${f}-board.png"><img src="${f}-board.png" alt="${f} รางประกอบ3ชิ้น"></a><p><a download href="${f}-board.png">PNG</a> · <a download href="${f}-board.svg">SVG</a> · <a download href="${f}.json">JSON/ผลคำนวณ</a> · <a download href="${f}-parts.csv">รายการ24ชิ้นที่เปลี่ยน</a></p></section>`).join('')}<p>ยังไม่อนุมัติผลิต เท หรือยก. แนวเหล็กคอนกรีตไม่มีขนาดตามP52</p></html>`);
+console.log('P94 six assembled/detail/exploded boards generated');

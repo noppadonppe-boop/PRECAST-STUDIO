@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "id": "PROGRAMME-R02-STAGE7-STARTER-LIBRARY-P150",
+  "date": "2026-09-21",
+  "authority": "USER_REFINED_SCOPE_TO_LIBRARY_READY_NOT_RUN_STAAD_FILES",
+  "status": "COMPLETE_AWAITING_USER_STAGE_REVIEW",
+  "formal_stage": 7,
+  "supersedes_operational_scope": [
+    "STAGE7_PAUSE_REPLAN_P149_SECTIONS_7C_TO_7G",
+    "P149_M7_FILE_48_NATIVE_RUN_REQUIREMENT"
+  ],
+  "target": {
+    "primary_staad_files": 48,
+    "package_per_product": true,
+    "storage": "PRIVATE_LOCAL_LIBRARY",
+    "download_on_demand": true
+  },
+  "required_content": [
+    "GEOMETRY_AND_ANALYTICAL_MESH",
+    "MATERIAL_PROPERTY_SUPPORT_AND_JOINT_ASSUMPTIONS",
+    "LOAD_CASES_AND_SOURCE_REGISTER",
+    "LOAD_COMBINATIONS",
+    "LOAD_ENVELOPES",
+    "ANALYSIS_AND_OUTPUT_COMMANDS",
+    "RC_DESIGN_COMMANDS_OR_SUPPORTED_HANDOFF",
+    "ENGINEER_REVIEW_FLAGS"
+  ],
+  "acceptance_requires": [
+    "48_UNIQUE_STARTER_PACKAGES",
+    "STATIC_PREFLIGHT_PASS_48_OF_48",
+    "MANIFEST_HASH_SOURCE_AND_DEPENDENCY_TRACEABILITY",
+    "PRIVATE_LIBRARY_REGISTRATION",
+    "NOT_RUN_AND_ENGINEER_REVIEW_REQUIRED_LABELS"
+  ],
+  "acceptance_does_not_require": [
+    "NATIVE_STAAD_RUN",
+    "ANL_RESULTS",
+    "ZERO_SOLVER_WARNINGS",
+    "EQUILIBRIUM_PASS",
+    "STRESS_OR_DISPLACEMENT_PASS",
+    "RC_DESIGN_PASS",
+    "ENGINEERING_APPROVAL",
+    "PRODUCTION_RELEASE"
+  ],
+  "artifact_status_on_acceptance": "LIBRARY_READY_STARTER",
+  "native_validation_status_on_acceptance": "NOT_RUN_BY_CURRENT_SCOPE",
+  "analysis_status_on_acceptance": "NOT_RUN",
+  "design_status_on_acceptance": "NOT_RUN",
+  "engineer_review_status_on_acceptance": "REQUIRED_BEFORE_RUN",
+  "final_engineering_workflow_owner": "RESPONSIBLE_ENGINEER",
+  "resume_requires_user_instruction": false,
+  "progress_rebaseline_pending_user_acceptance": false,
+  "completion_percent": 100,
+  "delivered_packages": 48,
+  "delivered_std_files": 48,
+  "static_preflight_passed": 48,
+  "wave_counts": {"I": 16, "L": 16, "U": 16},
+  "analysed_products": 0,
+  "rc_designed_products": 0,
+  "native_solver_invoked_in_p150": false,
+  "library_root": "%LOCALAPPDATA%/Precast-Module/private/staad-starter-p150",
+  "library_index": "%LOCALAPPDATA%/Precast-Module/private/staad-starter-p150/library-index.json",
+  "delivery_manifest": "%LOCALAPPDATA%/Precast-Module/private/staad-starter-p150/delivery-manifest.json",
+  "acceptance_report": "%LOCALAPPDATA%/Precast-Module/private/staad-starter-p150/acceptance-report.json",
+  "progress_report": "%LOCALAPPDATA%/Precast-Module/private/staad-starter-p150/progress-report.json",
+  "engineering_approved": false,
+  "production_released": false,
+  "knowledge_path": "STAGE7_STARTER_LIBRARY_P150.md"
+}

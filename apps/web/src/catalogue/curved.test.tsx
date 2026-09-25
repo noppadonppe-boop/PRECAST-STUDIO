@@ -1,0 +1,20 @@
+import {fireEvent,render,screen,within} from '@testing-library/react';
+import {readFileSync} from 'node:fs';import {resolve} from 'node:path';import {expect,it} from 'vitest';
+import {CurvedStudyView} from './CurvedStudyView';import type {CurvedStudy} from './model';
+const raw=JSON.parse(readFileSync(resolve(import.meta.dirname,'../../../../output/tsc-step2g-r00/web_summary.json'),'utf8'));
+const study={...raw,drawings:raw.drawings.map((d:{id:string;title:string})=>({...d,artifact:{id:d.id,url:`/api/catalogue/artifacts/${d.id}`,bytes:100,revision:raw.revision,status:raw.status}}))} as CurvedStudy;
+it('switches real thickness/model results and keeps coupon/production and fixed-board labels separate',()=>{
+  render(<CurvedStudyView study={study}/>);
+  expect(within(screen.getByRole('table',{name:/t175 \/ ν=.20/})).getAllByRole('row')).toHaveLength(10);
+  expect(screen.getByRole('heading',{name:'H20-CURVED / t175 / G3 · 6 องค์ประกอบ'})).toBeInTheDocument();
+  fireEvent.change(screen.getByRole('combobox',{name:'ความหนาชิ้นโค้ง'}),{target:{value:'0.2'}});
+  fireEvent.change(screen.getByRole('combobox',{name:'แบบจำลองชิ้นโค้ง'}),{target:{value:'H8-CHORD'}});
+  expect(screen.getByRole('heading',{name:'H8-CHORD / t200 / G3 · 6 องค์ประกอบ'})).toBeInTheDocument();
+  expect(within(screen.getByRole('table',{name:/t200 \/ ν=.20/})).getAllByRole('row')).toHaveLength(10);
+  fireEvent.change(screen.getByRole('combobox',{name:'ความหนาชิ้นโค้ง'}),{target:{value:'0.15'}});
+  expect(screen.getByRole('heading',{name:'H8-CHORD / t150 / G3 · 6 องค์ประกอบ'})).toBeInTheDocument();
+  expect(screen.getByText(/NOT_ESTABLISHED/)).toBeInTheDocument();
+  expect(screen.getByRole('heading',{name:/ตัวอย่างคงที่ t175/})).toBeInTheDocument();
+  expect(screen.getAllByRole('button',{name:/ดาวน์โหลด/})).toHaveLength(2);
+});
+it('warns when curved evidence is stale',()=>{render(<CurvedStudyView study={{...study,status:'STALE'}}/>);expect(screen.getByRole('alert')).toHaveTextContent('STALE');});

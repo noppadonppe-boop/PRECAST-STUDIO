@@ -1,0 +1,23 @@
+{
+  "revision": "WEB-01",
+  "date": "2026-09-16",
+  "programme_source": "R01",
+  "status": "LOCAL_REVIEW_READY",
+  "scope": "Step 1 read-only catalogue; no deployment or engineering",
+  "product_slots": 48,
+  "typical_families": 4,
+  "protected_image_artifacts": 52,
+  "local_owner_preview": true,
+  "team_service_deployed": false,
+  "firebase_real_identity_integration_verified": false,
+  "public_catalog_enabled": false,
+  "browser_visual_qa": "NOT_RUN_NOT_REQUESTED",
+  "build": "PASS",
+  "web_typescript": "PASS",
+  "ui_model_tests": { "passed": 5, "failed": 0 },
+  "http_data_security_tests": { "passed": 11, "failed": 0, "identity": "FAKE_ADAPTER_FOR_HTTP_TESTS" },
+  "engineering_analysis": "NOT_STARTED",
+  "engineering_design": "NOT_STARTED",
+  "manufacturing_release": false,
+  "bim_for_catalogue_products": "NOT_STARTED"
+}

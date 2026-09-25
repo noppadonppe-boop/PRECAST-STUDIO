@@ -1,0 +1,68 @@
+{
+  "id": "STUDY-TS-C-S2B-R00",
+  "revision": "S2B-R00",
+  "date": "2026-09-16",
+  "scope": "LINEAR_ELASTIC_GRAVITY_SENSITIVITY_NOT_DESIGN",
+  "geometry_source": "knowledge/modular-tsc-step2a/study_basis.json",
+  "user_confirmations": [
+    "Use normal concrete fc' 320 ksc and exclude prestress in the first study only; compare t=150/175/200mm, not final material/prestress selection.",
+    "LP-A: wall-roof halves transfer directly to independently designed supports; floor remains separate."
+  ],
+  "material": {
+    "id": "TRIAL-NC320-ELASTIC-R00",
+    "fc_ksc": 320,
+    "ksc_to_MPa": 0.0980665,
+    "density_kg_m3": 2400,
+    "density_status": "ASSISTANT_STUDY_ASSUMPTION_NOT_MEASURED",
+    "E_formula_MPa": "0.043 * density_kg_m3 ** 1.5 * sqrt(fc_ksc * ksc_to_MPa)",
+    "E_source": "EIT-011008-21 clause 8.5.1, printed page 55, PDF page 67; general density-dependent SI expression",
+    "nu": 0.2,
+    "nu_status": "ASSISTANT_STUDY_ASSUMPTION_NOT_CODE_REQUIREMENT",
+    "stiffness": "ISOTROPIC_UNCRACKED_GROSS_SECTION",
+    "reinforcement": "NOT_MODELLED_NOT_SELECTED",
+    "prestress_in_this_trial": false,
+    "production_prestress_decision": "UNDECIDED"
+  },
+  "gravity_m_s2": 9.80665,
+  "roof_LL_kgf_m2": 50,
+  "thicknesses_m": [0.15, 0.175, 0.2],
+  "load_path": "LP-A_USER_CONFIRMED_FOR_STUDY",
+  "load_patterns": ["FULL", "LEFT"],
+  "load_factors": "1.0_SW_PLUS_1.0_ROOF_LL_UNFACTORED_SENSITIVITY_NOT_CODE_COMBINATION",
+  "roof_load_mapping": "vertical on outer horizontal projection; equivalent nodal forces and My couples preserve exact force and first moment",
+  "self_weight_mapping": "exact straight/annular-sector volume and centroid; equivalent nodal forces and My couples preserve force and first moment",
+  "floor": "NOT_IN_SHELL_MODEL_AND_NO_FLOOR_LL_APPLIED_TO_SHELL",
+  "joints": [
+    {"id":"P-H","base":"PIN_LINE","crown":"HINGE_Y","meaning":"three-hinge in-plane limit; not hardware selection"},
+    {"id":"P-R","base":"PIN_LINE","crown":"RIGID","meaning":"continuous crown, pin-line bases"},
+    {"id":"F-H","base":"FIXED_LINE","crown":"HINGE_Y","meaning":"fixed bases, crown rotation Ry released"},
+    {"id":"F-R","base":"FIXED_LINE","crown":"RIGID","meaning":"fully rotationally continuous limit"}
+  ],
+  "base_dof": {
+    "PIN_LINE": "Ux=Uz=0 along both wall base lines; Uy=0 only at Y=L/2 on each base; rotations free",
+    "FIXED_LINE": "Ux=Uz=Rx=Ry=Rz=0 along both wall base lines; Uy=0 only at Y=L/2 on each base"
+  },
+  "crown_dof": {
+    "HINGE_Y": "duplicate coincident LH/RH nodes; equal Ux,Uy,Uz,Rx,Rz; relative Ry free",
+    "RIGID": "duplicate coincident LH/RH nodes; all six DOF equal"
+  },
+  "bay_end_edges": "Y=0,L free; no assumed ties to adjacent bays; not full-building stability",
+  "solver": {"name":"OpenSees", "expected_version":"3.8.0", "element":"ShellMITC4", "section":"ElasticMembranePlateSection", "units":"kN,m; E in kN/m2", "linear_static":true, "large_displacement":false},
+  "mesh_levels": [{"id":"M1","target_m":0.3,"arc_divisions":4},{"id":"M2","target_m":0.15,"arc_divisions":8},{"id":"M3","target_m":0.075,"arc_divisions":16}],
+  "refinement_followup": {"reason":"M2/M3 interior Nsy/Msy/Qy did not meet the original 5% criterion; keep criterion unchanged", "t_m":0.175,"joint_ids":["P-H","F-R"],"pattern":"FULL","mesh":{"id":"M4","target_m":0.0375,"arc_divisions":32}},
+  "qa_criteria_set_before_run": {
+    "global_equilibrium_relative": 0.000001,
+    "interface_pair_relative": 0.000001,
+    "flat_cantilever_displacement_relative": 0.03,
+    "membrane_patch_relative": 0.000001,
+    "three_hinge_reaction_relative": 0.01,
+    "mesh_last_pair_global_displacement_relative": 0.05,
+    "mesh_last_pair_reaction_relative": 0.02,
+    "mesh_last_pair_interior_resultant_relative": 0.05,
+    "resultant_exclusion_m": 0.30,
+    "near_zero_reference_floors": {"reaction_kN":0.1,"resultant_kN_m_or_kNm_m":0.1,"displacement_m":0.000001},
+    "scope": "research QA targets, not structural acceptance or code limits"
+  },
+  "mandatory_limitations": ["high t/Rm: solid/continuum comparison not done", "cracking/creep/shrinkage not included", "actual joint stiffness/contact/anchors unknown", "lateral/uplift/seismic/handling not checked", "no strength/serviceability/code-combination check", "no openings, foundations, adjacent bays, L/U nodes, drainage slope or finishes"],
+  "approval": {"design_approved":false,"manufacturing_release":false,"responsible_engineer_review":false}
+}

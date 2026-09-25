@@ -1,0 +1,16 @@
+{
+  "revision": "P36",
+  "method": "DOTNET_ZIPFILE_READ_BACK_EACH_ENTRY_AND_SHA256_COMPARE_TO_PACKAGED_MANIFEST",
+  "status": "PASS",
+  "archive": "output/PM-STAGE3-P36-REVIEW.zip",
+  "bytes": 43380566,
+  "sha256": "ab8cbf7e8c45aff15dc0f82e84dc235b62dc5f72fe3e9244caa1695add449782",
+  "entries": 417,
+  "manifestAssetsVerified": 416,
+  "missingEntries": 0,
+  "hashMismatches": 0,
+  "byteSizeMismatches": 0,
+  "localDrawingMarkdownBrokenLinks": 0,
+  "engineeringApproved": false,
+  "productionReleased": false
+}

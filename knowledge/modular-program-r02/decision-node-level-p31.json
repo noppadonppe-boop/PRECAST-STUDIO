@@ -1,0 +1,12 @@
+{
+  "id": "R02-P31-NODE-LOWER-50",
+  "authority": "EXPLICIT_USER_ANSWER",
+  "user_statement": "ศึกษาลดระดับหลังคาโหนด50 มม. (แนะนำ)",
+  "scope": "DEVELOPMENT_STUDY",
+  "node_roof_lowering_mm": 50,
+  "node_roof_top_study_mm": 2800,
+  "main_roof_profiles_changed": false,
+  "type_I_changed": false,
+  "engineering_approved": false,
+  "production_released": false
+}

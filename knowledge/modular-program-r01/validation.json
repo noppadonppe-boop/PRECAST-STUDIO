@@ -1,0 +1,820 @@
+{
+  "date": "2026-09-16",
+  "revision": "R01",
+  "scope": "Plan/data/source identity/link integrity ONLY. Not web implementation, FEM, code compliance, design approval or production release.",
+  "status": "PASS_PLAN_DATA_CHECKS_ONLY",
+  "checks_total": 162,
+  "failures": [],
+  "checks": [
+    {
+      "name": "user_plan_accepted_but_engineering_not_approved",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "1500mm_all_plans",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "legacy_retained_not_relabelled",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "thickness_target_not_selected",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "internal_not_public",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "pilot_C",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "unselected_materials_and_prestress",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "force_conversion_roof",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "force_conversion_floor",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "48_unique_product_slots",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "complete_category_matrix",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "use_1_12_slots",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "use_2_12_slots",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "use_3_12_slots",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "use_4_12_slots",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "plan_I_16_slots",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "recipe_I_floor_area",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "recipe_I_halves_and_primary_count",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "plan_L_16_slots",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "recipe_L_floor_area",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "recipe_L_halves_and_primary_count",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "plan_U_16_slots",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "recipe_U_floor_area",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "recipe_U_halves_and_primary_count",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A1_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A2_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A3_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-A4_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B1_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B2_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B3_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-B4_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C1_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C2_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C3_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-C4_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D1_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D2_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D3_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "I-D4_legacy_warning",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-A1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-A1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-A2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-A2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-A3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-A3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-A4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-A4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-B1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-B1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-B2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-B2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-B3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-B3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-B4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-B4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-C1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-C1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-C2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-C2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-C3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-C3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-C4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-C4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-D1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-D1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-D2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-D2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-D3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-D3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-D4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "L-D4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-A1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-A1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-A2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-A2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-A3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-A3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-A4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-A4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-B1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-B1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-B2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-B2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-B3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-B3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-B4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-B4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-C1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-C1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-C2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-C2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-C3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-C3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-C4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-C4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-D1_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-D1_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-D2_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-D2_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-D3_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-D3_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-D4_image_mapping",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "U-D4_not_manufacture_ready",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "EIT-011008-21-LOCAL-001_exists",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "EIT-011008-21-LOCAL-001_hash",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "EIT-011008-21-LOCAL-001_identity_only",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "primary_code_source_resolves",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "reference_legacy_catalog",
+      "pass": true,
+      "detail": "../modular-segments-r00/catalog.json"
+    },
+    {
+      "name": "reference_legacy_register",
+      "pass": true,
+      "detail": "../modular-segments-r00/variant_register.json"
+    },
+    {
+      "name": "reference_legacy_grid",
+      "pass": true,
+      "detail": "../modular-segments-r00/placement_grid.json"
+    },
+    {
+      "name": "reference_roles",
+      "pass": true,
+      "detail": "../ROLE_PERMISSION_KNOWLEDGE.md"
+    },
+    {
+      "name": "reference_skill",
+      "pass": true,
+      "detail": "../../skills/precast-modular-workflow/SKILL.md"
+    },
+    {
+      "name": "DESIGN_BASIS_R01.md_local_link_MASTER_PLAN_TH.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "DESIGN_BASIS_R01.md_local_link_baseline.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "DESIGN_BASIS_R01.md_local_link_source_register.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "ENGINEERING_WORKFLOW.md_local_link_DESIGN_BASIS_R01.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "ENGINEERING_WORKFLOW.md_local_link_../REVIT_DXF_INTEROP_KNOWLEDGE.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_MASTER_PLAN_TH.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_DESIGN_BASIS_R01.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_WEB_CATALOG_SPEC.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_ENGINEERING_WORKFLOW.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_baseline.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_product_matrix.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_source_register.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_../../skills/precast-modular-workflow/SKILL.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "README.md_local_link_../modular-segments-r00/KNOWLEDGE_TH.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "WEB_CATALOG_SPEC.md_local_link_product_matrix.json",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "WEB_CATALOG_SPEC.md_local_link_../ROLE_PERMISSION_KNOWLEDGE.md",
+      "pass": true,
+      "detail": null
+    },
+    {
+      "name": "skill_source_exists",
+      "pass": true,
+      "detail": null
+    }
+  ]
+}

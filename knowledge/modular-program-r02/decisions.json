@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "id": "PROGRAMME-R02",
+  "accepted_date": "2026-09-16",
+  "authority": "USER_CONFIRMED_THICKNESSES_REORDERED_REVIT_BEFORE_STAAD_AND_AUTHORIZED_LOCAL_IMPLEMENTATION",
+  "status": "PRODUCT_DEVELOPMENT_PLAN_ACCEPTED",
+  "thickness": {
+    "unit": "mm",
+    "target_range": [100, 200],
+    "wall_roof": 150,
+    "floor": 175,
+    "node_roof": 175,
+    "node_wall": 175,
+    "local_reserve_max": 200,
+    "transition_kit_thickness": null,
+    "basis": "PRELIMINARY_PRODUCT_DIMENSIONS_NOT_CAPACITY_VERIFIED",
+    "engineering_selected": false
+  },
+  "geometry": {
+    "bay_grid_mm": 1500,
+    "external_width_target_mm": 3000,
+    "external_height_target_mm": 3000,
+    "height_datum": "UNDERSIDE_FLOOR_TO_HIGHEST_STRUCTURAL_ROOF_SURFACE",
+    "c_external_radius_mm": 400,
+    "cast_length_mm": null,
+    "joint_gap_mm": null,
+    "finish_thickness_mm": null,
+    "abc_d_complete_geometry_frozen": false
+  },
+  "stages": [
+    "P1_KNOWLEDGE_AND_LOCAL_DATA",
+    "P2_TYPICAL_MASTER",
+    "P3_48_DIMENSIONED_DESIGNS",
+    "P4_LOCAL_WEBSITE_UPDATE",
+    "P5_PLANNING_MOULD_DRAWINGS",
+    "P6_48_REVIT_DELIVERIES",
+    "P7_STAAD_AND_EIT_CALCULATIONS",
+    "P8_RECONCILE_AND_HUMAN_PRODUCTION_APPROVAL"
+  ],
+  "revit": {
+    "target_version": "2026",
+    "product_file_count": 48,
+    "pilot": "PM-I-C1",
+    "deliverables": ["RVT", "A1_PDF", "PNG", "SEGMENT_SCHEDULE", "QA_JSON", "README", "ZIP"],
+    "shared_library": ["TYPICAL_SEGMENTS", "PPE_TITLEBLOCK"],
+    "native_open_and_export_required": true
+  },
+  "analysis": {"status": "PAUSED_BY_USER", "resume_stage": "P7", "historical_results_preserved": true},
+  "storage": {"mode": "LOCAL_FIRST", "firebase": "DEFERRED", "cloud_provisioning_authorized": false, "public_access": false},
+  "engineering_approved": false,
+  "production_released": false
+}

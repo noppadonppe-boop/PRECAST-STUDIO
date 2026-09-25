@@ -1,0 +1,67 @@
+{
+  "id": "STUDY-TS-C-S2A-R00",
+  "revision": "S2A-R00",
+  "date": "2026-09-16",
+  "status": "DRAFT_PRE_ANALYSIS",
+  "programme_source": "R01",
+  "geometry_intent": "USER_CONFIRMED_FOR_STUDY_NOT_MANUFACTURE",
+  "user_confirmations": [
+    "Use TS-C exterior width 3.00m, height 3.00m, exterior shoulder radius 0.40m, bay length 1.50m; start with solid halves before openings.",
+    "Overall height 3.00m includes the floor, measured from underside of floor to top exterior roof surface."
+  ],
+  "geometry": {
+    "width_m": 3,
+    "overall_height_m": 3,
+    "bay_length_m": 1.5,
+    "outer_shoulder_radius_m": 0.4,
+    "floor_bottom_z_m": 0,
+    "floor_top_z": "t_floor",
+    "roof_outer_z_m": 3,
+    "opening": "S00",
+    "common_thickness_candidates_m": [0.15, 0.175, 0.2],
+    "selected_thickness_m": null,
+    "illustration_thickness_m": 0.175,
+    "illustration_thickness_status": "DRAWING_EXAMPLE_NOT_SELECTED_DESIGN",
+    "joint_gaps": "ZERO_WIDTH_GEOMETRY_REFERENCE_ONLY_PHYSICAL_GAPS_TBD",
+    "roof_drainage_slope": "TBD_NOT_INCLUDED_IN_GEOMETRY_V0",
+    "finishes_and_tolerances": "NOT_INCLUDED"
+  },
+  "coordinate_system": {
+    "type": "RIGHT_HANDED",
+    "X": "across building width: 0 to 3m",
+    "Y": "along one bay: 0 to 1.5m",
+    "Z": "upward; underside of floor = 0",
+    "positive_My": "right-hand rule about +Y; scalar moment = dz*Fx - dx*Fz",
+    "forces_kN": "global signed components",
+    "interface_pair": "F_A + F_B = 0; M_A + M_B = 0 at a common reference point"
+  },
+  "loads": {
+    "source": "../modular-program-r01/baseline.json",
+    "roof_LL_kgf_m2": 50,
+    "floor_LL_kgf_m2": 150,
+    "gravity_m_s2": 9.80665,
+    "roof_area_mapping": "STUDY_ASSUMPTION_HORIZONTAL_PROJECTION_VERTICAL_DOWN_NOT_CODE_VERIFIED",
+    "floor_area_mapping": "REPORT_GROSS_AND_CLEAR_AREA_SEPARATELY_FINAL_OCCUPANCY_BASIS_TBD",
+    "self_weight": "gamma_kN_m3 * exact_solid_volume_m3; gamma not selected",
+    "gamma_kN_m3": null,
+    "additional_dead_load_kN_m2": null,
+    "design_load_combinations": null,
+    "status": "USER_LOADS_PENDING_CODE_OCCUPANCY_AND_AREA_REVIEW"
+  },
+  "benchmark": {
+    "id": "BM-C-P3-R00",
+    "type": "2D_THREE_HINGED_EQUILIBRIUM_ONLY_NOT_PLATE_SHELL_FEM",
+    "supports": "pins at (t/2,L/2,t_floor) and (B-t/2,L/2,t_floor); both X and Z restrained in this trial",
+    "crown": "hinge at (B/2,L/2,H-t/2); My=0 only in this trial",
+    "base_My": 0,
+    "roof_patterns": ["SYMMETRIC_FULL", "LEFT_HALF_ONLY"],
+    "floor_in_shell_benchmark": false,
+    "additional_dead_load": "EXCLUDED_UNKNOWN_NOT_ASSUMED_ZERO_IN_DESIGN",
+    "prestress": "EXCLUDED_FROM_BENCHMARK_ONLY_PROGRAMME_UNDECIDED",
+    "claim": "geometric self-weight coefficients and conditional reactions; not chosen permanent connection",
+    "three_dimensional_stability": "NOT_VERIFIED"
+  },
+  "not_selected": ["density", "E", "nu", "cracked stiffness", "concrete type/strength", "reinforcement", "prestress", "permanent joint stiffness/contact", "foundation/load path", "site lateral loads", "solver", "lifting stages"],
+  "approval": { "responsible_engineer_review": false, "design_approved": false, "manufacturing_release": false },
+  "web_visibility": "INTERNAL_ENGINEERING_DRAFT"
+}

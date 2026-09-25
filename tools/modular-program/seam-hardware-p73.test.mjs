@@ -1,0 +1,4 @@
+import fs from 'node:fs';import test from 'node:test';import assert from 'node:assert/strict';import {hull} from './seam-hardware-p73.mjs';
+test('hull removes interior points',()=>assert.equal(hull([[0,0],[2,0],[2,2],[0,2],[1,1]]).length,4));
+test('A prototype must not turn static pass into full geometry pass',()=>{const m=JSON.parse(fs.readFileSync('output/seam-hardware-p73/A-LH-S00.json'));assert.deepEqual(m.audit.staticHits,[]);assert.ok(m.audit.moves.some(x=>x.hits.includes('M04')));assert.equal(m.status,'INTERFERENCE_REQUIRES_REVISION');assert.equal(m.plates.length,36);assert.equal(m.hardware.length,72);assert.equal(m.locks.length,18);assert.equal(m.productionReleased,false);});
+test('D inner-corner interference is retained as unresolved',()=>{const m=JSON.parse(fs.readFileSync('output/seam-hardware-p73/D-RH-W01.json'));assert.ok(m.audit.staticHits.some(([tag])=>tag.startsWith('SJ-M03-M04')));assert.equal(m.engineeringApproved,false);});

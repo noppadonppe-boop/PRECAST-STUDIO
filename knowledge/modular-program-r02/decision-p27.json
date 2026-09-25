@@ -1,0 +1,12 @@
+{
+  "id": "R02-P27-EPX-DEVELOPMENT",
+  "user_statement": "ดำเนินการต่อ",
+  "context": "Response to proposal to develop integrated EPX end panels for A/B/C/D",
+  "interpretation": "PROCEED_WITH_PROPOSED_EPX_DEVELOPMENT_NOT_FINAL_GEOMETRY_FREEZE",
+  "development_direction": "EPX_INTEGRATED_END_PANEL",
+  "families": ["A", "B", "C", "D"],
+  "wall_roof_half_split_changed": false,
+  "weather_system_selected": false,
+  "engineering_approved": false,
+  "production_released": false
+}

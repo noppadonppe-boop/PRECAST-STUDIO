@@ -1,0 +1,80 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import { createHash } from 'node:crypto';
+const root=resolve(import.meta.dirname,'../..'), out=resolve(root,'output/tsc-step2b-r00');
+const read=async p=>JSON.parse(await readFile(p,'utf8'));
+const report=await read(resolve(out,'shell_results.json'));
+const reference=await read(resolve(out,'T175-P-H-FULL-M3.json'));
+const mesh=await read(resolve(out,'T175-P-H-FULL-M1.json'));
+const geometric=await read(resolve(root,'output/tsc-step2a-r00/study_results.json'));
+if (geometric.input_hash !== report.dependency_hashes['knowledge/modular-tsc-step2a/study_basis.json']) throw new Error('Geometry snapshot mismatch: regenerate Step 2A before comparing mass.');
+const sharp=createRequire(import.meta.url)(process.env.PM_SHARP_PATH||'sharp');
+const C={ink:'#19313d',muted:'#526872',teal:'#166a77',orange:'#ac5119',blue:'#315fa2',gray:'#d7e0e5'};
+const esc=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;');
+const txt=(x,y,s,size=22,color=C.ink,weight=400)=>`<text x="${x}" y="${y}" font-size="${size}" fill="${color}" font-weight="${weight}">${esc(s)}</text>`;
+const line=(x1,y1,x2,y2,color=C.gray,w=1)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${w}"/>`;
+const f=(n,d=3)=>(Math.abs(n)<.5*10**-d?0:Number(n)).toFixed(d);
+const pct=n=>f(n*100,2)+'%';
+const doc=(title,sub,body,H=1300)=>`<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="${H}" viewBox="0 0 1800 ${H}"><rect width="1800" height="${H}" fill="white"/><g font-family="Tahoma,Segoe UI,sans-serif"><rect width="1800" height="12" fill="${C.teal}"/>${txt(60,67,title,34,C.ink,700)}${txt(60,111,sub,22,C.muted)}${line(60,137,1740,137)}${body}${line(60,H-92,1740,H-92)}${txt(60,H-53,'S2B-R00 / QA INCOMPLETE / NOT FOR DESIGN OR CONSTRUCTION',24,C.orange,700)}${txt(60,H-23,'ผลยืดหยุ่นภายใต้สมมติฐาน • ไม่รวมร้าว/ลม/ยก • ต้องตรวจแรงเฉพาะที่และ solid comparison ต่อ',20,C.muted)}</g></svg>`;
+const poly=(pts,fill='none',stroke=C.gray,w=1)=>`<polygon points="${pts.map(p=>p.join(',')).join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${w}"/>`;
+const iso=([x,y,z])=>[140+170*x+85*y,835-170*z-60*y];
+let b=txt(60,188,'01 / Midsurface mesh และฐานรองรับ',27,C.ink,700);
+for(const e of [...mesh.elements].sort((a,b)=>b.centroid[1]-a.centroid[1])) b+=poly(e.nodes.map(n=>iso(mesh.nodes[n])),e.hand==='LH'?'#e2eff0':'#e5eaf4',C.teal,.65);
+for(const hand of ['LH','RH']){const ids=mesh.bases[hand];b+=line(...iso(mesh.nodes[ids[0]]),...iso(mesh.nodes[ids.at(-1)]),C.orange,6);const cr=mesh.crowns[hand];b+=line(...iso(mesh.nodes[cr[0]]),...iso(mesh.nodes[cr.at(-1)]),C.blue,5);}
+b+=txt(100,895,'รูปใช้ mesh M1 เพื่ออ่านง่าย; คำนวณ M1/M2/M3 และตรวจเพิ่ม M4',21,C.muted);
+b+=txt(100,935,'พื้น F15 แยกจาก shell model: ไม่มี LL พื้นบนหลังคา',22,C.orange);
+b+=txt(930,188,'02 / วัสดุและฐานศึกษา',27,C.ink,700);
+const material=report.basis.material;
+const info=[`fc′ = ${material.fc_ksc} ksc = ${f(material.fc_ksc*material.ksc_to_MPa,3)} MPa`, `ρ = ${material.density_kg_m3} kg/m³; ν = ${material.nu} (สมมติฐานศึกษา)`,`E = ${f(report.runs[0].E_MPa,1)} MPa จาก วสท. 8.5.1`,`กว้าง/สูงรวมพื้น = 3.00/3.00 ม.; bay = 1.50 ม.`,`R ภายนอก = 0.40 ม.; รูปใช้ t = 175 มม.`,`ไม่มี prestress เฉพาะการศึกษานี้; ผลิตจริงยังไม่เลือก`,`น้ำหนักตัวเอง + roof LL 50 kgf/m²; factor 1.0`,`FULL = LL เต็มหลังคา; LEFT = เฉพาะครึ่งซ้าย`];
+info.forEach((s,i)=>b+=txt(930,246+46*i,s,22));
+b+=txt(930,657,'03 / สมมติฐานจุดต่อ 4 กรณี',27,C.ink,700);
+const cases=[['P-H','ฐานหมุนได้ / crown หมุน Ry ได้'],['P-R','ฐานหมุนได้ / crown ต่อเนื่อง'],['F-H','ฐานยึดการหมุน / crown หมุน Ry ได้'],['F-R','ฐานยึดการหมุน / crown ต่อเนื่อง']];
+cases.forEach(([id,s],i)=>{b+=txt(950,715+i*47,id,25,C.teal,700)+txt(1040,715+i*47,s,22);});
+b+=txt(70,1025,'แกนผล: s ตามหน้าตัดจากฐานซ้าย → crown → ฐานขวา; y ตามความยาว; normal ชี้ออกนอก',23);
+b+=txt(70,1071,'Y=0 และ Y=1.50 ม. เป็นขอบอิสระ; ฐานยึด Uy ที่กึ่งกลางแต่ละด้านเท่านั้น',23);
+b+=txt(70,1117,'ไม่มีการเลือกจำนวน bolt / stiffness จุดต่อจริง และไม่ใช่การตรวจเสถียรภาพทั้งอาคาร',23,C.orange);
+const model=doc('TS-C / แบบจำลอง shell และกรณีศึกษา','LP-A: ผนัง–หลังคาลงฐานโดยตรง • OpenSees '+report.solver.version+' / ShellMITC4 / linear elastic',b,1240);
+
+// Unfold the actual computed element topology; no invented/smoothed values.
+const coords=reference.nodes; const profiles=[...new Set(Object.values(coords).filter(p=>Math.abs(p[1])<1e-9).map(p=>`${p[0]},${p[2]}`))].map(s=>s.split(',').map(Number));
+profiles.sort((a,b)=>Math.abs(a[0]-b[0])<1e-9?(a[0]<1.5?a[1]-b[1]:b[1]-a[1]):a[0]-b[0]);
+let distance=0;const smap=new Map();profiles.forEach((p,i)=>{if(i)distance+=Math.hypot(p[0]-profiles[i-1][0],p[1]-profiles[i-1][1]);smap.set(`${p[0]},${p[1]}`,distance);});
+const color=(v,max)=>{const a=Math.min(1,Math.abs(v)/max), c=v>=0?[184,57,39]:[40,86,160];return `rgb(${c.map(n=>Math.round(246+(n-246)*a)).join(',')})`;};
+let fbody=txt(60,181,'ผลเฉลี่ย 4 Gauss points ต่อ element • ไม่ทำ nodal smoothing • สเกลสีแยกแต่ละภาพ',22,C.muted);
+reference.fields.forEach((key,k)=>{
+  const col=k%2,row=Math.floor(k/2),x=70+col*885,y=238+row*244,W=740,H=128;
+  const values=reference.elements.map(e=>e.mean_resultants[k]);const vmax=Math.max(...values.map(Math.abs),1e-15);
+  const unit=k>=3&&k<=5?'kN·m/m':'kN/m';
+  fbody+=txt(x,y-18,`${key} [${unit}]`,26,C.ink,700);
+  for(const e of reference.elements){const pts=e.nodes.map(n=>{const p=coords[n];return [x+smap.get(`${p[0]},${p[2]}`)/distance*W,y+(1-p[1]/1.5)*H];});fbody+=poly(pts,color(e.mean_resultants[k],vmax),'none',0);}
+  for(let i=0;i<100;i++) fbody+=`<rect x="${x+i*W/100}" y="${y+H+17}" width="${W/100+1}" height="10" fill="${color((i/99*2-1)*vmax,vmax)}"/>`;
+  fbody+=txt(x,y+H+53,`−${f(vmax,3)}`,19)+txt(x+W/2-8,y+H+53,'0',19)+txt(x+W-105,y+H+53,`+${f(vmax,3)}`,19);
+});
+fbody+=txt(70,1238,'อ่านแต่ละภาพ: ซ้าย=ฐาน LH · กลาง=crown · ขวา=ฐาน RH; แนวตั้ง Y=0 ด้านล่าง ถึง 1.50 ม. ด้านบน',22);
+fbody+=txt(70,1278,'N บวก=แรงดึง; M/Q ใช้เครื่องหมาย solver ตาม local axes • peak ที่ Gauss point เก็บแยกจากสีเฉลี่ย',21,C.muted);
+fbody+=txt(70,1318,'สำคัญ: แรงบางองค์ประกอบยังไม่ผ่าน mesh convergence ห้ามใช้สี/ค่าสูงสุดนี้ออกแบบเหล็กหรือจุดต่อ',23,C.orange,700);
+const forces=doc('TS-C / ผลแรงภายใน shell จากการคำนวณ','ตัวอย่าง T175-P-H-FULL-M3 • 2,560 elements • เปรียบเทียบรูปแบบแรง ไม่ใช่ design envelope',fbody,1450);
+
+const fine=report.runs.filter(r=>r.mesh==='M3');
+let s=txt(70,190,'01 / ผลของสมมติฐานจุดต่อ · t=175 mm · FULL · M3',28,C.ink,700);
+const xs=[80,265,535,810,1080,1390];
+['กรณี','R_Lz (kN)','H_L (+X,kN)','Crown My (kN·m)','|u|max (mm)','|Mss|max*'].forEach((v,i)=>s+=txt(xs[i],246,v,22,C.muted));
+fine.filter(r=>r.t_m===.175&&r.pattern==='FULL').forEach((r,i)=>{const vals=[r.joint,f(r.base.LH[2]),f(r.base.LH[0]),f(r.crown_on_half.LH[4]),f(r.max_displacement_mm,4),f(r.all_gauss_extrema.Mss.abs_max)];vals.forEach((v,j)=>s+=txt(xs[j],303+i*56,v,25));});
+s+=txt(80,543,'* Mss เป็น raw Gauss peak (kN·m/m) เพื่อชี้ความไวของโมเดล ไม่ใช่ค่าพร้อมออกแบบ',21,C.orange);
+s+=txt(70,612,`02 / มวลชิ้นงานจาก ρ สมมติ ${material.density_kg_m3} kg/m³`,28,C.ink,700);
+['t (mm)','ซีกละ (kg)','พื้น F15 (kg)','รวม 1 bay (kg)'].forEach((v,i)=>s+=txt(90+i*390,670,v,23,C.muted));
+geometric.cases.forEach((c,i)=>{[f(c.t_m*1000,0),f(c.half_volume_m3*material.density_kg_m3,0),f(c.floor_volume_m3*material.density_kg_m3,0),f(c.total_primary_volume_m3*material.density_kg_m3,0)].forEach((v,j)=>s+=txt(90+j*390,721+i*48,v,25));});
+s+=txt(80,887,'ไม่รวมเหล็ก อุปกรณ์ฝัง รอยต่อ ผิวตกแต่ง หรือฐานรองรับ; ไม่ใช้แทน lifting weight ที่ตรวจแล้ว',22,C.muted);
+s+=txt(70,954,'03 / QA: สมดุลดี แต่ยังมีเรื่องที่ไม่ผ่าน',28,C.ink,700);
+s+=txt(80,1005,`Benchmark cantilever error = ${pct(report.benchmarks.cantilever.at(-1).relative_error)}; membrane patch ตรวจแล้ว`,22);
+s+=txt(80,1050,`Mesh: global displacement/reaction เข้าเกณฑ์ ${report.convergence.filter(c=>c.global_targets_met).length}/24; แรงภายในครบ 8 ตัวเข้าเกณฑ์ ${report.convergence.filter(c=>c.interior_targets_met).length}/24`,22,C.orange);
+s+=txt(80,1095,'ตรวจ M4 เพิ่มที่ 175 mm (P-H/F-R, FULL); คงเกณฑ์เดิม ไม่ลดเกณฑ์เพื่อให้ผ่าน',22);
+s+=txt(80,1140,'ยังต้อง local refinement/solid comparison + จุดต่อจริง + cracking/โหลดครบ ก่อนเลือกความหนา',22,C.orange);
+const summary=doc('TS-C / เปรียบเทียบแรง มวล และสถานะ QA','ทุกค่าเป็นผลของกรณีสมมติที่ระบุ • ไม่แปลว่าความหนาใดผ่าน วสท. หรือเหมาะผลิตแล้ว',s,1270);
+const boards=[['TS-C-MODEL-S2B-R00','แบบจำลอง shell และสมมติฐาน',model],['TS-C-FORCES-S2B-R00','ผลแรงภายใน N/M/Q · QA ยังไม่ครบ',forces],['TS-C-QA-S2B-R00','เปรียบเทียบจุดต่อ มวล และ QA',summary]];
+for(const [id,,svg] of boards){await writeFile(resolve(out,`${id}.svg`),svg);await sharp(Buffer.from(svg)).png().toFile(resolve(out,`${id}.png`));}
+const hashes={...report.dependency_hashes};
+for(const p of ['output/tsc-step2b-r00/shell_results.json','tools/tsc-study/render_shell.mjs','output/tsc-step2a-r00/study_results.json']) hashes[p]=createHash('sha256').update(await readFile(resolve(root,p))).digest('hex');
+await writeFile(resolve(out,'web_summary.json'),JSON.stringify({id:report.id,revision:report.revision,status:report.status,basis:report.basis,solver:report.solver,benchmarks:report.benchmarks,runs:fine,run_count:report.runs.length,convergence:report.convergence,dependency_hashes:hashes,mass_cases:geometric.cases.map(c=>({t_m:c.t_m,half_mass_kg:c.half_volume_m3*material.density_kg_m3,floor_mass_kg:c.floor_volume_m3*material.density_kg_m3,total_mass_kg:c.total_primary_volume_m3*material.density_kg_m3})),drawings:boards.map(([id,title])=>({id,title,file:`${id}.png`})),sources:[{title:'วสท. 011008-21 ข้อ 8.5.1 · หน้าเล่ม 55 / PDF 67 (ไม่เผยแพร่ไฟล์ต้นฉบับ)',url:null},{title:'OpenSees ShellMITC4',url:'https://openseespydoc.readthedocs.io/en/latest/src/ShellMITC4.html'},{title:'COMSOL shell assumptions and curvature limitations',url:'https://doc.comsol.com/6.3/doc/com.comsol.help.sme/sme_ug_theory.06.130.html'}],solid_comparison:'NOT_RUN',engineering_approval:false,manufacturing_release:false},null,2));
+console.log(JSON.stringify({boards:boards.map(([id])=>id),status:report.status,run_count:report.runs.length}));

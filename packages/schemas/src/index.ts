@@ -27,29 +27,52 @@ export const sourceFileSchema = z.object({
   size: z.number().int().positive().max(100 * 1024 * 1024),
 });
 
+// Drafts allow blank fields; readiness is checked separately at workflow transitions.
+export const prestressInputSchema = z.object({
+  system: z.enum(['pretension', 'posttension']),
+  memberReference: z.string().max(4000), source: z.string().max(4000), assumptionsConfirmed: z.boolean(),
+  values: z.record(z.enum([
+    'widthMm', 'depthMm', 'spanM', 'eccentricityMm', 'strandCount', 'strandAreaMm2', 'fpuMpa', 'jackingStressMpa',
+    'elasticLossMpa', 'frictionLossMpa', 'anchorageLossMpa', 'initialRelaxationLossMpa', 'creepLossMpa', 'shrinkageLossMpa', 'relaxationLossMpa',
+    'transferStrengthMpa', 'serviceStrengthMpa', 'transferModulusMpa', 'serviceModulusMpa', 'transferLoadKnM', 'serviceLoadKnM',
+    'transferCompressionLimitMpa', 'transferTensionLimitMpa', 'serviceCompressionLimitMpa', 'serviceTensionLimitMpa',
+  ]), z.string().max(100)),
+});
+export const designCriteriaSchema = z.object({
+  prestressCalculation: prestressInputSchema.optional(),
+  schemaVersion: z.literal('1.0'), presetId: z.string().max(100),
+  standards: z.array(z.object({
+    category: z.enum(['regulatory', 'concrete', 'precast', 'thaiConcrete', 'guidance', 'loading', 'wind', 'seismic']),
+    code: z.string().max(500), edition: z.string().max(80), amendment: z.string().max(500), scope: z.string().max(4000), source: z.string().max(4000), clause: z.string().max(4000),
+    applicability: z.enum(['required', 'notApplicable']), reason: z.string().max(4000),
+  })).length(8),
+  values: z.record(z.enum(['location', 'occupancy', 'hierarchy', 'designLife', 'riskCategory', 'concreteType', 'fc28', 'fcDemould', 'fcLift', 'density', 'elasticModulus', 'fy', 'materialSource', 'durability', 'fire', 'deadLoad', 'liveLoad', 'wind', 'seismic', 'serviceCombinations', 'ultimateCombinations', 'constructionLoads', 'serviceability', 'memberType', 'prestress', 'demould', 'lifting', 'liftFactor', 'transportFactor', 'handlingSource', 'transport', 'storage', 'installation', 'connections', 'loadPath', 'tolerances', 'unitSource']), z.string().max(4000)),
+});
+
 export const designBasisPayloadSchema = z.object({
-  jurisdiction: z.string().trim().min(2).max(120),
-  designCode: z.string().trim().min(2).max(80),
-  designCodeEdition: z.string().trim().min(2).max(24),
-  loadingCode: z.string().trim().min(2).max(80),
-  loadingCodeEdition: z.string().trim().min(2).max(24),
+  criteria: designCriteriaSchema.optional(),
+  jurisdiction: z.string().trim().min(2).max(4000),
+  designCode: z.string().trim().min(2).max(500),
+  designCodeEdition: z.string().trim().min(2).max(80),
+  loadingCode: z.string().trim().min(2).max(500),
+  loadingCodeEdition: z.string().trim().min(2).max(80),
   units: z.literal('kN-m-MPa'),
   designLifeYears: z.number().int().min(1).max(200),
-  riskCategory: z.string().trim().min(1).max(80),
+  riskCategory: z.string().trim().min(1).max(4000),
   concrete: z.object({
     fc28Mpa: z.number().min(10).max(150),
     fcLiftMpa: z.number().min(5).max(100),
     densityKgM3: z.number().min(1000).max(3500),
     stiffnessMpa: z.number().min(1000).max(100000),
-    durabilityClass: z.string().trim().min(1).max(80),
-    source: z.string().trim().min(2).max(240),
+    durabilityClass: z.string().trim().min(1).max(4000),
+    source: z.string().trim().min(2).max(4000),
   }),
-  reinforcement: z.object({ fyMpa: z.number().min(200).max(1000), source: z.string().trim().min(2).max(240) }),
+  reinforcement: z.object({ fyMpa: z.number().min(200).max(1000), source: z.string().trim().min(2).max(4000) }),
   handling: z.object({
     liftingDynamicFactor: z.number().min(1).max(5),
     transportDynamicFactor: z.number().min(1).max(5),
-    storageSupportRule: z.string().trim().min(3).max(500),
-    source: z.string().trim().min(2).max(240),
+    storageSupportRule: z.string().trim().min(3).max(4000),
+    source: z.string().trim().min(2).max(4000),
   }),
   fireResistanceMinutes: z.number().int().min(0).max(360),
   inheritedFrom: z.string().trim().min(1).max(120),

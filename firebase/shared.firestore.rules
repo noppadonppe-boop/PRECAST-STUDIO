@@ -5,16 +5,16 @@ service cloud.firestore {
     function categoryAllowed(category) {
       return category in ['projects', 'intake', 'criteria', 'panel', 'loads', 'analysis', 'design', 'cost', 'report', 'shop', 'release', 'review', 'team', 'audit', 'libraries', 'settings'];
     }
-    match /precast-studio/root {
-      allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.schemaVersion == 1;
+    match /{workspaceCollection}/{rootDocument} {
+      allow read: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root';
+      allow create: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root' && request.resource.data.schemaVersion == 1;
       match /{category}/{recordId} {
-        allow read: if signedIn() && categoryAllowed(category);
-        allow create: if signedIn() && categoryAllowed(category)
+        allow read: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root' && categoryAllowed(category);
+        allow create: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root' && categoryAllowed(category)
           && request.resource.data.keys().hasAll(['data', 'revision', 'updatedAt', 'updatedBy'])
           && request.resource.data.revision == 1
           && request.resource.data.updatedBy == request.auth.uid;
-        allow update: if signedIn() && categoryAllowed(category) && category != 'audit'
+        allow update: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root' && categoryAllowed(category) && category != 'audit'
           && request.resource.data.keys().hasAll(['data', 'revision', 'updatedAt', 'updatedBy'])
           && request.resource.data.revision == resource.data.revision + 1
           && request.resource.data.updatedBy == request.auth.uid;

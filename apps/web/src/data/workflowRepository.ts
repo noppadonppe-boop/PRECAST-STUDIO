@@ -1,8 +1,8 @@
-import { collection, doc, limit, onSnapshot, orderBy, query, setDoc, Timestamp, updateDoc, where, type DocumentData, type Unsubscribe } from 'firebase/firestore';
+import { collection, doc, limit, onSnapshot, orderBy, query, runTransaction, setDoc, Timestamp, updateDoc, where, type DocumentData, type Unsubscribe } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
 import { ref, uploadBytesResumable } from 'firebase/storage';
 import type { AnalysisRunRecord, ApprovalRequest, ArtifactType, AuditEvent, DesignBasisPayload, DesignCheckPayload, DocumentationSetPayload, EstimatePayload, LoadAnalysisSettingsPayload, ProductModelPayload, ProjectRecord, ReleasePackagePayload, SourceValidationSummary } from '@precast/domain';
-import { designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, releasePackagePayloadSchema } from '@precast/schemas';
+import { designBasisPayloadSchema, designCheckPayloadSchema, documentationSetPayloadSchema, estimatePayloadSchema, loadAnalysisSettingsPayloadSchema, productModelPayloadSchema, releasePackagePayloadSchema } from '@precast/schemas';
 import { firebaseAuth, firestore, functions, storage } from '../firebase/client';
 import { canonicalSourceContentType, validateSourceFile } from './sourceFileValidation';
 
@@ -188,7 +188,10 @@ export function watchDesignBasis(orgId: string, projectId: string, artifactId: s
       return;
     }
     const data = snapshot.data();
-    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), createdBy: String(data.createdBy), draftHash: String(data.draftHash), payload: data.payload as DesignBasisPayload, locked: data.locked === true });
+    const parsed = designBasisPayloadSchema.safeParse(data.payload);
+    if (!parsed.success) { onError(new Error('Design Basis data is invalid; review the stored draft.')); return; }
+    const { criteria, ...basePayload } = parsed.data;
+    onValue({ id: snapshot.id, revision: String(data.revision), status: String(data.status), createdBy: String(data.createdBy), draftHash: String(data.draftHash), payload: { ...basePayload, ...(criteria === undefined ? {} : { criteria }) }, locked: data.locked === true });
   }, onError);
 }
 
@@ -405,6 +408,19 @@ export async function createDesignBasisRevision(input: { orgId: string; projectI
   const command = httpsCallable<Record<string, unknown>, CommandResult>(functions, 'createDesignBasisRevisionCommand');
   const result = await command({ orgId: input.orgId, projectId: input.projectId, designBasisId: input.id, revision: input.revision, payload: input.payload, ...(input.supersedesId === undefined ? {} : { supersedesId: input.supersedesId }), idempotencyKey: crypto.randomUUID() });
   return result.data;
+}
+
+export async function saveDesignBasisDraft(input: { orgId: string; projectId: string; artifact: DesignBasisState; payload: DesignBasisPayload }): Promise<void> {
+  const payload = designBasisPayloadSchema.parse(input.payload);
+  const artifactRef = doc(firestore, `organizations/${input.orgId}/projects/${input.projectId}/designBasisVersions/${input.artifact.id}`);
+  await runTransaction(firestore, async (tx) => {
+    const snapshot = await tx.get(artifactRef);
+    const data = snapshot.data() as Record<string, unknown> | undefined;
+    if (!data || data.status !== 'draft' || data.locked || data.isCurrentRevision === false) throw new Error('แก้ไขได้เฉพาะร่างปัจจุบันที่ยังไม่ล็อก');
+    if (data.draftHash !== input.artifact.draftHash) throw new Error('Design Basis เปลี่ยนแล้ว กรุณาโหลดข้อมูลล่าสุดก่อนบันทึก');
+    const draftHash = await snapshotHash({ artifactType: 'designBasis', artifactId: snapshot.id, artifactRevision: data.revision, createdBy: data.createdBy, upstreamRefs: data.upstreamRefs, payload });
+    tx.update(artifactRef, { payload, draftHash, updatedAt: Timestamp.now(), updatedBy: firebaseAuth.currentUser?.uid });
+  });
 }
 
 export async function createProductModelRevision(input: { orgId: string; projectId: string; id: string; revision: string; payload: ProductModelPayload; supersedesId?: string }): Promise<CommandResult> {

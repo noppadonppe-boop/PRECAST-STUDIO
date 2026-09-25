@@ -1,0 +1,13 @@
+.prestress-calculator { min-width: 0; overflow-wrap: anywhere; }
+.prestress-calculator .prestress-toggle { display: flex; align-items: center; gap: 12px; }
+.prestress-calculator input[type="checkbox"] { width: auto; }
+.prestress-calculator summary { cursor: pointer; padding-block: 8px; }
+.prestress-calculator .data-table { width: 100%; min-width: 0; table-layout: fixed; }
+.prestress-calculator .data-table th:first-child { width: 42%; }
+.prestress-calculator .data-table th,
+.prestress-calculator .data-table td { white-space: normal; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .prestress-calculator .data-table th,
+  .prestress-calculator .data-table td { padding: 10px 6px; font-size: 12px; }
+  .prestress-calculator .data-table caption { text-align: left; }
+}

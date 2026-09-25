@@ -215,6 +215,28 @@ service cloud.firestore {
       }
     }
 
+    // Shared PRECAST MODULE workspace. All signed-in identities, including anonymous users,
+    // use the same root document and category records; the UID is attribution only.
+    function sharedCategoryAllowed(category) {
+      return category in ['projects', 'intake', 'criteria', 'panel', 'loads', 'analysis', 'design', 'cost', 'report', 'shop', 'release', 'review', 'team', 'audit', 'libraries', 'settings'];
+    }
+
+    match /{workspaceCollection}/{rootDocument} {
+      allow read: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root';
+      allow create: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root' && request.resource.data.schemaVersion == 1;
+      match /{category}/{recordId} {
+        allow read: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root' && sharedCategoryAllowed(category);
+        allow create: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root' && sharedCategoryAllowed(category)
+          && request.resource.data.keys().hasAll(['data', 'revision', 'updatedAt', 'updatedBy'])
+          && request.resource.data.revision == 1
+          && request.resource.data.updatedBy == request.auth.uid;
+        allow update: if signedIn() && workspaceCollection == 'PRECAST MODULE' && rootDocument == 'root' && sharedCategoryAllowed(category) && category != 'audit'
+          && request.resource.data.keys().hasAll(['data', 'revision', 'updatedAt', 'updatedBy'])
+          && request.resource.data.revision == resource.data.revision + 1
+          && request.resource.data.updatedBy == request.auth.uid;
+      }
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

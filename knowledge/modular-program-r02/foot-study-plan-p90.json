@@ -1,0 +1,14 @@
+{
+  "revision": "P90",
+  "stage": 5,
+  "scope": "P89 candidate pressure-only flexible-foot demand update;24 W01 wall-foot groups,not all mould components",
+  "pilot": "D-RH-W01-M03-F2",
+  "pilotReason": "Highest tension and uplift in the issued P86 audit,not a claim that it will necessarily govern every new case",
+  "nominalTrial": { "washerPatchRadiusMm":18.5,"footThicknessMm":30,"effectiveBoltLengthMm":50,"contactK_N_per_mm3":1000 },
+  "stiffnessSensitivity": { "effectiveBoltLengthMm":[40,60],"scope":"pilot only unless expanded explicitly","meaning":"stiffness sensitivity,NOT ISO bolt-length tolerance or confirmed threaded-bed compliance" },
+  "meshes": {"A_B":[20,10],"D":[10,7.5]},
+  "criteria": {"boltForceVectorL2Relative":0.02,"maxUpwardDisplacementRelative":0.02,"forceEquilibriumN":0.01,"momentEquilibriumNmm":1,"washerCompatibilityMm":1e-8,"freeVerticalResidualN":0.01,"freeBendingResidualNmm":1,"plateAreaErrorMm2":0.02},
+  "mirrorReuse": {"required":"identical canonical FE geometry/material/constraints/tributaries plus load coordinates; load-vector difference bounded below","maxForceOrMomentComponentDifference":1e-6,"relativeLoadVectorDifference":1e-10,"ifNotMet":"perform native solve; do not infer equivalence from similar pictures","resultLabel":"MIRROR_DERIVED_LOCAL_RESPONSE,not native solver output"},
+  "limitations": ["One-way P83 reactions; no feedback to the wall/frame","Rigid washer kinematics do not verify actual washer bending or head contact","No thread capacity,preload,gravity,fatigue,whole-bed support or full-connection approval","P89 is not promoted merely because a pilot solves"],
+  "stageComplete":false,"engineeringApproved":false,"productionReleased":false
+}

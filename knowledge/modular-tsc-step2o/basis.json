@@ -1,0 +1,15 @@
+{
+  "id":"STUDY-TS-C-S2O-R00","revision":"S2O-R00",
+  "status":"BASE_PROFILE_REFINEMENT_STUDY_NOT_FOR_DESIGN",
+  "upstream":"output/tsc-step2m-r00/arc_crown_results.json",
+  "diagnostic_source":"output/tsc-step2n-r00/directional_results.json",
+  "new_mesh":"NB","new_FEM_solves":1,
+  "mesh_rule":"Start from M1, split first three wall cells next to each base into four each: wall27->36. Keep arc48, roof24, Y16 and thickness8. Mirror both halves with conforming shared nodes. Physical wall refinement interval z=.175 to .466m; each original97mm cell becomes24.25mm.",
+  "profile_counts_per_half":{"wall":36,"arc":48,"roof":24},
+  "expected_elements":27648,"physical_thickness_m":0.175,
+  "comparison_pairs":[["M1","NB"]],
+  "unchanged":"FULL SW+roofLL50kgf/m2 projected horizontally; NC320trial E28321.786532937494MPa nu.2 rho2400; exterior3x3m including separate floor; R.4; bay1.5; LP-A; F-R face UxUz fixed and one Uy datum per base; bonded crown; free Y; uncracked; no prestress in trial only",
+  "criteria":"Unchanged S2H global QA, S2E490point point/RMS/spread5% floor10kPa, S2I two trace/nodal and pair5% floors.1kN/.1kNm and quadrature1e-6. Same S2L physical-angle cuts.",
+  "limits":["One directional pair, not whole-model convergence","No Y or thickness refinement","No physical thickness/material/support/joint selection","No cracking/openings/lateral/handling or code design"],
+  "engineering_approval":false,"manufacturing_release":false
+}

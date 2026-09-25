@@ -11,8 +11,11 @@ export default defineConfig(({ mode }) => {
   return {
     root: import.meta.dirname,
     envDir,
+    // Keep authored TypeScript/TSX authoritative when legacy adjacent JS emit files exist.
+    resolve: { extensions: ['.ts', '.tsx', '.mjs', '.js', '.mts', '.jsx', '.json'] },
     define: mode === 'test' ? { 'import.meta.env.VITE_DATA_MODE': JSON.stringify('fixture'), 'import.meta.env.VITE_FIREBASE_PROJECT_ID': JSON.stringify('demo-precast-m1') } : {},
     plugins: [react()],
+    ...(mode === 'catalogue' ? { publicDir: false, build: { outDir: 'dist-catalogue', rollupOptions: { input: resolve(import.meta.dirname, 'catalogue.html') } } } : {}),
     server: { port: 5173 },
     test: {
       environment: 'jsdom',

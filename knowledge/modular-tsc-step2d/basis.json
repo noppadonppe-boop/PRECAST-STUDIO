@@ -1,0 +1,20 @@
+{
+  "id":"STUDY-TS-C-S2D-R00",
+  "revision":"S2D-R00",
+  "date":"2026-09-16",
+  "scope":"SECTION_CUT_AUDIT_AND_FIRST_FREE_SIDED_SOLID_BAY_SENSITIVITY",
+  "upstream":"output/tsc-step2b-r00/shell_results.json",
+  "benchmark_source":"output/tsc-step2c-r00/diagnostic_results.json",
+  "thickness_m":0.175,
+  "selection_status":"ASSISTANT_SCOPED_DIAGNOSTIC_NOT_PRODUCTION_SELECTION",
+  "material":"Inherited uncracked isotropic NC320 trial, density 2400 kg/m3, E=28321.786532937494 MPa, nu=0.20; no prestress in this study only",
+  "shell_audit":{"joints":["P-H","F-R"],"meshes":["M2","M3","M4"],"pattern":"FULL","preserve_upstream":true},
+  "cuts":[{"id":"W-TOP","kind":"arc_angle","degrees":0},{"id":"C22.5","kind":"arc_angle","degrees":22.5},{"id":"C45","kind":"arc_angle","degrees":45},{"id":"C67.5","kind":"arc_angle","degrees":67.5},{"id":"R-START","kind":"arc_angle","degrees":90},{"id":"CROWN","kind":"crown"}],
+  "cut_method":"Sum global element resisting nodal forces on the cut of the LH subbody from base to cut. Subtract the equivalent nodal loads assigned by selected elements at the cut. Include all r cross F and nodal moments about (cut_midsurface_X,L/2,cut_midsurface_Z). Compare against separately summed subbody external loads plus LH base reaction. Not Gauss smoothing, not connector force division.",
+  "solid":{"element":"stdBrick","solver_version":"3.8.0","joint_case":"F-R-LIMIT","patterns":["FULL","LEFT"],"meshes":[{"id":"D1","target_m":0.15,"arc_divisions":8,"through_thickness":2},{"id":"D2","target_m":0.075,"arc_divisions":16,"through_thickness":4},{"id":"D3","target_m":0.05,"arc_divisions":24,"through_thickness":6}],"base_bc":"Ux=Uz=0 at all nodes of each wall bottom face, with Uy=0 at only the thickness-and-width midpoint on each face; rotations arise through 3D displacement field, not nodal rotation DOFs.","crown_bc":"Merged full-thickness face, bonded continuum limit only; no contact, gap, bolts or opening/slip","sides":"Y=0,L traction-free including lateral strain; not Uy-fixed coupon","load_mapping":"No element body force or automatic mass load. Exact physical rectangular/annular cell weights distributed over 8 vertices with nonnegative affine weights preserving vertical resultant and X first moment. Roof LL on outer horizontal projection on four outer-face vertices, full or left only. Faceted solid stiffness geometry differs slightly from exact annulus; report volume error.","floor":"Not meshed; LP-A shell-to-independent-support trial retained; base at Z=t_floor=0.175m.","comparison_warning":"Solid face support and shell line support are not identical local kinematics. Compare integrated reactions, section actions and common midsurface displacement; local differences require investigation, not automatic model equivalence."},
+  "qa_targets_before_run":{"force_and_moment_equilibrium_relative":0.000001,"shell_reproduction_relative":0.00000001,"solid_last_pair_displacement_relative":0.05,"solid_last_pair_reaction_relative":0.02,"solid_last_pair_section_resultant_relative":0.05,"normalization_floors":{"force_kN":0.1,"moment_kNm":0.1,"displacement_mm":0.001},"scope":"Numerical research targets, not code acceptance or proof of local stress convergence"},
+  "limitations":["Only one thickness and one solid support/joint idealization","No local-stress mesh acceptance criterion established by this cut audit","No shell-resultant or coupon stress ratio is a bolt or rebar design force","No cracking, creep, wind, seismic, uplift, handling, openings, foundations or adjacent bays","No full 3D stability/capacity/serviceability approval"],
+  "sources":[{"title":"OpenSees eleForce — elemental resisting force","url":"https://openseespydoc.readthedocs.io/en/latest/src/eleForce.html"},{"title":"OpenSees stdBrick","url":"https://openseespydoc.readthedocs.io/en/latest/src/stdBrick.html"}],
+  "engineering_approval":false,
+  "manufacturing_release":false
+}

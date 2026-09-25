@@ -7,6 +7,7 @@ import { gateFromStage } from './studioNavigation';
 import { watchSharedCollection } from './sharedRepository';
 
 export interface StudioProject {
+  exampleProfileId?: string;
   id: string; code: string; name: string; family: string; gate: Gate; gateState: GateState;
   gateStates: Partial<Record<Gate, GateState>>; sourceRevision: string; designBasisRevision: string;
   modelRevision: string; analysisRevision: string; engineer: string; checker: string; due: string;

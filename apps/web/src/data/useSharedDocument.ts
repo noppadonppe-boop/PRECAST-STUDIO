@@ -31,13 +31,14 @@ export function useSharedDocument<T>(category: SharedCategory, id: string, initi
     }, (reason) => { setError(reason.message); setLoaded(false); });
   }, [category, id, mode]);
   function setData(value: T | ((previous: T) => T)) { edits.current += 1; dirtyRef.current = true; setDirty(true); setValue(value); }
-  async function save() {
+  async function save(value?: T) {
     if (mode !== 'shared' || !loaded || inFlight.current) return;
     inFlight.current = true;
     const savedEdit = edits.current;
+    const dataToSave = value ?? data;
     setSaving(true); setError('');
     try {
-      await saveSharedRecord(category, id, data, revision.current);
+      await saveSharedRecord(category, id, dataToSave, revision.current);
       revision.current += 1;
       if (edits.current === savedEdit) { dirtyRef.current = false; setDirty(false); }
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'บันทึกไม่สำเร็จ'); }

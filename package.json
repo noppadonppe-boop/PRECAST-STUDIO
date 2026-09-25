@@ -8,6 +8,10 @@
   },
   "scripts": {
     "dev": "vite --config apps/web/vite.config.ts",
+    "catalogue:build": "node node_modules/vite/bin/vite.js build --config apps/web/vite.config.ts --mode catalogue",
+    "catalogue:preview": "node tools/catalogue/server.mjs --owner-preview",
+    "catalogue:test": "node --test tools/catalogue/server.test.mjs tools/catalogue/current.test.mjs",
+    "catalogue:test:browser": "node tools/catalogue/verify-p37-browser.mjs",
     "staging:preflight": "node --experimental-strip-types tools/staging-preflight.mjs",
     "pilot:readiness": "node --experimental-strip-types tools/pilot-readiness.mjs",
     "pilot:provision": "node --experimental-strip-types tools/provision-pilot.mjs",

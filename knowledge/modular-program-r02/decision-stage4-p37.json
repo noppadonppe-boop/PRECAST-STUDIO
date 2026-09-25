@@ -1,0 +1,11 @@
+{
+  "revision": "P37",
+  "programmeStage": 4,
+  "userDirection": "ต่อไป ขั้นตอนที่ 4 ให้ 100%",
+  "scope": "Integrate P36 48 designs, P35 44 Typical references and 96 planned native slots into existing private local catalogue; preserve historical views; verify downloads and permissions.",
+  "excluded": ["Firebase provisioning", "public deployment", "Stage5 mould drawings", "Revit creation", "STAAD execution", "engineering or production release"],
+  "stopAfterStage": true,
+  "nextStageAuthorized": false,
+  "engineeringApproved": false,
+  "productionReleased": false
+}

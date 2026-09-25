@@ -1,0 +1,17 @@
+{
+  "id":"STUDY-TS-C-S2L-R00","revision":"S2L-R00","date":"2026-09-16",
+  "status":"COMBINED_PROFILE_THICKNESS_STUDY_NOT_FOR_DESIGN",
+  "upstream":"output/tsc-step2k-r00/profile_thickness_verified.json",
+  "mesh":{"id":"KPT","profile_refine":true,"through_thickness":8},
+  "comparison_pairs":[["KP","KPT"],["KT","KPT"]],
+  "purpose":"Close the 2x2 directional comparison H4/KP/KT/KPT using the same KP profile knots and KT thickness layers; do not change all arc cells, Y, base grading or BC in this controlled combination.",
+  "new_FEM_solves":1,
+  "profile_counts_per_half":{"wall":27,"arc":32,"roof":22},
+  "y_cells":16,"expected_elements":20736,
+  "physical_thickness_m":0.175,
+  "unchanged":"FULL / NC320 trial / exterior3x3m including separate floor / R.4 / bay1.5 / F-R / bonded crown / free Y / explicit consistent SW+roofLL50kgf/m2 / no prestress only in trial. No production material selection.",
+  "cut_selection":"Physical coordinates at 0,22.5,45,67.5,90 degrees and crown; verify each exact-angle location before evaluating nodal forces. Never select nonuniform cuts by fraction of row count.",
+  "criteria":"Unchanged S2H numerical QA, S2E 490 physical samples point/RMS/spread5% floor10kPa, S2I both traction traces/nodal and pair5% floor.1kN/.1kNm and quadrature1e-6. These are numerical targets, not code design acceptance.",
+  "limits":["Not an all-axis convergence sequence","No further interior-arc/base/Y refinement","No exact full-bay solution or actual support/contact model","No LEFT, other thickness, openings, cracking, lateral loads or handling","No strength/reinforcement/bolt design"],
+  "engineering_approval":false,"manufacturing_release":false
+}

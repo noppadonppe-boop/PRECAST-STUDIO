@@ -1,0 +1,18 @@
+{
+  "id":"STUDY-TS-C-S2K-R00","revision":"S2K-R00","date":"2026-09-16",
+  "status":"DIRECTIONAL_PROFILE_THICKNESS_STUDY_NOT_FOR_DESIGN",
+  "reference":"output/tsc-step2h-r00/QSB-T175-FR-FULL-H4.json",
+  "upstream":"output/tsc-step2h-r00/quadratic_bay_followup.json",
+  "reference_mesh":{"target_m":0.10,"arc_divisions":24,"through_thickness":6},
+  "meshes":[{"id":"KP","profile_refine":true,"through_thickness":6},{"id":"KT","profile_refine":false,"through_thickness":8}],
+  "profile_rule":"KP: split last two wall cells into two each, first four and last four arc cells into two each, and every flat roof cell into two. Mirror LH/RH. KT: preserve H4 profile and increase thickness layers 6 to 8. Both preserve H4 Y16; no hanging nodes.",
+  "comparison_pairs":[["H4","KP"],["H4","KT"]],
+  "unchanged":"FULL only, t175, 3x3m including separate floor, R.40, bay1.50, NC320 trial, F-R limit, bonded crown, free Y, SW and roof LL50kgf/m2, no prestress in trial. No material or thickness selection.",
+  "sampling_source":"knowledge/modular-tsc-step2e/basis.json",
+  "traction_criteria_source":"knowledge/modular-tsc-step2i/basis.json",
+  "numerical_criteria_source":"knowledge/modular-tsc-step2h/basis.json",
+  "interpretation":"Two one-direction comparisons, not an all-axis convergence sequence. H4 is a control, not a claim to supersede IBY base/edge refinement. Combined KP+KT and IBY transfer remain uncomputed.",
+  "resource_policy":"Run sequentially in local isolated runtime; retain complete raw evidence. No external compute or deployment.",
+  "whole_model_local_stress_convergence":"NOT_ESTABLISHED",
+  "engineering_approval":false,"manufacturing_release":false
+}

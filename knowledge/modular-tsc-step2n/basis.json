@@ -1,0 +1,11 @@
+{
+  "id":"STUDY-TS-C-S2N-R00","revision":"S2N-R00",
+  "status":"DIRECTIONAL_STRESS_DIAGNOSTIC_NOT_FOR_DESIGN",
+  "upstream":"output/tsc-step2m-r00/arc_crown_results.json",
+  "raw_sources":["output/tsc-step2l-r00/COMBINED-T175-FR-FULL-KPT.json","output/tsc-step2m-r00/ARC-T175-FR-FULL-M1.json"],
+  "scope":"Postprocess all 490 existing points; no new FEM solve. Separate mesh-pair change from one-sided stress spread. Classify M1 side pairs by logical element indices i/profile, j/Y, k/thickness; retain multi-direction pairs separately. Adjacent single-axis pairs must share opposite natural-coordinate faces.",
+  "criteria_source":"knowledge/modular-tsc-step2e/basis.json",
+  "criteria_changed":false,"new_FEM_solves":0,
+  "limits":["Direction of a stress jump is not proof of its cause","No extrapolation to faces, support singularities or unmeasured peaks","No replacement of prior acceptance by directional maxima","No actual support/joint selection, design or manufacturing approval"],
+  "engineering_approval":false,"manufacturing_release":false
+}

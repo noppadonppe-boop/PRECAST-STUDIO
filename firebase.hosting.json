@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "precast-studio",
+    "site": "precast-module",
     "public": "apps/web/dist",
     "ignore": [".*", "**/node_modules/**"],
     "rewrites": [{ "source": "**", "destination": "/index.html" }],

@@ -1,19 +1,37 @@
 import { collection, doc, onSnapshot, runTransaction, type DocumentData } from 'firebase/firestore';
-import { firebaseAuth, firestore } from '../firebase/client';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { firebaseAuth, firestore, storage } from '../firebase/client';
 import type { StudioProject } from './useProjectDirectory';
 
-export const sharedRoot = 'precast-studio/root';
+export const sharedStorageRoot = 'PRECAST MODULE';
+export const sharedRoot = `${sharedStorageRoot}/root`;
 export const sharedCategories = ['projects', 'intake', 'criteria', 'panel', 'loads', 'analysis', 'design', 'cost', 'report', 'shop', 'release', 'review', 'team', 'audit', 'libraries', 'settings'] as const;
 export type SharedCategory = typeof sharedCategories[number];
 export interface SharedRecord<T> { data: T; revision: number; updatedAt: string; updatedBy: string }
+export interface SharedAttachment { id: string; name: string; size: number; contentType: string; storagePath: string; downloadUrl: string; uploadedBy: string; uploadedAt: string }
 export function sharedPath(category: SharedCategory, id: string) {
   if (!sharedCategories.includes(category) || !/^[a-zA-Z0-9_-]+$/.test(id)) throw new Error('Invalid shared document path.');
   return `${sharedRoot}/${category}/${id}`;
 }
+function safeStorageName(name: string) {
+  const normalized = name.normalize('NFKC').replace(/[^a-zA-Z0-9._() -]/g, '_').replace(/\s+/g, ' ').trim();
+  return normalized.slice(0, 120) || 'file';
+}
+export async function uploadSharedFile(input: { category: SharedCategory; documentId: string; file: File; onProgress?: (percent: number) => void }): Promise<SharedAttachment> {
+  const user = firebaseAuth.currentUser;
+  if (!user) throw new Error('กรุณาเชื่อมต่อ Firebase ก่อนอัปโหลด');
+  if (!sharedCategories.includes(input.category) || !/^[a-zA-Z0-9_-]+$/.test(input.documentId)) throw new Error('Invalid shared file path.');
+  if (input.file.size <= 0 || input.file.size > 100 * 1024 * 1024) throw new Error('ไฟล์ต้องมีขนาดมากกว่า 0 และไม่เกิน 100 MB');
+  const id = crypto.randomUUID();
+  const storagePath = `${sharedStorageRoot}/${input.category}/${input.documentId}/${id}/${safeStorageName(input.file.name)}`;
+  const task = uploadBytesResumable(ref(storage, storagePath), input.file, { contentType: input.file.type || 'application/octet-stream', customMetadata: { uploadedBy: user.uid, category: input.category, documentId: input.documentId } });
+  await new Promise<void>((resolve, reject) => task.on('state_changed', (snapshot) => input.onProgress?.(Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 100)), reject, resolve));
+  return { id, name: input.file.name, size: input.file.size, contentType: input.file.type || 'application/octet-stream', storagePath, downloadUrl: await getDownloadURL(task.snapshot.ref), uploadedBy: user.uid, uploadedAt: new Date().toISOString() };
+}
 export async function initializeSharedWorkspace() {
   const ref = doc(firestore, sharedRoot);
   await runTransaction(firestore, async (tx) => {
-    if (!(await tx.get(ref)).exists()) tx.set(ref, { name: 'Precast Studio', schemaVersion: 1, categories: sharedCategories, createdAt: new Date().toISOString() });
+    if (!(await tx.get(ref)).exists()) tx.set(ref, { name: 'PRECAST MODULE', schemaVersion: 1, categories: sharedCategories, createdAt: new Date().toISOString() });
   });
 }
 export function watchSharedCollection<T>(category: SharedCategory, receive: (items: Array<SharedRecord<T> & { id: string }>) => void, fail: (reason: Error) => void) {
